@@ -236,3 +236,8 @@ textarea { width: 100%; min-height: 110px; font: 12px var(--font-mono); color: v
 details > summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 13px; }
 table.data tr.sel td { background: var(--accent-soft); }
 table.data td .btn { padding: 3px 8px; font-size: 12px; }
+
+.snaps { gap: 6px; }
+.snaps .btn { padding: 4px 8px; font-size: 12px; display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1.25; }
+.snaps .btn small { font-family: var(--font-mono); color: var(--muted); font-weight: 400; }
+.snaps .btn.primary small { color: inherit; }

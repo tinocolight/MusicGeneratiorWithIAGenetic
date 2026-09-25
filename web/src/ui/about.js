@@ -43,6 +43,7 @@ export const ABOUT_HTML = `
 <ul>
 <li>As saídas das regras originais têm a surpresa melódica do ruído branco e 2–3 vezes mais notas do que melodias reais. Em cânone a 1 compasso soam tão consonantes como ruído ao acaso: as regras de auto-harmonização não chegavam para dois violinistas lerem a mesma parte.</li>
 <li>Só trocar os operadores de bits por operadores musicais já leva o crítico de 0,00 a 0,93.</li>
+<li>Quanto vem da população inicial: com padrões musicais (células rítmicas e escala) o melhor indivíduo da geração 0 já tem crítico 0,71–0,88. A partir de uma população aleatória, sem padrões, o AG chega à mesma aptidão com 1–2 vozes em 1000–2000 gerações, mas o crítico fica ~0,1 abaixo; com 3 vozes não chega lá. A opção «População inicial» deixa ver essa convergência a partir do ruído.</li>
 <li>Considerar o cânone desde a população inicial: com 2 vozes o contraponto chega a 0,8 na 1.ª geração (22 gerações sem isso); com 3 vozes o resultado final também melhora (tríades 87 % contra 72 %, crítico 0,79 contra 0,63).</li>
 <li>Sem as bacias (ablação) o crítico fica igual: as ondas atratoras controlam a forma do contorno, não a qualidade por si só.</li>
 <li>Pausas: com os pesos por defeito o original quase não gera pausas; quando se reforçam as ondas, deixa de atacar notas (ataques de 0,7 para 0,2 por semicolcheia, pausas até 10 %), porque a regra da onda só penaliza ataques.</li>

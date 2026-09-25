@@ -104,7 +104,22 @@
               </select></div>
           </div>
         </details>
+        <h3>Ponto de partida</h3>
+        <div class="field"><span>Cada geração</span>
+          <select id="startMode">
+            <option value="seed">Do zero (semente)</option>
+            <option value="newSeed">Do zero (semente nova)</option>
+            <option value="continue">Continua a anterior</option>
+          </select></div>
+        <div class="field"><span>População inicial</span>
+          <select id="initMode">
+            <option value="auto">Com padrões musicais</option>
+            <option value="musical">Com padrões musicais, sem cânone</option>
+            <option value="random">Aleatória, sem padrões</option>
+          </select></div>
         <div class="field"><span>Semente</span><input type="number" id="seed" min="1" max="999999" step="1" value="7"></div>
+        <label class="hint" for="slowRun"><input type="checkbox" id="slowRun"> Ver a evolução devagar (geração a geração no início)</label>
+        <p class="hint" id="startHint"></p>
 
         <div class="row">
           <button class="btn primary" id="runBtn" type="button">Gerar</button>
@@ -128,6 +143,11 @@
         <h3>Evolução</h3>
         <canvas class="chart" id="historyChart" aria-label="Aptidão ao longo das gerações"></canvas>
         <div class="legend"><span><i style="background:var(--accent)"></i>melhor</span><span><i style="background:var(--grid-strong)"></i>média da população</span><span><i style="background:var(--wave-3)"></i>diversidade (0–1, eixo próprio)</span></div>
+        <div id="snapBox" hidden>
+          <h3>Convergência</h3>
+          <p class="hint">O melhor indivíduo em algumas gerações da última experiência: clique para o ver e ouvir na partitura.</p>
+          <div class="row snaps" id="snapshots"></div>
+        </div>
         <h3>Contribuição das regras (melhor indivíduo)</h3>
         <p class="hint" id="partsHint">Cada regra é uma média por nota em [−1, 1] multiplicada pelo seu peso.</p>
         <div class="bars" id="partsBars"></div>

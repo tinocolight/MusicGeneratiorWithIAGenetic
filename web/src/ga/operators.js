@@ -194,6 +194,20 @@ export function randomCanonGenome(env, rng) {
   return genes;
 }
 
+/**
+ * Initial individual with no predefined patterns: every 16th is, with equal probability, a rest,
+ * a prolongation or a chromatic note drawn uniformly from the instrument's range (no rhythmic
+ * cells, no scale, no canon). Used to show the GA converging from noise.
+ */
+export function randomUniformGenome(env, rng) {
+  const genes = Array.from({ length: env.length }, () => {
+    const r = rng.int(0, 2);
+    return r === 0 ? REST : r === 1 ? HOLD : clampGene(midiToGene(rng.int(env.lowMidi, env.highMidi)));
+  });
+  if (genes[0] === HOLD) genes[0] = REST;
+  return genes;
+}
+
 export function randomMusicalGenome(env, rng) {
   const { length, stepsPerBar } = env;
   const genes = [];

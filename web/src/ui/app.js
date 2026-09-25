@@ -184,12 +184,14 @@ function onConfigChange(kind, arg) {
     }
   }
   if (kind === 'voices' || kind === 'piece') controls.renderWaves();
+  updateStartHint();
   updatePreview();
   if ($('configBox').open) fillConfigText();
 }
 
 function configReplaced(message) {
   controls.renderAll();
+  updateStartHint();
   updatePreview();
   if ($('configBox').open) fillConfigText();
   $('runStatus').textContent = message;
@@ -463,11 +465,25 @@ function setRunning(on) {
   $('stopBtn').disabled = !on;
 }
 
-/** Runs the GA in time slices; resolves with the experiment (or null if it could not start). */
-function runGA(cfg) {
+// generations at which the best individual is kept, to show the convergence afterwards
+const SNAP_GENS = new Set([0, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000]);
+
+/**
+ * Runs the GA in time slices; resolves with the experiment (or null if it could not start).
+ * Every run starts from a new population unless the configuration says to continue from the
+ * final population of the previous run (`ga.start = 'continue'`); `ga.init` chooses how the new
+ * individuals are made (with musical patterns, or at random with no patterns at all).
+ */
+function runGA(cfg, { batch = false } = {}) {
   return new Promise((resolve) => {
     player.stop();
     $('playBtn').textContent = '▶ Tocar';
+    const start = batch ? 'seed' : cfg.ga.start ?? 'seed';
+    if (start === 'newSeed') {
+      cfg.ga.seed = 1 + Math.floor(Math.random() * 99999);
+      state.config.ga.seed = cfg.ga.seed;
+      controls.renderGA();
+    }
     let built;
     try {
       built = buildFitness(cfg);
@@ -478,6 +494,8 @@ function runGA(cfg) {
     }
     const seed = cfg.ga.seed || 1;
     const binary = cfg.ga.operators === 'binary';
+    const last = state.lastPopulation;
+    const continuing = start === 'continue' && last && last.length === built.fit.length;
     const ga = createGA({
       fitness: built.fit,
       rng: createRng(seed),
@@ -488,14 +506,25 @@ function runGA(cfg) {
       mutationRate: cfg.ga.mutation,
       strategy: binary ? 'geneticsharp' : 'tournament',
       operators: binary ? 'binary' : 'musical',
+      initMode: cfg.ga.init ?? 'auto',
+      initialPopulation: continuing ? last.genomes : null,
     });
+    const origin = continuing ? { continuedFrom: last.from } : {};
     const token = {};
     state.running = token;
     state.history = [];
     setRunning(true);
     const t0 = performance.now();
     let lastDraw = 0;
-    const title = (final) => `${MODE_LABEL[built.mode]} · ${activeVoices(cfg).length > 1 ? `${activeVoices(cfg).length} vozes · ` : ''}semente ${seed}${final ? '' : ' (a evoluir…)'}`;
+    const snapshots = [];
+    const snap = () => {
+      if (SNAP_GENS.has(ga.generation) && !snapshots.some((x) => x.generation === ga.generation)) {
+        snapshots.push({ generation: ga.generation, genes: ga.best.decoded, fitness: ga.best.fitness });
+      }
+    };
+    snap();
+    const nVoices = activeVoices(cfg).length;
+    const title = (final) => `${MODE_LABEL[built.mode]} · ${nVoices > 1 ? `${nVoices} vozes · ` : ''}semente ${seed}${continuing ? ` · continua a exp. ${last.from}` : ''}${final ? '' : ` · geração ${ga.generation} (a evoluir…)`}`;
     const show = (final) => {
       const best = ga.best;
       const weights = built.mode === 'classic'
@@ -507,32 +536,56 @@ function runGA(cfg) {
       state.running = null;
       setRunning(false);
       state.history = ga.history.slice();
+      if (!snapshots.some((x) => x.generation === ga.generation)) snapshots.push({ generation: ga.generation, genes: ga.best.decoded, fitness: ga.best.fitness });
       show(true);
       drawHistory();
       $('runStatus').textContent += stopped ? ' · parado' : ' · concluído';
-      const exp = recordExperiment(cfg, stopped);
+      const population = ga.population.map((ind) => Uint8Array.from(ga.decode(ind.genes)));
+      const exp = recordExperiment(cfg, stopped, { snapshots, population, ...origin });
+      state.lastPopulation = { genomes: population.map((g) => Array.from(g)), length: built.fit.length, from: exp.n };
+      renderSnapshots(exp);
+      updateStartHint();
       resolve(exp);
     };
+    // "slowly": one generation per frame at the start, then a few; otherwise ~14 ms of work per slice
+    const slow = () => $('slowRun').checked && !batch;
     const slice = () => {
       if (state.running !== token) return finish(true);
-      const end = performance.now() + 14;
-      while (performance.now() < end && !ga.done) ga.step(1);
+      if (slow()) {
+        const n = ga.generation < 100 ? 1 : ga.generation < 400 ? 3 : 10;
+        for (let k = 0; k < n && !ga.done; k++) {
+          ga.step(1);
+          snap();
+        }
+      } else {
+        const end = performance.now() + 14;
+        while (performance.now() < end && !ga.done) {
+          ga.step(1);
+          snap();
+        }
+      }
       $('progress').value = ga.generation / cfg.ga.generations;
       $('runStatus').textContent = `Geração ${ga.generation} · avaliações ${ga.evaluations.toLocaleString('pt-PT')} · aptidão ${ga.best.fitness.toFixed(2)} · ${((performance.now() - t0) / 1000).toFixed(1)} s`;
-      if (performance.now() - lastDraw > 250) {
+      if (slow() || performance.now() - lastDraw > 250) {
         lastDraw = performance.now();
         state.history = ga.history.slice();
         show(false);
         drawHistory();
       }
       if (ga.done) return finish(false);
-      setTimeout(slice, 0);
+      setTimeout(slice, slow() ? 40 : 0);
     };
-    setTimeout(slice, 0);
+    // the initial population is shown first, so the starting point is visible
+    ga.step(0);
+    state.history = ga.history.slice();
+    show(false);
+    drawHistory();
+    if (slow()) document.querySelector('.stage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(slice, slow() ? 1200 : 0);
   });
 }
 
-function recordExperiment(cfg, stopped) {
+function recordExperiment(cfg, stopped, extra = {}) {
   const p = state.piece;
   const ev = evaluationOf(p);
   const ens = ensembleOf(p);
@@ -549,12 +602,58 @@ function recordExperiment(cfg, stopped) {
     genes: p.genes.slice(),
     history: state.history.slice(),
     stopped,
+    ...extra,
   };
   state.experiments.unshift(exp);
   if (state.experiments.length > 40) state.experiments.pop();
   state.selectedExperiment = exp.n;
   renderExperiments();
   return exp;
+}
+
+/** Buttons with the best individual at a few generations of an experiment (the convergence). */
+function renderSnapshots(exp) {
+  const box = $('snapshots');
+  box.innerHTML = '';
+  $('snapBox').hidden = !exp?.snapshots?.length;
+  if (!exp?.snapshots?.length) return;
+  exp.snapshots.forEach((sn) => {
+    if (sn.critic === undefined) sn.critic = critic.evaluate(sliceSteps(eventsToCompact(toEvents(sn.genes)), 128), { barLen: STEPS_PER_BAR }).humanLike;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn';
+    b.title = `Melhor indivíduo na geração ${sn.generation}: aptidão ${sn.fitness.toFixed(1)}, crítico ${pct(sn.critic)}`;
+    b.innerHTML = `ger. ${sn.generation}<small>crítico ${pct(sn.critic)}</small>`;
+    b.addEventListener('click', () => {
+      if (state.running) return;
+      box.querySelectorAll('.btn').forEach((x) => x.classList.toggle('primary', x === b));
+      const built = buildFitness(exp.config);
+      const res = built.fit.evaluate(sn.genes, { generation: sn.generation, maxGenerations: exp.config.ga.generations, evaluationCount: 0 });
+      setPiece(pieceFromGenes(sn.genes, built, exp.config, {
+        fitness: res.score, parts: res.parts,
+        weights: built.mode === 'classic' ? exp.config.classicG2 : built.fit.weights,
+        title: `Experiência ${exp.n} · geração ${sn.generation}`,
+      }));
+    });
+    box.append(b);
+  });
+}
+
+function updateStartHint() {
+  const c = state.config;
+  const last = state.lastPopulation;
+  const parts = [];
+  const start = c.ga.start ?? 'seed';
+  if (start === 'seed') parts.push('Cada «Gerar» parte do zero. A mesma semente dá a mesma população inicial e as mesmas escolhas ao acaso, por isso definições parecidas dão resultados parecidos.');
+  else if (start === 'newSeed') parts.push('Cada «Gerar» parte do zero com uma semente nova (fica registada na experiência, para a poder repetir).');
+  else if (!last) parts.push('Ainda não há população anterior: a próxima geração parte do zero e as seguintes continuam dela.');
+  else if (last.length !== c.bars * STEPS_PER_BAR) parts.push(`A população da experiência ${last.from} tem outro número de compassos: a próxima geração parte do zero.`);
+  else parts.push(`A próxima geração continua da população final da experiência ${last.from}, reavaliada com as definições atuais.`);
+  if (c.ga.operators === 'binary') parts.push('Com operadores de bits a população inicial é sempre a do programa original (genes ao acaso entre 0 e 74).');
+  else if (c.ga.init === 'random') parts.push('População inicial sem padrões: cada semicolcheia é, ao acaso, pausa, prolongamento ou uma nota cromática do registo. Parte do ruído (crítico ≈ 0) e precisa de 2–3 vezes mais gerações para chegar ao mesmo nível.');
+  else if (c.ga.init === 'musical') parts.push('População inicial com células rítmicas e graus da escala, sem ter em conta o cânone.');
+  else parts.push(activeVoices(c).length > 1 ? 'População inicial com células rítmicas e graus da escala, já escrita em cânone com as outras vozes.' : 'População inicial com células rítmicas e graus da escala: já soa a melodia antes de evoluir.');
+  $('startHint').textContent = parts.join(' ');
 }
 
 function renderExperiments() {
@@ -577,6 +676,9 @@ function loadExperiment(n) {
   const res = built.fit.evaluate(e.genes, { generation: state.config.ga.generations, maxGenerations: state.config.ga.generations, evaluationCount: 0 });
   state.history = e.history.slice();
   state.selectedExperiment = n;
+  if (e.population) state.lastPopulation = { genomes: e.population.map((g) => Array.from(g)), length: e.genes.length, from: n };
+  renderSnapshots(e);
+  updateStartHint();
   setPiece(pieceFromGenes(e.genes, built, state.config, {
     fitness: res.score, parts: res.parts,
     weights: built.mode === 'classic' ? state.config.classicG2 : built.fit.weights,
@@ -596,7 +698,7 @@ async function runBatch() {
     const cfg = cloneConfig(base);
     cfg.ga.seed = (base.ga.seed || 1) + k;
     $('batchSummary').innerHTML = `<p class="hint">A testar a semente ${cfg.ga.seed} (${k + 1} de 5)…</p>`;
-    const r = await runGA(cfg);
+    const r = await runGA(cfg, { batch: true });
     if (!r || r.stopped) break;
     results.push(r);
   }
@@ -1036,6 +1138,7 @@ function start() {
   setPiece(pieceFromGenes(ex.genes, built, cfg, { fitness: res.score, parts: res.parts, weights: built.fit.weights, title: ex.title }));
   state.history = ex.history || [];
   updatePreview();
+  updateStartHint();
   drawHistory();
   $('runStatus').textContent = `Pronto. ${describe(state.config)}.`;
 }
