@@ -98,7 +98,13 @@
           </div>
           <p class="hint" id="wavesHint"></p>
         </div>
-        <p class="hint" id="classicHint" hidden>O modo clássico usa as duas ondas senoidais e as 15 regras do programa original; as vozes definem as distâncias da auto-harmonização e a reprodução.</p>
+        <div id="classicWavesSection" class="group" hidden>
+          <h3>Ondas atratoras (como no programa original)</h3>
+          <p class="hint" id="classicHint">Os campos do formulário do C# para as duas ondas senoidais W1 e W2: <code>valor médio + amplitude · sen(2π · i / período + 2π · desfasamento / 16)</code>, em semicolcheias. Valores inteiros como no original, exceto os períodos. Os pesos das regras «Onda 1» e «Onda 2» estão em «Pesos das regras». As vozes definem as distâncias da auto-harmonização e a reprodução.</p>
+          <div id="classicWaveCards" class="group"></div>
+          <label class="hint" for="classicFirstRun"><input type="checkbox" id="classicFirstRun"> Simular a 1.ª execução do original (a onda 1 fica uma linha plana no gene 0)</label>
+          <div class="row"><button class="btn" id="classicWavesReset" type="button">Repor os valores do original</button></div>
+        </div>
 
         <details id="weightsBox"><summary>Pesos das regras</summary>
           <div class="row" id="weightPresets" style="margin-top:8px"></div>

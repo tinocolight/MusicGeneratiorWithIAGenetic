@@ -10,7 +10,7 @@ import { INTERVALS } from '../fitness/canon.js';
 import { FORMS } from '../fitness/attractor.js';
 import { WAVE_PRESETS } from '../fitness/presets.js';
 import { hz } from '../analysis/wavefit.js';
-import { activeVoices, playableRange, presetWaves, WEIGHT_PRESETS } from './config.js';
+import { activeVoices, playableRange, presetWaves, defaultClassicWaves, WEIGHT_PRESETS } from './config.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -106,7 +106,7 @@ export function createControls(getConfig, onChange) {
     $('phraseBars').value = String(c.phraseBars);
     const classic = c.mode === 'classic';
     $('wavesSection').hidden = classic;
-    $('classicHint').hidden = !classic;
+    $('classicWavesSection').hidden = !classic;
     $('formRow').hidden = classic;
     $('phraseRow').hidden = classic;
   }
@@ -307,6 +307,59 @@ export function createControls(getConfig, onChange) {
       : `As ondas cabem no registo possível (${midiName(lo)}–${midiName(hi)}). A linha tracejada na partitura mostra-as antes de gerar.`;
   }
 
+  // ---------------------------------------------------------------- classic waves (C# form)
+  function renderClassicWaves() {
+    const c = cfg();
+    c.classicWaves ||= defaultClassicWaves();
+    const box = $('classicWaveCards');
+    box.innerHTML = '';
+    c.classicWaves.forEach((w, i) => {
+      const changed = () => onChange('waves');
+      const periodHint = el('small');
+      const setPeriod = () => (periodHint.textContent = `1 ciclo em ${(1 / Math.max(0.01, w.periods)).toFixed(2)} c.`);
+      setPeriod();
+      const meanHint = el('small');
+      const setMean = () => (meanHint.textContent = noteLabel(69 + Math.round(w.meanA4)));
+      setMean();
+      const shiftHint = el('small');
+      const setShift = () => (shiftHint.textContent = `fase de ${Math.round((Math.round(w.shift) / 16) * 360)}°`);
+      setShift();
+      const periods = numberInput(`cw${i}-periods`, w.periods, 0.25, (v) => {
+        w.periods = Math.max(0.01, v);
+        setPeriod();
+        changed();
+      }, { min: '0.01' });
+      const mean = numberInput(`cw${i}-mean`, w.meanA4, 1, (v) => {
+        w.meanA4 = v;
+        setMean();
+        changed();
+      });
+      const amp = numberInput(`cw${i}-amp`, w.amplitude, 1, (v) => {
+        w.amplitude = Math.max(0, v);
+        changed();
+      }, { min: '0' });
+      const basin = numberInput(`cw${i}-basin`, w.basin, 1, (v) => {
+        w.basin = Math.max(0, v);
+        changed();
+      }, { min: '0' });
+      const shift = numberInput(`cw${i}-shift`, w.shift, 1, (v) => {
+        w.shift = v;
+        setShift();
+        changed();
+      });
+      const head = el('div', { class: 'wave-head' }, [el('span', { class: 'wave-tag', style: `background:var(--wave-${i + 1})` }), el('strong', { text: `Onda ${i + 1} (W${i + 1})` })]);
+      const grid = el('div', { class: 'wave-grid' }, [
+        el('label', { for: periods.id }, ['Períodos por compasso', periods, periodHint]),
+        el('label', { for: mean.id }, ['Valor médio (meios-tons, Lá4 = 0)', mean, meanHint]),
+        el('label', { for: amp.id }, ['Amplitude (meios-tons)', amp, el('small', { text: 'a onda vai de −A a +A' })]),
+        el('label', { for: basin.id }, ['Bacia de atração (meios-tons)', basin, el('small', { text: 'nota a ≤ ½: +3, ≤ 1: +1, ≤ 1½: −4,1, além: −6,2' })]),
+        el('label', { for: shift.id }, ['Desfasamento horizontal', shift, shiftHint]),
+      ]);
+      box.append(el('div', { class: 'wave-card' }, [head, grid]));
+    });
+    $('classicFirstRun').checked = !!c.classicFirstRun;
+  }
+
   // ---------------------------------------------------------------- weights & GA
   function renderWeights() {
     const c = cfg();
@@ -374,6 +427,7 @@ export function createControls(getConfig, onChange) {
     renderPiece();
     renderVoices();
     renderWaves();
+    renderClassicWaves();
     renderWeights();
     renderGA();
   }
@@ -435,6 +489,17 @@ export function createControls(getConfig, onChange) {
       renderWaves();
       onChange('waves');
     });
+    $('classicFirstRun').addEventListener('change', () => {
+      cfg().classicFirstRun = $('classicFirstRun').checked;
+      onChange('waves');
+    });
+    $('classicWavesReset').addEventListener('click', () => {
+      const c = cfg();
+      c.classicWaves = defaultClassicWaves();
+      c.classicFirstRun = false;
+      renderClassicWaves();
+      onChange('waves');
+    });
     $('waveDef').addEventListener('change', () => {
       cfg().waveDef = $('waveDef').value;
       renderWaves();
@@ -459,5 +524,5 @@ export function createControls(getConfig, onChange) {
     }
   }
 
-  return { renderAll, renderVoices, renderWaves, renderWeights, renderGA, bind };
+  return { renderAll, renderVoices, renderWaves, renderClassicWaves, renderWeights, renderGA, bind };
 }

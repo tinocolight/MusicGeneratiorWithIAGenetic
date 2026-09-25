@@ -1,7 +1,7 @@
 // Composition settings: one plain object that drives generation, playback, export and the
 // experiment history, plus the optional "auto-configure" helpers.
 
-import { STEPS_PER_BAR } from '../core/score.js';
+import { STEPS_PER_BAR, GENE_A4 } from '../core/score.js';
 import { keyFromScale, MAJOR_TONICS } from '../core/theory.js';
 import { INSTRUMENTS, ENSEMBLES, instrument } from '../core/instruments.js';
 import { INTERVALS, intervalMap } from '../fitness/canon.js';
@@ -41,10 +41,29 @@ export function defaultConfig() {
     canonWeight: 6,
     classicG1: { ...CLASSIC_DEFAULTS.g1 },
     classicG2: { ...CLASSIC_DEFAULTS.g2 },
+    // the two waves of the original form (Form1): periods per measure, mean in half tones
+    // (A4 = 0), amplitude and attraction basin in half tones, horizontal shift (16 = one cycle)
+    classicWaves: defaultClassicWaves(),
+    classicFirstRun: false,
     // start: 'seed' (from scratch with the seed), 'newSeed' (from scratch, new seed each time),
     // 'continue' (from the previous final population); init: 'auto' | 'musical' | 'random'
     ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7, start: 'seed', init: 'auto' },
   };
+}
+
+export function defaultClassicWaves() {
+  return CLASSIC_DEFAULTS.waves.map((w) => ({ periods: w.periodsPerBar, meanA4: w.mean - GENE_A4, amplitude: w.amplitude, basin: w.threshold, shift: w.shift }));
+}
+
+/** Editor values -> the classic fitness' wave specs (integers where the C# form used int.Parse). */
+export function classicWaveSpecs(c) {
+  return (c.classicWaves ?? defaultClassicWaves()).map((w) => ({
+    threshold: Math.max(0, Math.round(w.basin)),
+    periodsPerBar: Math.max(0.01, w.periods),
+    amplitude: Math.round(w.amplitude),
+    mean: GENE_A4 + Math.round(w.meanA4),
+    shift: Math.round(w.shift),
+  }));
 }
 
 export const cloneConfig = (c) => JSON.parse(JSON.stringify(c));
@@ -89,14 +108,17 @@ export function buildFitness(c) {
   const specs = voiceSpecs(c);
   if (c.mode === 'classic') {
     const followers = specs.slice(1);
+    const waveSpecs = classicWaveSpecs(c);
     const fit = createClassicFitness({
       scale: c.scale, major: c.major, bars: c.bars, g1: c.classicG1, g2: c.classicG2,
+      waves: waveSpecs,
+      firstRunBug: !!c.classicFirstRun,
       // the original self-harmonisation rules compare with the bars where the other voices enter
       selfHarmDistances: [followers[0]?.delayBars ?? 1, followers[1]?.delayBars ?? 2],
     });
     return {
       mode: 'classic', fit, key,
-      waves: fit.waves.map((values, i) => ({ values, basin: CLASSIC_DEFAULTS.waves[i].threshold, shape: 'step' })),
+      waves: fit.waves.map((values, i) => ({ values, basin: waveSpecs[i].threshold, shape: 'step' })),
       env: { key, waves: fit.waves, basin: 3, lowMidi: 48, highMidi: 96, length: fit.length, stepsPerBar: STEPS_PER_BAR },
     };
   }

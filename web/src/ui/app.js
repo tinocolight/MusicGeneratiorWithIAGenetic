@@ -235,7 +235,7 @@ function updatePreview() {
 }
 
 // everything that changes the drawn waves
-const waveSignature = (c) => JSON.stringify([c.mode, c.scale, c.major, c.bars, c.mode === 'classic' ? 0 : c.waves, c.ga.seed]);
+const waveSignature = (c) => JSON.stringify([c.mode, c.scale, c.major, c.bars, c.mode === 'classic' ? [c.classicWaves, !!c.classicFirstRun] : c.waves, c.ga.seed]);
 
 function fillConfigText() {
   $('configText').value = JSON.stringify(state.config, null, 1);
@@ -381,7 +381,7 @@ function render() {
   });
   const analyzing = state.tab === 'analyze' && state.analysis && p === state.analysisPiece;
   if (!analyzing) {
-    scene.waves.forEach((w, i) => legend.push(`<span><i style="background:var(--wave-${(i % 4) + 1})"></i>onda ${i + 1} · bacia σ ${Number(w.basin).toFixed(1)}${w.preview ? ' (tracejado: configuração atual, ainda por gerar)' : ''}</span>`));
+    scene.waves.forEach((w, i) => legend.push(`<span><i style="background:var(--wave-${(i % 4) + 1})"></i>onda ${i + 1} · ${w.shape === 'step' ? `bacia ±${Number(w.basin)} meios-tons` : `bacia σ ${Number(w.basin).toFixed(1)}`}${w.preview ? ' (tracejado: configuração atual, ainda por gerar)' : ''}</span>`));
   } else legend.push('<span><i style="background:var(--wave-1)"></i>onda de frequência mais baixa</span><span><i style="background:var(--wave-2)"></i>ondas mais rápidas</span><span>faixas: partes</span>');
   $('legend').innerHTML = legend.join('');
   $('legend').hidden = state.view === 'score';
