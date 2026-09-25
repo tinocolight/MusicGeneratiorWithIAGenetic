@@ -32,12 +32,24 @@
       <div class="chips" id="pieceChips"></div>
     </div>
     <canvas id="roll" aria-label="Piano roll com as notas e as ondas atratoras"></canvas>
+    <div id="score" class="score" hidden aria-label="Partitura"></div>
+    <details id="lilyBox" hidden><summary>Código LilyPond</summary>
+      <div class="group" style="margin-top:8px">
+        <textarea id="lilyText" readonly aria-label="Código LilyPond da peça"></textarea>
+        <div class="row"><button class="btn" id="copyLily" type="button">Copiar</button><span class="hint" id="lilyNote">Compile com <code>lilypond peca.ly</code> para obter o PDF gravado pelo próprio LilyPond.</span></div>
+      </div>
+    </details>
     <div class="legend" id="legend"></div>
     <div class="transport">
+      <div class="viewswitch" role="group" aria-label="Vista">
+        <button type="button" id="viewRoll" aria-pressed="true">Piano roll</button>
+        <button type="button" id="viewScore" aria-pressed="false">Partitura</button>
+      </div>
       <button class="btn primary" id="playBtn" type="button">▶ Tocar</button>
       <label for="bpm">Tempo <input type="range" id="bpm" min="40" max="160" value="84"><span id="bpmVal" class="status">84</span></label>
       <label for="canonPlay"><input type="checkbox" id="canonPlay" checked> Tocar com todas as vozes</label>
       <button class="btn" id="midiBtn" type="button">Descarregar MIDI</button>
+      <button class="btn" id="lilyBtn" type="button" title="Código LilyPond (.ly) da peça, com uma pauta por voz">LilyPond (.ly)</button>
       <span class="note-inline" id="midiNote"></span>
     </div>
   </section>

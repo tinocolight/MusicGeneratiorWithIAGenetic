@@ -19,10 +19,12 @@ const title = html.match(/<title>[\s\S]*?<\/title>/)[0];
 const fonts = [...html.matchAll(/<link rel="(?:preconnect|stylesheet)" href="https:\/\/fonts[^>]*>/g)].map((m) => m[0]).join('\n');
 const body = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>')).replace(/<script type="module"[^>]*><\/script>/, '');
 const safeJs = js.replace(/<\/script/gi, '<\\/script');
-const content = `${title}\n${fonts}\n<style>\n${css}\n</style>\n${body}\n<script>\n${safeJs}\n</script>\n`;
+// the score engine (VexFlow + Gonville, MIT) is inlined too, so the single file works offline
+const vex = readFileSync(`${root}vendor/vexflow-gonville.js`, 'utf8').replace(/<\/script/gi, '<\\/script');
+const content = `${title}\n${fonts}\n<style>\n${css}\n</style>\n${body}\n<script>\n${vex}\n</script>\n<script>\n${safeJs}\n</script>\n`;
 const page = fragment
   ? content
-  : `<!doctype html>\n<html lang="pt">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n${title}\n${fonts}\n<style>\n${css}\n</style>\n</head>\n<body>\n${body}\n<script>\n${safeJs}\n</script>\n</body>\n</html>\n`;
+  : `<!doctype html>\n<html lang="pt">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n${title}\n${fonts}\n<style>\n${css}\n</style>\n</head>\n<body>\n${body}\n<script>\n${vex}\n</script>\n<script>\n${safeJs}\n</script>\n</body>\n</html>\n`;
 mkdirSync(out.slice(0, out.lastIndexOf('/')), { recursive: true });
 writeFileSync(out, page);
 console.log(`wrote ${out} (${(page.length / 1024).toFixed(0)} KB)`);
