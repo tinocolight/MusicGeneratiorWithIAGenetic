@@ -15,6 +15,8 @@ import { analyzePiece, waveToSpec, hz } from '../analysis/wavefit.js';
 import { loadCritic } from '../eval/critic.js';
 import { FEATURE_LABELS } from '../eval/metrics.js';
 import { writeMidi, readMidi } from '../io/midi.js';
+import { scoreModel, toLilyPond } from '../io/notation.js';
+import { estimateKey } from '../core/theory.js';
 import { makeZip } from '../io/zip.js';
 import { REFERENCE_CANONS, referenceEvents, compactToLine } from '../data/references.js';
 import criticData from '../data/critic-data.js';
@@ -23,6 +25,7 @@ import { EXAMPLES } from '../data/examples.js';
 import { drawRoll } from './pianoroll.js';
 import { lineChart, spectrumChart, eliteMap } from './charts.js';
 import { createPlayer } from './audio.js';
+import { loadVexFlow, renderScore } from './score.js';
 import { ABOUT_HTML } from './about.js';
 import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves,
@@ -53,6 +56,11 @@ const state = {
   playhead: null,
   midiUpload: null,
   tab: 'compose',
+  view: 'roll', // 'roll' | 'score'
+  scoreLayout: null,
+  scoreFor: null,
+  scoreAt: 0,
+  scoreTimer: 0,
 };
 
 const controls = createControls(() => state.config, onConfigChange);
@@ -136,6 +144,20 @@ function initControls() {
   $('copyConfig').addEventListener('click', copyConfig);
   $('applyConfig').addEventListener('click', applyConfigText);
   $('playBtn').addEventListener('click', togglePlay);
+  $('viewRoll').addEventListener('click', () => setView('roll'));
+  $('viewScore').addEventListener('click', () => setView('score'));
+  $('lilyBtn').addEventListener('click', downloadLily);
+  $('lilyBox').addEventListener('toggle', () => $('lilyBox').open && fillLily());
+  $('copyLily').addEventListener('click', async () => {
+    fillLily();
+    try {
+      await navigator.clipboard.writeText($('lilyText').value);
+      $('lilyNote').textContent = 'Copiado.';
+    } catch (e) {
+      $('lilyText').select();
+      $('lilyNote').textContent = 'Selecionado: use Ctrl+C / ⌘C para copiar.';
+    }
+  });
   $('midiBtn').addEventListener('click', downloadMidi);
   $('canonPlay').addEventListener('change', render);
   $('meRun').addEventListener('click', runMapElites);
@@ -213,7 +235,7 @@ function updatePreview() {
 }
 
 // everything that changes the drawn waves
-const waveSignature = (c) => JSON.stringify([c.mode, c.scale, c.major, c.bars, c.mode === 'classic' ? 0 : c.waves, c.ga.seed]);
+const waveSignature = (c) => JSON.stringify([c.mode, c.scale, c.major, c.bars, c.mode === 'classic' ? [c.classicWaves, !!c.classicFirstRun] : c.waves, c.ga.seed]);
 
 function fillConfigText() {
   $('configText').value = JSON.stringify(state.config, null, 1);
@@ -344,7 +366,8 @@ function stageScene() {
 function render() {
   const scene = stageScene();
   if (!scene) return;
-  drawRoll($('roll'), scene);
+  if (state.view === 'score') renderScoreView();
+  else drawRoll($('roll'), scene);
   const p = stagePiece();
   $('pieceTitle').textContent = p.title;
   if (state.chipsFor !== p) renderChips(p);
@@ -358,9 +381,124 @@ function render() {
   });
   const analyzing = state.tab === 'analyze' && state.analysis && p === state.analysisPiece;
   if (!analyzing) {
-    scene.waves.forEach((w, i) => legend.push(`<span><i style="background:var(--wave-${(i % 4) + 1})"></i>onda ${i + 1} · bacia σ ${Number(w.basin).toFixed(1)}${w.preview ? ' (tracejado: configuração atual, ainda por gerar)' : ''}</span>`));
+    scene.waves.forEach((w, i) => legend.push(`<span><i style="background:var(--wave-${(i % 4) + 1})"></i>onda ${i + 1} · ${w.shape === 'step' ? `bacia ±${Number(w.basin)} meios-tons` : `bacia σ ${Number(w.basin).toFixed(1)}`}${w.preview ? ' (tracejado: configuração atual, ainda por gerar)' : ''}</span>`));
   } else legend.push('<span><i style="background:var(--wave-1)"></i>onda de frequência mais baixa</span><span><i style="background:var(--wave-2)"></i>ondas mais rápidas</span><span>faixas: partes</span>');
   $('legend').innerHTML = legend.join('');
+  $('legend').hidden = state.view === 'score';
+}
+
+// ------------------------------------------------------------------ engraved score (optional view)
+
+function setView(view) {
+  state.view = view;
+  try {
+    localStorage.setItem('ondas-view', view);
+  } catch (e) {
+    /* storage unavailable */
+  }
+  $('viewRoll').setAttribute('aria-pressed', String(view === 'roll'));
+  $('viewScore').setAttribute('aria-pressed', String(view === 'score'));
+  $('roll').hidden = view === 'score';
+  $('score').hidden = view !== 'score';
+  $('lilyBox').hidden = view !== 'score';
+  state.scoreFor = null;
+  render();
+}
+
+/** Score model of what is on the stage: the voices as they sound, one staff each. */
+function scoreModelFor(p) {
+  const { voices, total } = soundingVoices(p);
+  const count = {};
+  voices.forEach((v) => (count[v.instrument] = (count[v.instrument] || 0) + 1));
+  const seen = {};
+  const named = voices.map((v) => {
+    const label = instrument(v.instrument).label;
+    seen[v.instrument] = (seen[v.instrument] || 0) + 1;
+    return { events: v.events, instrument: v.instrument, name: count[v.instrument] > 1 ? `${label} ${seen[v.instrument]}` : label };
+  });
+  let key = p.key;
+  if (!key || !key.mode) {
+    const notes = p.events.filter((e) => e.pitch !== null);
+    key = notes.length ? estimateKey(notes.map((e) => e.pitch), notes.map((e) => e.dur)) : { tonic: 0, mode: 'major' };
+  }
+  return scoreModel({
+    voices: named,
+    total,
+    barLen: p.barLen,
+    key,
+    title: p.title.replace(/ · geração \d+ \(a evoluir…\)$/, '').replace(/ \(a evoluir…\)$/, ''),
+    subtitle: p.config ? describe(p.config) : '',
+    bpm: Number($('bpm').value),
+  });
+}
+
+// redraws only when the piece, the voices shown or the width change; at most ~3 times a second
+function renderScoreView() {
+  const p = stagePiece();
+  const box = $('score');
+  const width = box.clientWidth || 800;
+  const cs = getComputedStyle(document.documentElement);
+  const theme = cs.getPropertyValue('--paper').trim();
+  const sig = { p, all: $('canonPlay').checked, width, theme, bpm: $('bpm').value };
+  const same = state.scoreFor && Object.keys(sig).every((k) => state.scoreFor[k] === sig[k]);
+  if (same) {
+    highlightScore(state.playhead);
+    return;
+  }
+  const wait = 300 - (performance.now() - state.scoreAt);
+  if (state.scoreLayout && wait > 0) {
+    clearTimeout(state.scoreTimer);
+    state.scoreTimer = setTimeout(() => state.view === 'score' && renderScoreView(), wait);
+    return;
+  }
+  state.scoreFor = sig;
+  state.scoreAt = performance.now();
+  loadVexFlow()
+    .then(() => {
+      if (state.scoreFor !== sig) return;
+      const scroll = box.scrollTop;
+      state.scoreLayout = renderScore(box, scoreModelFor(p), { width, ink: cs.getPropertyValue('--paper-ink').trim(), muted: cs.getPropertyValue('--paper-muted').trim() });
+      box.scrollTop = scroll;
+      highlightScore(state.playhead);
+      if ($('lilyBox').open) fillLily();
+    })
+    .catch((e) => {
+      state.scoreLayout = null;
+      box.innerHTML = `<p class="msg">Não foi possível mostrar a partitura (${e.message}). O código LilyPond continua disponível.</p>`;
+    });
+}
+
+function highlightScore(step) {
+  const lay = state.scoreLayout;
+  if (!lay) return;
+  let first = null;
+  for (const n of lay.notes) {
+    const on = step !== null && step !== undefined && !n.rest && step >= n.start && step < n.end;
+    if (n.el && n.on !== on) {
+      n.el.classList.toggle('on', on);
+      n.on = on;
+    }
+    if (on && !first) first = n.el;
+  }
+  // keep the sounding notes in view inside the score box
+  const box = $('score');
+  if (first && box.scrollHeight > box.clientHeight) {
+    const r = first.getBoundingClientRect();
+    const br = box.getBoundingClientRect();
+    if (r.top < br.top + 20 || r.bottom > br.bottom - 20) box.scrollTop += r.top - br.top - box.clientHeight / 3;
+  }
+}
+
+function fillLily() {
+  const p = stagePiece();
+  if (p) $('lilyText').value = toLilyPond(scoreModelFor(p));
+}
+
+async function downloadLily() {
+  const p = stagePiece();
+  if (!p) return;
+  const text = toLilyPond(scoreModelFor(p));
+  await saveFile(`ondas-atratoras-${Date.now()}.ly`, new TextEncoder().encode(text), 'text/x-lilypond', 'Guardado: ZIP com o ficheiro LilyPond (.ly).');
 }
 
 function lineOf(p) {
@@ -770,12 +908,16 @@ async function downloadMidi() {
   }));
   const [num, den] = TIME_SIGNATURES[p.barLen] ?? [4, 4];
   const bytes = writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den });
-  const name = `ondas-atratoras-${Date.now()}`;
+  await saveFile(`ondas-atratoras-${Date.now()}.mid`, bytes, 'audio/midi', `Guardado: ZIP com o ficheiro MIDI (${tracks.length} pista${tracks.length > 1 ? 's' : ''}).`);
+}
+
+/** Download a file; inside the claude.ai viewer it goes through the downloads capability, in a ZIP. */
+async function saveFile(filename, bytes, mime, savedNote) {
   const dl = await downloadsCap;
   if (dl) {
     try {
-      await dl.save({ filename: `${name}.zip`, data: makeZip([{ name: `${name}.mid`, data: bytes }]) });
-      $('midiNote').textContent = `Guardado: ZIP com o ficheiro MIDI (${tracks.length} pista${tracks.length > 1 ? 's' : ''}).`;
+      await dl.save({ filename: filename.replace(/\.[^.]+$/, '.zip'), data: makeZip([{ name: filename, data: bytes }]) });
+      $('midiNote').textContent = savedNote;
     } catch (e) {
       const code = e && e.code;
       $('midiNote').textContent = code === 'declined' ? 'Download cancelado.'
@@ -784,10 +926,10 @@ async function downloadMidi() {
     }
     return;
   }
-  const blob = new Blob([bytes], { type: 'audio/midi' });
+  const blob = new Blob([bytes], { type: mime });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `${name}.mid`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -942,11 +1084,11 @@ function analysisSource() {
   }
   if (REFERENCE_CANONS[src]) {
     const r = REFERENCE_CANONS[src];
-    return { compact: referenceEvents(r), barLen: r.barLen, title: r.title, key: { tonic: r.tonic }, voices: referenceVoices(src, r), circular: !!r.circular, end: r.endStep };
+    return { compact: referenceEvents(r), barLen: r.barLen, title: r.title, key: { tonic: r.tonic, mode: r.mode }, voices: referenceVoices(src, r), circular: !!r.circular, end: r.endStep };
   }
   if (src === 'corpus') {
     const m = corpus[Number($('anCorpus').value)];
-    return { compact: m.events, barLen: m.barLen, title: `${sourceName(m.source)} — ${m.title}`, key: { tonic: m.tonic }, voices: solo(state.config.voices[0].instrument) };
+    return { compact: m.events, barLen: m.barLen, title: `${sourceName(m.source)} — ${m.title}`, key: { tonic: m.tonic, mode: m.mode }, voices: solo(state.config.voices[0].instrument) };
   }
   if (src === 'midi') return state.midiUpload && { ...state.midiUpload, voices: solo(state.config.voices[0].instrument) };
   return null;
@@ -1130,6 +1272,11 @@ const fmtNum = (v) => (Math.abs(v) >= 10 ? v.toFixed(1) : v.toFixed(2));
 
 function start() {
   initControls();
+  try {
+    if (localStorage.getItem('ondas-view') === 'score') state.view = 'score';
+  } catch (e) {
+    /* storage unavailable */
+  }
   const ex = EXAMPLES[0];
   const cfg = cloneConfig(state.config);
   cfg.ga.seed = ex.seed;
@@ -1141,6 +1288,7 @@ function start() {
   updateStartHint();
   drawHistory();
   $('runStatus').textContent = `Pronto. ${describe(state.config)}.`;
+  if (state.view === 'score') setView('score');
 }
 
 start();

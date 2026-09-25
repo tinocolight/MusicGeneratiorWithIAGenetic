@@ -131,3 +131,26 @@ test('configuration: voices, JSON round trip and every ensemble/mode builds a fi
     assert.ok(Number.isFinite(buildFitness(s).fit.evaluate(randomMusicalGenome(buildFitness(s).env, rng)).score));
   }
 });
+
+test('classic mode: the W1/W2 fields of the original form reach the fitness', async () => {
+  const { classicWaveSpecs, defaultClassicWaves } = await import('../src/ui/config.js');
+  const { CLASSIC_DEFAULTS } = await import('../src/fitness/classic.js');
+  const cfg = defaultConfig();
+  cfg.mode = 'classic';
+  // defaults are the original values
+  assert.deepEqual(classicWaveSpecs(cfg), CLASSIC_DEFAULTS.waves);
+  const ref = buildFitness(cfg).fit.waves[0];
+  // custom W1: 1 period per bar, mean A4+2, amplitude 5, shift 4 (a quarter of a cycle), basin 1
+  cfg.classicWaves = defaultClassicWaves();
+  cfg.classicWaves[0] = { periods: 1, meanA4: 2, amplitude: 5, basin: 1, shift: 4 };
+  const w = buildFitness(cfg).fit.waves[0];
+  for (let i = 0; i < 32; i++) {
+    const gene = Math.trunc(37 + 2 + 5 * Math.sin((2 * Math.PI * i) / 16 + (2 * Math.PI * 4) / 16));
+    assert.equal(w[i], gene + 32, `step ${i}`);
+  }
+  assert.notDeepEqual(Array.from(w), Array.from(ref));
+  assert.equal(buildFitness(cfg).waves[0].basin, 1);
+  // the first-run bug of the original: wave 1 is a flat line at gene 0
+  cfg.classicFirstRun = true;
+  assert.ok(Array.from(buildFitness(cfg).fit.waves[0]).every((v) => v === 32));
+});

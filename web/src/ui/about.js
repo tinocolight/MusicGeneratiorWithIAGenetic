@@ -10,6 +10,9 @@ export const ABOUT_HTML = `
 <li><strong>Vozes</strong>: em qualquer dos modelos a melodia pode ser tocada por 2 ou 3 vozes, cada uma com o seu instrumento, compasso de entrada e intervalo (uníssono, oitavas, 5.ª ou 4.ª diatónicas), para que vários músicos leiam a mesma parte como nos <em>Canons mélodieux</em> de Telemann (TWV 40:118–123). O contraponto entre todos os pares de vozes entra na aptidão e na população inicial, desde a geração 0.</li>
 </ul>
 
+<h3>Partitura e LilyPond</h3>
+<p>O botão «Partitura» mostra a peça em notação tradicional, uma pauta por voz, com a fonte Gonville (feita como substituta da fonte do LilyPond) e a disposição habitual do LilyPond. «LilyPond (.ly)» descarrega o código para gravar a partitura com o próprio LilyPond. No modo clássico, as duas ondas W1 e W2 editam-se com os mesmos campos do formulário original.</p>
+
 <h3>Ondas editáveis e experiências</h3>
 <p>Cada onda tem tipo, frequência, desfasamento, valor médio e amplitude (ou mínimo e máximo) e uma bacia com largura e forma; pode haver até 4. As ondas da configuração aparecem a tracejado na partitura antes de gerar. Os botões de auto-configuração sugerem ondas, forma, pesos e algoritmo a partir das vozes; cada geração fica registada com a sua configuração, e «Testar 5 sementes» mostra se uma mudança ajuda de forma consistente.</p>
 
