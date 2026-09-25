@@ -26,7 +26,9 @@ geração e uma **análise inversa** que passa música real pelas regras.
 | Servidor local | `cd web && python3 -m http.server 8080` e abrir <http://localhost:8080>. Usa os módulos em `src/` diretamente. |
 | GitHub Pages | Publicar a pasta `web/` (Settings → Pages). Não há passo de compilação. |
 
-Não há dependências em tempo de execução. Node ≥ 18 só é preciso para os testes e ferramentas.
+A única dependência em tempo de execução é o VexFlow (MIT), incluído em `web/vendor/` e usado só
+quando se abre a partitura; o ficheiro único leva-o embutido e funciona sem rede. Node ≥ 18 só é
+preciso para os testes e ferramentas.
 
 ## Guia de utilização
 
@@ -35,6 +37,16 @@ voz (melodia a negro, 2.ª voz a azul, 3.ª a roxo), as ondas atratoras com as b
 opacidade segue a influência da onda a cada distância) e, a tracejado, as ondas da configuração
 atual enquanto ainda não foram usadas para gerar. Por baixo:
 
+- **Piano roll / Partitura**: a partitura mostra a peça em notação tradicional, uma pauta por voz,
+  gravada com a fonte musical Gonville (desenhada como substituta da fonte do LilyPond) e composta à
+  maneira do LilyPond: sistemas justificados e equilibrados, nome dos instrumentos no 1.º sistema,
+  número do compasso no início de cada linha, colchete a juntar as vozes, andamento e barra final.
+  As notas que soam acendem-se durante a reprodução. Por baixo, **Código LilyPond** mostra (e copia)
+  o `.ly` da peça.
+- **LilyPond (.ly)**: descarrega esse ficheiro, para gravar a partitura com o próprio LilyPond
+  (`lilypond peca.ly` produz o PDF e um MIDI). A ortografia segue a tonalidade (sensível elevada
+  no modo menor, bequadros antes de sustenidos ou bemóis), as figuras são divididas nos tempos e nas
+  barras com ligaduras, e as vozes que entram mais tarde começam com pausas de compasso.
 - **▶ Tocar**: sintetizador no navegador com um timbre por família de instrumento (cordas
   friccionadas, flautas, palheta simples e dupla, metais, cravo, piano, órgão, vozes), tempo
   ajustável; cada voz tem a sua posição no panorama.
@@ -83,7 +95,13 @@ no que interessa: tudo o resto tem valores sensatos.
 
    **Ondas ← instrumentos** propõe uma onda para o registo das vozes; **Ondas ← melodia real**
    ajusta ondas a uma melodia do corpus e transpõe-as. Um aviso aparece se uma onda sair do registo
-   tocável. No modo clássico usam-se as duas ondas do original.
+   tocável.
+
+   No **modo clássico** aparecem os campos do formulário original para as duas ondas W1 e W2:
+   períodos por compasso, valor médio em meios-tons (Lá4 = 0), amplitude e bacia de atração em
+   meios-tons e desfasamento horizontal (16 = um ciclo, como em `NoteAtractionFunction`), com
+   inteiros onde o C# usava `int.Parse`. Há ainda a opção de simular a 1.ª execução do original
+   (onda 1 plana no gene 0) e um botão para repor os valores do original.
 5. **Pesos das regras** (expandir): o peso de cada regra, com predefinições (por omissão,
    **aprendidos da música real**, ênfase no contraponto, ênfase nas ondas); no modo clássico, os dois
    grupos do original.
@@ -592,6 +610,9 @@ web/
   src/analysis/wavefit.js        analisador de ondas
   src/eval/                      características, modelo de expectativa, crítico, modelos nulos
   src/io/midi.js                 escrita/leitura de MIDI
+  src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond
+  src/ui/score.js                partitura na página (VexFlow + Gonville)
+  vendor/                        VexFlow 4.2.5 com a fonte Gonville (MIT, LICENSE-vexflow.txt)
   src/data/                      corpus, crítico treinado, 3 cânones de Telemann e rondas, pesos aprendidos, exemplo
   src/ui/                        interface (config.js: configuração e auto-configuração; controls.js: painel Compor)
   tools/                         extração do corpus, treino do crítico, benchmark, análise inversa, build, harness C#
@@ -601,7 +622,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 41 testes
+npm test                              # 46 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória

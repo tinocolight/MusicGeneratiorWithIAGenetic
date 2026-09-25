@@ -54,7 +54,7 @@ export function renderScore(container, model, { width, ink = '#111', muted = '#6
   const n = model.staves.length;
   const accidentals = Object.values(model.spelling.signature).filter((a) => a !== 0).length;
   const names = model.staves.map((s) => s.name || '');
-  const nameW = Math.min(120, Math.max(...names.map((s) => s.length)) * 7.2 + (n > 1 ? 22 : 16));
+  const nameW = Math.min(W * 0.3, Math.max(...names.map((s) => s.length)) * 7 + (n > 1 ? 26 : 18));
   const hasNames = names.some(Boolean);
   const indentFirst = hasNames ? nameW : 14;
   const indent = n > 1 ? 18 : 10;
@@ -142,7 +142,7 @@ export function renderScore(container, model, { width, ink = '#111', muted = '#6
         }
         if (bar === model.nBars - 1) stave.setEndBarType(VF.Barline.type.END);
         if (i === 0 && k === 0 && !sys.first) stave.setMeasure(bar + 1);
-        if (i === 0 && k === 0 && sys.first) stave.setTempo({ duration: tempoDur[0], dots: tempoDur[1], bpm: tempo.value }, -2);
+        if (i === 0 && k === 0 && sys.first) stave.setTempo({ duration: tempoDur[0], dots: tempoDur[1], bpm: tempo.value }, -14);
         return stave.setContext(ctx);
       });
       if (staves.length > 1) VF.Stave.formatBegModifiers(staves);
