@@ -16,6 +16,7 @@ export function themeColors(el) {
     muted: v('--muted'),
     note: v('--note'),
     follower: v('--follower'),
+    voice3: v('--voice-3'),
     waves: [v('--wave-1'), v('--wave-2'), v('--wave-3'), v('--wave-4')],
     playhead: v('--accent'),
     segment: v('--segment'),
@@ -57,7 +58,7 @@ export function drawRoll(canvas, scene) {
   const { length, barLen = 16 } = scene;
   const voices = scene.voices || [];
   const pitches = [];
-  for (const v of voices) for (const e of v.events) if (e.pitch !== null) pitches.push(e.pitch);
+  for (const v of voices) for (const e of v.events) if (e.pitch !== null) pitches.push(v.map ? v.map(e.pitch) : e.pitch);
   for (const w of scene.waves || []) for (let i = 0; i < w.values.length; i += 4) pitches.push(w.values[i]);
   let lo = pitches.length ? Math.floor(Math.min(...pitches)) - 2 : 55;
   let hi = pitches.length ? Math.ceil(Math.max(...pitches)) + 2 : 84;
@@ -154,25 +155,29 @@ export function drawRoll(canvas, scene) {
   (scene.waves || []).forEach((w, k) => {
     ctx.strokeStyle = colors.waves[(w.colorIndex ?? k) % colors.waves.length];
     ctx.lineWidth = 2;
+    ctx.setLineDash(w.preview ? [6, 4] : []);
     ctx.beginPath();
     const segStart = w.start ?? 0;
     w.values.forEach((v, i) => (i ? ctx.lineTo(x(segStart + i), y(v)) : ctx.moveTo(x(segStart + i), y(v))));
     ctx.stroke();
+    ctx.setLineDash([]);
   });
 
-  // notes
+  // notes (followers are drawn in their own register: `map` applies their transposition)
   for (const v of voices) {
-    const follower = v.kind === 'follower';
-    ctx.fillStyle = follower ? colors.follower : colors.note;
+    const follower = v.kind !== 'lead';
+    ctx.fillStyle = v.kind === 'v3' ? colors.voice3 : follower ? colors.follower : colors.note;
     ctx.globalAlpha = follower ? 0.75 : 1;
+    const map = v.map || ((p) => p);
     for (const e of v.events) {
       if (e.pitch === null) continue;
+      const pitch = map(e.pitch);
       const s = e.start + (v.offset || 0);
       if (s >= length) continue;
       const x0 = x(s) + 0.5;
       const x1 = Math.min(x(Math.min(length, s + e.dur)), gutter + W) - 0.5;
       const h = Math.max(3, rowH * (follower ? 0.55 : 0.8));
-      const yy = y(e.pitch) - h / 2 + (follower ? rowH * 0.18 : 0);
+      const yy = y(pitch) - h / 2 + (follower ? rowH * 0.18 : 0);
       roundRect(ctx, x0, yy, Math.max(2, x1 - x0), h, Math.min(3, h / 2));
       ctx.fill();
     }

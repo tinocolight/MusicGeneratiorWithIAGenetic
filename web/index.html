@@ -36,9 +36,7 @@
     <div class="transport">
       <button class="btn primary" id="playBtn" type="button">▶ Tocar</button>
       <label for="bpm">Tempo <input type="range" id="bpm" min="40" max="160" value="84"><span id="bpmVal" class="status">84</span></label>
-      <label for="timbre">Timbre <select id="timbre"></select></label>
-      <label for="canonPlay"><input type="checkbox" id="canonPlay"> 2.º violino em cânone</label>
-      <label for="canonPlayDelay">atraso <select id="canonPlayDelay"><option value="1">1 compasso</option><option value="2">2 compassos</option><option value="3">3 compassos</option><option value="4">4 compassos</option></select></label>
+      <label for="canonPlay"><input type="checkbox" id="canonPlay" checked> Tocar com todas as vozes</label>
       <button class="btn" id="midiBtn" type="button">Descarregar MIDI</button>
       <span class="note-inline" id="midiNote"></span>
     </div>
@@ -48,59 +46,82 @@
   <section class="panel active" id="panel-compose" role="tabpanel" aria-labelledby="tab-compose">
     <div class="cols">
       <div class="box" id="controls">
-        <h3>Modelo</h3>
-        <div class="field"><span>Modo</span>
+        <div class="quick">
+          <h3>Configuração rápida</h3>
+          <p class="hint">Escolha a tonalidade e as vozes; o resto pode ser sugerido. Os botões são opcionais e só mudam os campos abaixo.</p>
+          <div class="row">
+            <button class="btn" id="autoBtn" type="button" title="Ondas ajustadas ao registo dos instrumentos e ao cânone; forma, pesos e algoritmo por critérios gerais">Auto-configurar</button>
+            <button class="btn" id="surpriseBtn" type="button" title="Tonalidade, vozes, ondas e forma ao acaso, dentro de valores sensatos">Surpreende-me</button>
+            <button class="btn" id="resetBtn" type="button">Repor</button>
+          </div>
+        </div>
+
+        <h3>Peça</h3>
+        <div class="field"><span>Modelo</span>
           <select id="mode">
             <option value="field">Campo de atratores (novo)</option>
-            <option value="canon">Cânone à Telemann (novo)</option>
             <option value="classic">Clássico (regras do C# original)</option>
           </select></div>
         <div class="field"><span>Tonalidade</span><select id="scale"></select></div>
         <div class="field"><span>Modo tonal</span><select id="major"><option value="1">Maior</option><option value="0">Menor</option></select></div>
-        <div class="field"><span>Compassos (4/4)</span><select id="bars"><option>4</option><option selected>8</option><option>12</option><option>16</option></select></div>
+        <div class="field"><span>Compassos (4/4)</span><select id="bars"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option></select></div>
+        <div class="field" id="formRow"><span>Forma musical</span><select id="form"></select></div>
+        <div class="field" id="phraseRow"><span>Frase (compassos)</span><select id="phraseBars"><option>1</option><option selected>2</option><option>4</option></select></div>
 
-        <div id="fieldControls" class="group">
-          <h3>Ondas e bacias</h3>
-          <div class="field"><span>Ondas</span><select id="preset"></select></div>
-          <div class="field"><span>Forma da bacia</span>
-            <select id="basinShape">
-              <option value="gaussian">Gaussiana (decai com d²)</option>
-              <option value="gravity">Gravitacional 1/(1+d²)</option>
-              <option value="step">Degraus (como no C#)</option>
-            </select></div>
-          <div class="field"><span>Largura da bacia (σ)</span><input type="number" id="basin" min="0.5" max="8" step="0.5" value="3"></div>
-          <div class="field"><span>Amplitude (× preset)</span><input type="number" id="ampScale" min="0" max="3" step="0.1" value="1"></div>
-          <div class="field"><span>Forma musical</span><select id="form"></select></div>
-          <div class="field"><span>Frase (compassos)</span><select id="phraseBars"><option>1</option><option selected>2</option><option>4</option></select></div>
+        <h3>Vozes e cânone</h3>
+        <div class="field"><span>Conjunto</span><select id="ensemble"></select></div>
+        <div id="voiceRows"></div>
+        <label class="hint" for="circular"><input type="checkbox" id="circular"> Ronda circular (a melodia recomeça e as vozes nunca param)</label>
+        <p class="hint" id="voicesHint"></p>
+
+        <div id="wavesSection" class="group">
+          <h3>Ondas atratoras</h3>
+          <div class="field"><span>Predefinição</span><select id="preset"></select></div>
+          <div class="field"><span>Altura definida por</span><select id="waveDef"><option value="meanAmp">valor médio ± amplitude</option><option value="minMax">mínimo e máximo</option></select></div>
+          <div id="waveCards" class="group"></div>
+          <div class="row">
+            <button class="btn" id="addWave" type="button">+ Onda</button>
+            <button class="btn" id="wavesAuto" type="button" title="Uma onda que cabe no registo comum de todas as vozes">Ondas ← instrumentos</button>
+            <button class="btn" id="wavesReal" type="button" title="Ajusta ondas a uma melodia real do corpus e transpõe-as">Ondas ← melodia real</button>
+          </div>
+          <p class="hint" id="wavesHint"></p>
         </div>
+        <p class="hint" id="classicHint" hidden>O modo clássico usa as duas ondas senoidais e as 15 regras do programa original; as vozes definem as distâncias da auto-harmonização e a reprodução.</p>
 
-        <div id="canonControls" class="group" hidden>
-          <h3>Cânone</h3>
-          <div class="field"><span>Entrada da 2.ª voz</span><select id="canonDelay"><option value="1">após 1 compasso</option><option value="2">após 2 compassos</option><option value="3">após 3 compassos</option><option value="4">após 4 compassos</option></select></div>
-          <div class="field"><span>Intervalo</span><select id="canonTranspose"><option value="0">Uníssono (2 violinos)</option><option value="-12">Oitava abaixo</option></select></div>
-          <div class="field"><span>Circular (ronda)</span><select id="canonCircular"><option value="0">Não</option><option value="1">Sim</option></select></div>
-        </div>
-
-        <h3>Algoritmo</h3>
-        <div class="field"><span>Gerações</span><input type="number" id="generations" min="20" max="20000" step="50" value="600"></div>
-        <div class="field"><span>População</span><input type="number" id="popSize" min="10" max="400" step="10" value="80"></div>
-        <div class="field"><span>Mutação</span><input type="number" id="mutation" min="0" max="1" step="0.05" value="0.9"></div>
-        <div class="field"><span>Operadores</span>
-          <select id="operators">
-            <option value="musical">Musicais (Matić, GenJam)</option>
-            <option value="binary">Bits (como o GeneticSharp)</option>
-          </select></div>
+        <details id="weightsBox"><summary>Pesos das regras</summary>
+          <div class="row" id="weightPresets" style="margin-top:8px"></div>
+          <div class="wgrid" id="weights"></div>
+        </details>
+        <details id="gaBox"><summary>Algoritmo genético</summary>
+          <div class="group" style="margin-top:8px">
+            <div class="field"><span>Gerações</span><input type="number" id="generations" min="20" max="20000" step="50" value="600"></div>
+            <div class="field"><span>População</span><input type="number" id="popSize" min="10" max="400" step="10" value="80"></div>
+            <div class="field"><span>Mutação</span><input type="number" id="mutation" min="0" max="1" step="0.05" value="0.9"></div>
+            <div class="field"><span>Operadores</span>
+              <select id="operators">
+                <option value="musical">Musicais (Matić, GenJam)</option>
+                <option value="binary">Bits (como o GeneticSharp)</option>
+              </select></div>
+          </div>
+        </details>
         <div class="field"><span>Semente</span><input type="number" id="seed" min="1" max="999999" step="1" value="7"></div>
-
-        <details class="weights" id="weightsBox"><summary>Pesos das regras</summary><div class="wgrid" id="weights"></div></details>
 
         <div class="row">
           <button class="btn primary" id="runBtn" type="button">Gerar</button>
           <button class="btn" id="stopBtn" type="button" disabled>Parar</button>
-          <button class="btn" id="reseedBtn" type="button" title="Nova semente e gerar">Outra</button>
+          <button class="btn" id="reseedBtn" type="button" title="Nova semente e gerar">Outra semente</button>
+          <button class="btn" id="batchBtn" type="button" title="Gera com 5 sementes seguidas e resume os resultados">Testar 5 sementes</button>
         </div>
         <progress id="progress" max="1" value="0"></progress>
         <div class="status" id="runStatus">Pronto.</div>
+
+        <details id="configBox"><summary>Copiar ou colar a configuração</summary>
+          <div class="group" style="margin-top:8px">
+            <textarea id="configText" aria-label="Configuração em JSON"></textarea>
+            <div class="row"><button class="btn" id="copyConfig" type="button">Copiar</button><button class="btn" id="applyConfig" type="button">Aplicar o texto</button></div>
+            <p class="hint" id="configNote"></p>
+          </div>
+        </details>
       </div>
 
       <div class="box">
@@ -110,6 +131,10 @@
         <h3>Contribuição das regras (melhor indivíduo)</h3>
         <p class="hint" id="partsHint">Cada regra é uma média por nota em [−1, 1] multiplicada pelo seu peso.</p>
         <div class="bars" id="partsBars"></div>
+        <h3>Experiências</h3>
+        <p class="hint">Cada geração fica registada com a configuração usada. «Carregar» repõe essa configuração e a peça; «Gerar» repete-a.</p>
+        <div id="batchSummary"></div>
+        <div class="scroll" id="experiments"><p class="hint">Ainda sem experiências.</p></div>
       </div>
     </div>
   </section>
@@ -186,8 +211,8 @@
         <h3>Avaliação independente</h3>
         <p class="hint">Estas medidas não são usadas para gerar. O crítico é uma regressão logística treinada para distinguir 480 melodias reais (canções do Essen, música irlandesa de O'Neill, sopranos dos corais de Bach) de melodias nulas (ruído branco, castanho e 1/f, melodias reais baralhadas).</p>
         <div id="evalSummary"></div>
-        <h3>Como cânone</h3>
-        <p class="hint">A mesma melodia contra si própria atrasada. Referência: o Vivace do TWV 40:118 obtém 83 % de consonâncias nos tempos fortes com a 2.ª voz a 1 compasso.</p>
+        <h3>Vozes e contraponto</h3>
+        <p class="hint">As vozes da peça (se houver mais do que uma), cada par entre si e, para comparação, a melodia contra si própria atrasada 1, 2 ou 3 compassos. Em rodapé, os três cânones de Telemann transcritos, com a entrada real da 2.ª voz. Consonância: nos tempos fortes; paralelas: 5.as e 8.as seguidas; contrário: movimento contrário.</p>
         <div class="scroll" id="canonTable"></div>
       </div>
       <div class="box">

@@ -265,12 +265,16 @@ export function createClassicFitness(options = {}) {
   // emulate the first run of the C# program, where wave 1 is a flat line at gene 0
   if (o.firstRunBug) waves[0] = new Int32Array(length);
   const strict = !!o.strict;
+  // the original compares each bar with the bar 1 and 2 bars before; with a canon selected in
+  // the page, these distances follow the entries of the 2nd and 3rd voices (the original's own
+  // way of aiming at self-harmonisation, kept from the first generation)
+  const selfHarm = o.selfHarmDistances ?? [1, 2];
 
   function components(seq, evaluationCount) {
     return {
       rhythmicPatterns: evaluateInterestingRhythmicPatterns(seq, m, strict),
-      selfHarm1: scoreSelfHarmonization(seq, m, 1, o.major),
-      selfHarm2: scoreSelfHarmonization(seq, m, 2, o.major),
+      selfHarm1: scoreSelfHarmonization(seq, m, selfHarm[0], o.major),
+      selfHarm2: scoreSelfHarmonization(seq, m, selfHarm[1], o.major),
       aba: scoreMetricRepetitionsABA(seq, m, 4),
       leitmotif: scoreRhythmicRepetitions(seq, m, 0, 1),
       wave1: attractorWave(seq, waveSpecs[0].threshold, waves[0]),

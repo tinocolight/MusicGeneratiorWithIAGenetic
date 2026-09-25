@@ -40,6 +40,121 @@ TELEMANN_BARS.push(
   /* 34 */ [[67, 8], [-1, 16]],
 );
 
+// Telemann, Sonata III, 1st movement "Spirituoso" (D major, C = 4/4): the second player starts at
+// the segno (bar 2, one bar later) and stops at the fermata in bar 46. The 32nd-note figures of
+// bars 1, 7 and 34 are approximated with 16ths.
+const D = { d4: 62, e4: 64, fs4: 66, g4: 67, gs4: 68, a4: 69, as4: 70, b4: 71, cs5: 73, d5: 74, ds5: 75, e5: 76,
+  fs5: 78, g5: 79, gs5: 80, a5: 81, b5: 83, cs6: 85, d6: 86 };
+const T3 = [
+  /* 1 */ [[D.d6, 4], [D.a5, 4], [D.fs5, 2], [D.e5, 1], [D.fs5, 1], [D.g5, 2], [D.e5, 2]],
+  /* 2 */ [[D.fs5, 2], [D.d5, 2], [D.cs5, 1], [D.d5, 1], [D.e5, 1], [D.cs5, 1], [D.d5, 2], [D.a4, 2], [D.cs5, 1], [D.d5, 1], [D.e5, 1], [D.cs5, 1]],
+  /* 3 */ [[D.d5, 2], [D.fs5, 2], [D.e5, 1], [D.fs5, 1], [D.g5, 1], [D.e5, 1], [D.fs5, 4], [D.e5, 1], [D.fs5, 1], [D.g5, 1], [D.e5, 1]],
+  /* 4 */ [[D.fs5, 2], [D.a5, 2], [D.a5, 2], [D.a5, 2], [-1, 2], [D.a5, 2], [D.a5, 2], [D.a5, 2]],
+  /* 5 */ [[D.a5, 2], [D.g5, 1], [D.fs5, 1], [D.e5, 2], [D.d5, 2], [D.cs5, 4], [-1, 4]],
+  /* 6 */ [[-1, 8], [D.a5, 4], [D.e5, 4]],
+  /* 7 */ [[D.cs5, 2], [D.b4, 1], [D.cs5, 1], [D.d5, 2], [D.b4, 2], [D.cs5, 2], [D.a4, 2], [D.gs4, 1], [D.a4, 1], [D.b4, 1], [D.gs4, 1]],
+  /* 8 */ [[D.a4, 2], [D.e4, 2], [D.gs4, 1], [D.a4, 1], [D.b4, 1], [D.gs4, 1], [D.a4, 2], [D.cs5, 2], [D.b4, 1], [D.cs5, 1], [D.d5, 1], [D.b4, 1]],
+  /* 9 */ [[D.cs5, 4], [D.b4, 1], [D.cs5, 1], [D.d5, 1], [D.b4, 1], [D.cs5, 2], [D.e5, 2], [D.e5, 2], [D.e5, 2]],
+  /* 10 */ [[-1, 2], [D.e5, 2], [D.e5, 2], [D.e5, 2], [D.e5, 2], [D.d5, 1], [D.cs5, 1], [D.b4, 2], [D.a4, 2]],
+  /* 11 */ [[D.gs4, 4], [-1, 4], [D.fs5, 8]],
+  /* 12 */ [[D.fs5, 2, 'tie'], [D.e5, 1], [D.ds5, 1], [D.e5, 2], [D.gs5, 2], [D.a5, 2], [D.a4, 2], [D.a5, 2], [D.b5, 1], [D.a5, 1]],
+  /* 13 */ [[D.gs5, 6], [D.e5, 2], [D.cs6, 6], [D.d6, 2]],
+  /* 14 */ [[D.b5, 2], [D.e5, 2], [D.b5, 6], [D.a5, 1], [D.gs5, 1], [D.a5, 4]],
+  /* 15 */ [[D.a5, 2, 'tie'], [D.b5, 1], [D.a5, 1], [D.gs5, 1], [D.fs5, 1], [D.e5, 1], [D.d5, 1], [D.cs5, 1], [D.d5, 1], [D.e5, 2], [D.d5, 1], [D.cs5, 1], [D.b4, 1], [D.a4, 1]],
+  /* 16 */ [[D.e4, 4], [D.b4, 4], [D.a4, 4], [-1, 2], [D.cs5, 2]],
+  /* 17 */ [[D.b4, 1], [D.cs5, 1], [D.d5, 2], [D.d5, 2], [D.e4, 2], [D.cs5, 2], [D.d5, 1], [D.e5, 1], [D.d5, 1], [D.cs5, 1], [D.b4, 1], [D.a4, 1]],
+  /* 18 */ [[D.e4, 4], [D.b4, 4], [D.a4, 2], [D.cs5, 2], [D.e5, 2], [D.a5, 2]],
+  /* 19 */ [[D.b4, 2], [D.gs5, 1], [D.a5, 1], [D.e4, 2], [D.gs5, 1], [D.a5, 1], [D.a5, 2], [D.e5, 2], [D.a4, 4]],
+  /* 20 */ [[-1, 6], [D.e5, 2], [D.cs5, 2], [D.a4, 1], [D.b4, 1], [D.cs5, 1], [D.d5, 1], [D.e5, 1], [D.fs5, 1]],
+  /* 21 */ [[D.g5, 2], [D.g5, 2], [D.fs5, 2], [D.g5, 2], [-1, 2], [D.g5, 2], [D.e5, 2], [D.cs5, 2]],
+  /* 22 */ [[D.as4, 4], [-1, 4], [D.cs5, 4], [-1, 4]],
+  /* 23 */ [[D.fs4, 2], [D.fs5, 2], [D.fs5, 1], [D.e5, 1], [D.g5, 1], [D.fs5, 1], [D.e5, 2], [D.e5, 2], [D.e5, 1], [D.d5, 1], [D.fs5, 1], [D.e5, 1]],
+  /* 24 */ [[D.d5, 2], [D.d5, 2], [D.d5, 1], [D.cs5, 1], [D.e5, 1], [D.d5, 1], [D.cs5, 2], [D.cs5, 2], [D.cs5, 1], [D.b4, 1], [D.d5, 1], [D.cs5, 1]],
+  /* 25 */ [[D.b4, 2], [D.b5, 2], [D.g4, 2], [D.b5, 2], [D.e4, 2], [D.b5, 2], [D.fs4, 2], [D.as4 + 12, 2]],
+  /* 26 */ [[D.b5, 2], [D.b4, 2], [-1, 2], [D.d5, 2], [D.cs5, 5], [D.d5, 1], [D.b4, 1], [D.cs5, 1]],
+  /* 27 */ [[D.d5, 1], [D.cs5, 1], [D.d5, 1], [D.e5, 1], [D.d5, 1], [D.e5, 1], [D.fs5, 1], [D.d5, 1], [D.e5, 1], [D.d5, 1], [D.e5, 1], [D.fs5, 1], [D.e5, 1], [D.fs5, 1], [D.d5, 1], [D.e5, 1]],
+  /* 28 */ [[D.fs5, 1], [D.e5, 1], [D.fs5, 1], [D.g5, 1], [D.fs5, 1], [D.g5, 1], [D.a5, 1], [D.fs5, 1], [D.g5, 1], [D.fs5, 1], [D.g5, 1], [D.a5, 1], [D.g5, 1], [D.a5, 1], [D.fs5, 1], [D.g5, 1]],
+  /* 29 */ [[D.a5, 2], [D.a4, 2], [D.a5, 6], [D.b5, 1], [D.a5, 1], [D.b5, 2], [D.d5, 2]],
+  /* 30 */ [[D.cs5, 2], [D.e5, 2], [D.cs5, 2], [D.a4, 2], [D.fs5, 2], [D.g5, 1], [D.fs5, 1], [D.g5, 2], [D.fs5, 2]],
+  /* 31 */ [[D.e5, 4], [-1, 4], [D.a5, 4], [D.d5, 4]],
+  /* 32 */ [[D.d5, 2, 'tie'], [D.cs5, 1], [D.b4, 1], [D.a4, 2], [D.g4, 2], [D.fs4, 2], [D.a4, 2], [D.fs4, 2], [D.d4, 2]],
+  /* 33 */ [[D.b4, 4], [D.cs5, 2], [D.b4, 1], [D.a4, 1], [D.d5, 2], [D.d4, 2], [-1, 4]],
+];
+// bars 34-38 repeat bars 1-5
+for (let b = 1; b <= 5; b++) T3.push(T3[b - 1]);
+T3.push(
+  /* 39 */ [[D.b5, 8], [D.b5, 2, 'tie'], [D.a5, 1], [D.gs5, 1], [D.a5, 2], [D.cs6, 2]],
+  /* 40 */ [[D.d6, 2], [D.d5, 2], [D.d6, 2], [D.cs6, 1], [D.b5, 1], [D.b5, 2], [D.e5, 2], [D.cs6, 2], [D.a4, 2]],
+  /* 41 */ [[D.fs5, 6], [D.e5, 1], [D.d5, 1], [D.e5, 2], [D.cs5, 1], [D.d5, 1], [D.e5, 4]],
+  /* 42 */ [[D.e5, 2, 'tie'], [D.d5, 1], [D.cs5, 1], [D.d5, 6], [D.e5, 1], [D.d5, 1], [D.cs5, 1], [D.a4, 1], [D.g5, 1], [D.e5, 1]],
+  /* 43 */ [[D.fs5, 2], [D.g5, 1], [D.a5, 1], [D.g5, 1], [D.fs5, 1], [D.e5, 1], [D.d5, 1], [D.a4, 4], [D.e5, 4]],
+  /* 44 */ [[D.d5, 4], [-1, 2], [D.fs5, 2], [D.e5, 1], [D.fs5, 1], [D.g5, 2], [D.g5, 2], [D.a4, 2]],
+  /* 45 */ [[D.fs5, 2], [D.g5, 1], [D.a5, 1], [D.g5, 1], [D.fs5, 1], [D.e5, 1], [D.d5, 1], [D.a4, 4], [D.e5, 4]],
+  /* 46 */ [[D.d5, 2], [D.fs5, 2], [D.a5, 2], [D.d6, 2], [D.e5, 2], [D.b5, 1], [D.d6, 1], [D.a4, 2], [D.b5, 1], [D.d6, 1]],
+  /* 47 */ [[D.d6, 8], [-1, 8]],
+);
+
+// Telemann, Sonata II, 1st movement "Vivace" (G minor, 3/8): the second player starts at the
+// segno in bar 3 (two bars later) and stops at the fermata in bar 72. Grace notes omitted.
+const G = { d4: 62, f4: 65, fs4: 66, g4: 67, a4: 69, bb4: 70, c5: 72, d5: 74, eb5: 75, e5: 76, f5: 77, fs5: 78,
+  g5: 79, a5: 81, bb5: 82 };
+const T2 = [
+  /* 1 */ [[G.bb5, 2], [G.fs5, 4]],
+  /* 2 */ [[G.g5, 4], [G.d5, 2]],
+  /* 3 */ [[G.g4, 1], [G.bb4, 1], [G.d5, 2], [G.c5, 2]],
+  /* 4 */ [[G.bb4, 2], [G.a4, 1], [G.bb4, 1], [G.g4, 2]],
+  /* 5 */ [[-1, 2], [G.bb4, 1], [G.c5, 1], [G.a4, 2]],
+  /* 6 */ [[-1, 2], [G.c5, 1], [G.d5, 1], [G.bb4, 2]],
+  /* 7 */ [[G.eb5, 2], [G.d5, 2], [G.c5, 2]],
+  /* 8 */ [[G.bb4, 2], [G.a4, 2], [G.g4, 2]],
+  /* 9 */ [[G.fs4, 2], [G.fs4, 1], [G.g4, 1], [G.a4, 2]],
+  /* 10 */ [[G.d4, 4], [-1, 2]],
+  /* 11 */ [[G.d5, 2], [G.c5, 1], [G.bb4, 1], [G.a4, 1], [G.c5, 1]],
+  /* 12 */ [[G.bb4, 1], [G.d5, 1], [G.e5, 1], [G.fs5, 1], [G.g5, 1], [G.a5, 1]],
+];
+// bars 13-20 repeat bars 1-8
+for (let b = 1; b <= 8; b++) T2.push(T2[b - 1]);
+T2.push(
+  /* 21 */ [[G.fs4, 1], [G.c5, 1], [G.bb4, 1], [G.a4, 1], [G.g4, 1], [G.fs4, 1]],
+  /* 22 */ [[G.g4, 2], [G.c5, 2], [G.d5, 1], [G.eb5, 1]],
+  /* 23 */ [[G.d5, 2], [G.d5, 1], [G.c5, 1], [G.bb4, 1], [G.a4, 1]],
+  /* 24 */ [[G.g4, 2], [-1, 4]],
+  /* 25 */ [[G.fs5, 2], [G.g5, 1], [G.fs5, 1], [G.g5, 1], [G.a5, 1]],
+  /* 26 */ [[G.a5, 1], [G.bb5, 1], [G.g5, 4]],
+  /* 27 */ [[G.a5, 2], [G.d5, 2], [G.d5, 2]],
+  /* 28 */ [[G.g5, 2], [G.c5, 2], [G.c5, 2]],
+  /* 29 */ [[G.f5, 4], [-1, 2]],
+  /* 30 */ [[G.eb5, 4], [-1, 2]],
+  /* 31 */ [[G.d5, 1], [G.f5, 1], [G.eb5, 1], [G.d5, 1], [G.c5, 1], [G.bb4, 1]],
+  /* 32 */ [[G.c5, 1], [G.eb5, 1], [G.d5, 1], [G.c5, 1], [G.bb4, 1], [G.a4, 1]],
+  /* 33 */ [[G.bb4, 1], [G.d5, 1], [G.c5, 1], [G.bb4, 1], [G.a4, 1], [G.g4, 1]],
+  /* 34 */ [[G.f4, 2], [G.f5, 2], [G.f4, 2]],
+  /* 35 */ [[G.d5, 1], [G.bb4, 1], [G.a4, 1], [G.bb4, 1], [G.eb5, 2]],
+  /* 36 */ [[G.eb5, 2, 'tie'], [G.d5, 1], [G.c5, 1], [G.bb4, 1], [G.a4, 1]],
+  /* 37 */ [[G.bb4, 2], [G.f4, 2], [G.a4, 2]],
+  /* 38 */ [[G.bb4, 3], [G.c5, 1], [G.d5, 1], [G.eb5, 1]],
+  /* 39 */ [[G.d5, 1], [G.bb4, 1], [G.a4, 1], [G.bb4, 1], [G.eb5, 2]],
+  /* 40 */ [[G.eb5, 2, 'tie'], [G.d5, 1], [G.c5, 1], [G.bb4, 1], [G.a4, 1]],
+  /* 41 */ [[G.bb4, 2], [G.f4, 2], [G.a4, 2]],
+  /* 42 */ [[G.bb4, 4], [-1, 2]],
+  /* 43 */ [[G.f5, 2], [G.eb5, 1], [G.d5, 1], [G.eb5, 2]],
+  /* 44 */ [[G.d5, 2], [G.d5, 2], [G.bb5, 2]],
+  /* 45 */ [[G.a5, 2], [G.g5, 1], [G.fs5, 1], [G.g5, 2]],
+  /* 46 */ [[G.a5, 1], [G.bb5, 1], [G.fs5, 2], [G.g5, 2]],
+  /* 47 */ [[G.d5, 2], [G.eb5, 1], [G.d5, 1], [G.eb5, 1], [G.c5, 1]],
+  /* 48 */ [[G.d5, 4], [-1, 2]],
+  /* 49 */ [[G.d5, 4], [G.c5, 2]],
+  /* 50 */ [[G.bb4, 1], [G.a4, 1], [G.g4, 2], [G.a5, 2]],
+);
+// bars 51-71 repeat bars 1-21
+for (let b = 1; b <= 21; b++) T2.push(T2[b - 1]);
+T2.push(
+  /* 72 */ [[G.g4, 2], [G.c5, 2], [G.d5, 1], [G.eb5, 1]],
+  /* 73 */ [[G.d5, 2], [G.d5, 1], [G.c5, 1], [G.bb4, 1], [G.a4, 1]],
+  /* 74 */ [[G.g4, 2], [-1, 4]],
+);
+
+// A third element 'tie' marks a note tied from the previous bar (merged by referenceEvents).
 export const REFERENCE_CANONS = {
   telemann: {
     title: 'Telemann — Sonata I (TWV 40:118), Vivace',
@@ -50,6 +165,26 @@ export const REFERENCE_CANONS = {
     // the follower stops at the fermata (bar 33), sounding the final G together with the leader
     endStep: 33 * 24 + 8,
     bars: TELEMANN_BARS,
+  },
+  telemann3: {
+    title: 'Telemann — Sonata III (TWV 40:120), Spirituoso',
+    barLen: 16,
+    delayBars: 1,
+    tonic: 2,
+    mode: 'major',
+    // the follower stops at the fermata (bar 46): D5 against the leader's final D6
+    endStep: 46 * 16 + 8,
+    bars: T3,
+  },
+  telemann2: {
+    title: 'Telemann — Sonata II (TWV 40:119), Vivace',
+    barLen: 6,
+    delayBars: 2,
+    tonic: 7,
+    mode: 'minor',
+    // the follower stops at the fermata (bar 72) on G4, with the leader's final G4
+    endStep: 73 * 6 + 2,
+    bars: T2,
   },
   frereJacques: {
     title: 'Frère Jacques (round, traditional)',

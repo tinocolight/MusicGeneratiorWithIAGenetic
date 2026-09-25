@@ -13,6 +13,8 @@
 //   inside the basin of the nearest attractor wave.
 
 import { REST, HOLD, isNote, geneToMidi, midiToGene, clampGene } from '../core/score.js';
+import { soundingLine } from '../core/analysis.js';
+import { metricWeightFor, intervalQuality } from '../fitness/canon.js';
 
 // ---------------------------------------------------------------- binary (classic)
 
@@ -109,6 +111,88 @@ const clampMidi = (env, m) => Math.max(env.lowMidi, Math.min(env.highMidi, m));
 const setPitch = (genes, i, midi) => {
   genes[i] = clampGene(midiToGene(midi));
 };
+
+// ---------------------------------------------------------------- canon-aware choices
+
+// How welcome an interval between two voices is, by kind and metric weight (strong/weak).
+function consonanceFactor(iv, w) {
+  const q = intervalQuality(iv).kind;
+  if (q === 'imperfect') return 1;
+  if (q === 'perfect') return 0.7;
+  if (q === 'unison') return 0.35;
+  if (q === 'fourth') return w >= 0.7 ? 0.25 : 0.6;
+  return w >= 0.7 ? 0.03 : 0.3;
+}
+
+/**
+ * Weight of candidate pitch c for melody index s: attraction of the waves x proximity to the
+ * neighbours x consonance with every other voice that sounds when any voice plays index s,
+ * x playability of c on every voice's instrument. `sounding[u]` is the pitch at index u (null =
+ * silence or undecided); `onlyPast` restricts the constraints to indices before s.
+ */
+function candidateWeight(env, sounding, s, c, prev, next, onlyPast) {
+  let w = 0.02;
+  for (let k = 0; k < env.waves.length; k++) {
+    const fn = env.basinFns ? env.basinFns[k] : (d, b) => Math.exp(-(d * d) / (2 * b * b));
+    w = Math.max(w, fn(c - env.waves[k][s], env.basins ? env.basins[k] : env.basin ?? 3));
+  }
+  if (prev !== null) w *= Math.exp(-((c - prev) ** 2) / 18);
+  if (next !== null) w *= Math.exp(-((c - next) ** 2) / 18);
+  const canon = env.canon;
+  if (!canon) return w;
+  const n = sounding.length;
+  for (const vi of canon.voices) {
+    const pi = vi.map(c);
+    if (vi.range && (pi < vi.range[0] || pi > vi.range[1])) w *= 0.05;
+    const T = s + vi.delay;
+    for (const vj of canon.voices) {
+      if (vj === vi) continue;
+      let u = T - vj.delay;
+      if (canon.circular) u = ((u % n) + n) % n;
+      if (u < 0 || u >= n || u === s || (onlyPast && u > s)) continue;
+      const q = sounding[u];
+      if (q === null || q === undefined) continue;
+      w *= consonanceFactor(pi - vj.map(q), metricWeightFor(T, env.stepsPerBar));
+    }
+  }
+  return w;
+}
+
+function diatonicRange(env) {
+  const out = [];
+  for (let m = env.lowMidi; m <= env.highMidi; m++) if (env.key.diatonic[((m % 12) + 12) % 12]) out.push(m);
+  return out;
+}
+
+function sampleSharpened(rng, cands, weights) {
+  return cands[rng.weighted(weights.map((x) => x * x))];
+}
+
+/**
+ * Initial individual for a canon: the rhythm comes from beat cells, the pitches are chosen
+ * left to right so that each new note already agrees with the voices sounding at that moment
+ * — the canon is considered from the very first generation, not only by the fitness.
+ */
+export function randomCanonGenome(env, rng) {
+  const template = randomMusicalGenome(env, rng); // rhythm (and a fallback pitch) template
+  const genes = template.slice();
+  const n = genes.length;
+  const sounding = new Array(n).fill(null);
+  const cands = diatonicRange(env);
+  let prev = null;
+  let cur = null;
+  for (let s = 0; s < n; s++) {
+    const g = genes[s];
+    if (isNote(g)) {
+      const weights = cands.map((c) => candidateWeight(env, sounding, s, c, prev, null, true));
+      cur = sampleSharpened(rng, cands, weights);
+      genes[s] = clampGene(midiToGene(cur));
+      prev = cur;
+    } else if (g === REST) cur = null;
+    sounding[s] = cur;
+  }
+  return genes;
+}
 
 export function randomMusicalGenome(env, rng) {
   const { length, stepsPerBar } = env;
@@ -231,6 +315,20 @@ function copySegment(g, from, to, len, mapPitch) {
   if (g[to] === HOLD && to > 0 && !isNote(prevNote(g, to))) g[to] = REST;
 }
 
+/** Canon-aware re-pitch: choose a note again, looking at every voice before and after it. */
+function repitch(g, env, rng) {
+  const idx = noteIdx(g);
+  if (!idx.length) return;
+  const k = rng.int(0, idx.length - 1);
+  const s = idx[k];
+  const sounding = soundingLine(g).pitch;
+  const prev = k > 0 ? geneToMidi(g[idx[k - 1]]) : null;
+  const next = k + 1 < idx.length ? geneToMidi(g[idx[k + 1]]) : null;
+  const cands = diatonicRange(env);
+  const weights = cands.map((c) => candidateWeight(env, sounding, s, c, prev, next, false));
+  setPitch(g, s, sampleSharpened(rng, cands, weights));
+}
+
 export const MUSICAL_OP_WEIGHTS = {
   step: 5, octave: 0.5, swap: 1.5, attract: 3, split: 2, merge: 2, rest: 1, sequence: 1.5, invert: 0.7,
 };
@@ -238,8 +336,15 @@ export const MUSICAL_OP_WEIGHTS = {
 export function musicalMutate(genes, env, rng, strength = 1) {
   const names = Object.keys(MUSICAL_OP_WEIGHTS);
   const weights = names.map((n) => MUSICAL_OP_WEIGHTS[n]);
+  if (env.canon) {
+    names.push('repitch');
+    weights.push(3);
+  }
   const count = 1 + (rng.chance(0.4 * strength) ? 1 : 0) + (rng.chance(0.15 * strength) ? 1 : 0);
-  for (let c = 0; c < count; c++) MUSICAL_OPS[names[rng.weighted(weights)]](genes, env, rng);
+  for (let c = 0; c < count; c++) {
+    const name = names[rng.weighted(weights)];
+    (name === 'repitch' ? repitch : MUSICAL_OPS[name])(genes, env, rng);
+  }
   if (genes[0] === HOLD) genes[0] = REST;
   return genes;
 }

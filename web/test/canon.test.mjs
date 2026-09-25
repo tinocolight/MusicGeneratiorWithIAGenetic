@@ -39,3 +39,18 @@ test('interval classes follow two-voice counterpoint', () => {
   assert.equal(intervalQuality(6).kind, 'dissonant');
   assert.equal(intervalQuality(0).kind, 'unison');
 });
+
+test('Telemann Sonatas I, II and III: the canon score peaks at the real entry (delays on the beat)', () => {
+  for (const key of ['telemann', 'telemann2', 'telemann3']) {
+    const ref = REFERENCE_CANONS[key];
+    const line = compactToLine(referenceEvents(ref));
+    const trueD = ref.delayBars * ref.barLen;
+    const beat = ref.barLen === 6 ? 2 : 4; // 3/8: eighths; otherwise quarters
+    const scores = [];
+    for (let d = beat; d <= 3 * Math.max(ref.barLen, trueD); d += beat) {
+      scores.push([d, analyzeCanon(line, { delay: d, barLen: ref.barLen, end: ref.endStep - trueD + d }).score]);
+    }
+    scores.sort((a, b) => b[1] - a[1]);
+    assert.equal(scores[0][0], trueD, `${ref.title}: best delay ${scores[0][0]}`);
+  }
+});

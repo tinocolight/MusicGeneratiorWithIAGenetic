@@ -355,14 +355,16 @@ function quartileMean(ps, which) {
   return part.reduce((a, b) => a + b, 0) / part.length;
 }
 
-/** Convert a fitted wave to a generator wave spec (sine family) anchored at the segment start. */
+/** Convert a fitted wave to an editor wave {type, freq, mean, amplitude, basin, shape, phase}. */
 export function waveToSpec(w, stepsPerBar = 16) {
   return {
-    type: 'sine',
-    periodsPerBar: w.freq || 1 / 64,
-    amplitude: w.freq ? w.amplitude : 0,
+    type: w.freq ? 'sine' : 'flat',
+    freq: w.freq || 0.25,
     mean: w.mean,
-    shift: (w.phase * stepsPerBar) / (2 * Math.PI) / (w.freq || 1),
+    amplitude: w.freq ? w.amplitude : 0,
     basin: Math.max(1.5, Math.min(5, w.basin || 3)),
+    shape: 'gaussian',
+    // value = mean + A sin(2*pi*f*t/bar + phi)  ->  shift of phi*bar/(2*pi*f) steps
+    phase: w.freq ? (w.phase * stepsPerBar) / (2 * Math.PI * w.freq) : 0,
   };
 }

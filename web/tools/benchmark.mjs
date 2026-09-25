@@ -16,6 +16,9 @@ import { analyzeCanon } from '../src/fitness/canon.js';
 import { loadCritic } from '../src/eval/critic.js';
 import { nullMelody } from '../src/eval/nullmodels.js';
 import { analyzePiece, fitWaves, notesOf } from '../src/analysis/wavefit.js';
+import { analyzeEnsemble } from '../src/fitness/canon.js';
+import { LEARNED_WEIGHTS } from '../src/data/learned-weights.js';
+import { defaultConfig, applyEnsemble, autoConfigure, buildFitness } from '../src/ui/config.js';
 import criticData from '../src/data/critic-data.js';
 import corpus from '../src/data/corpus-data.js';
 
@@ -109,7 +112,7 @@ const summarize = (rows) => {
   return out;
 };
 
-const results = { seeds: SEEDS, configs: [], reference: {}, waveStudy: {}, mapElites: {}, originalCsharp: null };
+const results = { seeds: SEEDS, configs: [], ensembles: [], reference: {}, waveStudy: {}, mapElites: {}, originalCsharp: null };
 const t0 = Date.now();
 
 // ---- reference rows: real melodies and null models
@@ -142,6 +145,58 @@ for (const cfg of CONFIGS) {
   }
   results.configs.push({ id: cfg.id, label: cfg.label, evaluations: evals / SEEDS, finalDiversity: div / SEEDS, ...summarize(rows), examples });
   console.error(`${cfg.id} done (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
+}
+
+// ---- voices: canon considered from generation 0 (canon-aware initial population) or only
+// by the fitness; several ensembles; default vs learned weights for a single melody
+const ENSEMBLE_RUNS = [
+  { id: 'telemann-init', label: 'Telemann: 2 violinos, 2.º no c. 2 · cânone desde a geração 0', ensemble: 'telemann', init: true },
+  { id: 'telemann-noinit', label: 'Telemann · cânone só na aptidão', ensemble: 'telemann', init: false },
+  { id: 'trio-init', label: 'Trio: violino, viola (c. 3), violoncelo 8.ª abaixo (c. 5) · desde a geração 0', ensemble: 'trio', init: true },
+  { id: 'trio-noinit', label: 'Trio · cânone só na aptidão', ensemble: 'trio', init: false },
+  { id: 'fifth-init', label: 'Cânone à 5.ª: oboé e fagote (c. 2)', ensemble: 'fifth', init: true },
+  { id: 'round-init', label: 'Ronda circular a 3 vozes (entradas a cada 2 c.)', ensemble: 'round', init: true },
+  { id: 'solo-default', label: 'Só a melodia · pesos por omissão', ensemble: 'solo', init: true },
+  { id: 'solo-learned', label: 'Só a melodia · pesos aprendidos da música real', ensemble: 'solo', init: true, learned: true },
+];
+for (const run of ENSEMBLE_RUNS) {
+  const rows = [];
+  for (let s = 1; s <= SEEDS; s++) {
+    const cfg = applyEnsemble(defaultConfig(), run.ensemble);
+    autoConfigure(cfg);
+    if (run.learned) cfg.weights = { ...cfg.weights, ...LEARNED_WEIGHTS };
+    cfg.ga.seed = s;
+    const built = buildFitness(cfg);
+    const ga = createGA({
+      fitness: built.fit, rng: createRng(s), length: built.fit.length, env: built.env,
+      generations: cfg.ga.generations, popSize: cfg.ga.popSize, mutationRate: cfg.ga.mutation,
+      strategy: 'tournament', operators: 'musical', canonInit: run.init,
+    });
+    const multi = !!built.env.canon;
+    const gen0 = multi ? ga.best.parts.canon : null;
+    let reached = null;
+    while (!ga.done) {
+      ga.step(1);
+      if (multi && reached === null && ga.best.parts.canon >= 0.8) reached = ga.generation;
+    }
+    const genes = ga.best.decoded;
+    const compact = eventsToCompact(toEvents(genes));
+    const first = [];
+    let t = 0;
+    for (const [p, d] of compact) if (t < 128) (first.push([p, Math.min(d, 128 - t)]), (t += d)); // first 8 bars, like the corpus
+    const ev = critic.evaluate(first, { barLen: 16 });
+    const row = { fitness: ga.best.fitness, critic: ev.humanLike, typical: ev.typicality * criticData.features.length, rest: ev.features.restRatio };
+    if (multi) {
+      const e = analyzeEnsemble(soundingLine(genes), built.env.canon.voices, { circular: built.env.canon.circular, barLen: 16 });
+      Object.assign(row, {
+        canonGen0: gen0, canonFinal: ga.best.parts.canon, genTo08: reached ?? cfg.ga.generations,
+        strong: e.strongConsonance, parallelsPerBar: e.parallelsPerBar, triads: e.triadRatio, outOfRange: e.outOfRange,
+      });
+    }
+    rows.push(row);
+  }
+  results.ensembles.push({ id: run.id, label: run.label, ...summarize(rows) });
+  console.error(`${run.id} done (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
 }
 
 // ---- original C# program (if tools/parity-csharp was run with "run")
@@ -225,6 +280,11 @@ for (const c of results.configs) md += row(c.label, c);
 if (results.originalCsharp) {
   md += '\n## Programa C# original (GeneticSharp 2.6, 40 s por execução)\n\n| Execução | Gerações | Crítico | Pausas | Notas/tempo | Cânone 1 c. |\n|---|---|---|---|---|---|\n';
   for (const r of results.originalCsharp) md += `| ${r.run}${r.run === 1 ? ' (onda 1 = 0)' : ''} | ${r.generations} | ${f2(r.critic)} | ${pct(r.rest)} | ${f2(r.density)} | ${pct(r.canonStrong)} |\n`;
+}
+md += '\n## Vozes: cânone desde a geração 0\n\nConfigurações de `autoConfigure` (ondas no registo comum dos instrumentos). «Desde a geração 0»: a população inicial é construída nota a nota a concordar com as vozes que soam; «só na aptidão»: população inicial aleatória. Contraponto = componente `canon` da aptidão (média dos pares, +0,3 × tríades com 3 vozes).\n\n| Configuração | Contraponto na geração 0 | Contraponto final | Gerações até 0,8 | Consonância forte | 5.as/8.as paral./c. | Tríades | Crítico | Típicas /26 |\n|---|---|---|---|---|---|---|---|---|\n';
+for (const e of results.ensembles) {
+  const has = e.canonGen0 && Number.isFinite(e.canonGen0.mean);
+  md += `| ${e.label} | ${has ? cell(e, 'canonGen0') : '—'} | ${has ? cell(e, 'canonFinal') : '—'} | ${has ? cell(e, 'genTo08', (x) => x.toFixed(0)) : '—'} | ${has ? cell(e, 'strong', pct) : '—'} | ${has ? cell(e, 'parallelsPerBar') : '—'} | ${has && e.label.match(/Trio|Ronda/) ? cell(e, 'triads', pct) : '—'} | ${cell(e, 'critic')} | ${cell(e, 'typical', (x) => x.toFixed(1))} |\n`;
 }
 const me = results.mapElites;
 md += `\n## MAP-Elites\n\n${me.evaluations} avaliações · ${me.cells} células preenchidas (${pct(me.coverage)}) · ${me.humanLikeCells} com crítico ≥ 0,7 · crítico médio ${cell(me, 'critic')} · notas/tempo ${cell(me, 'density')} · âmbito ${cell(me, 'range', (x) => x.toFixed(1))}\n`;

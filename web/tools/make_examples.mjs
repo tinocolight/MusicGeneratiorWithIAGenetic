@@ -1,21 +1,23 @@
 // Precomputes the example shown when the page opens (so the first view is a real result).
+// It is exactly what «Gerar» produces with the default configuration.
 //   node tools/make_examples.mjs
 import { writeFileSync } from 'node:fs';
-import { createAttractorFitness, DEFAULT_WEIGHTS } from '../src/fitness/attractor.js';
-import { resolvePreset } from '../src/fitness/presets.js';
 import { createGA } from '../src/ga/ga.js';
 import { createRng } from '../src/core/rng.js';
+import { defaultConfig, buildFitness } from '../src/ui/config.js';
 
 const here = new URL('.', import.meta.url).pathname;
-const seed = 7;
-const fit = createAttractorFitness({
-  bars: 8, tonic: 7, mode: 'major', waves: resolvePreset('arch', 7), basinShape: 'gaussian',
-  form: "AA'BA'", phraseBars: 2, weights: DEFAULT_WEIGHTS, seed,
+const cfg = defaultConfig();
+const seed = cfg.ga.seed;
+const built = buildFitness(cfg);
+const ga = createGA({
+  fitness: built.fit, rng: createRng(seed), length: built.fit.length, env: built.env,
+  generations: cfg.ga.generations, popSize: cfg.ga.popSize, mutationRate: cfg.ga.mutation,
+  strategy: 'tournament', operators: 'musical',
 });
-const ga = createGA({ fitness: fit, rng: createRng(seed), length: fit.length, env: fit.env, generations: 600, popSize: 80, mutationRate: 0.9, strategy: 'tournament', operators: 'musical' });
-ga.step(600);
+ga.step(cfg.ga.generations);
 const examples = [{
-  title: 'Exemplo · campo de atratores (arco de frase), Sol maior, semente 7',
+  title: `Exemplo · campo de atratores (arco de frase), Sol maior, semente ${seed}`,
   seed,
   genes: ga.best.decoded,
   history: ga.history.map((h) => ({ ...h, best: +h.best.toFixed(3), mean: +h.mean.toFixed(3), diversity: +h.diversity.toFixed(4) })),
