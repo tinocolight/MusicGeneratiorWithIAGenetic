@@ -15,6 +15,7 @@
 import { REST, HOLD, isNote, geneToMidi, midiToGene, clampGene } from '../core/score.js';
 import { soundingLine } from '../core/analysis.js';
 import { metricWeightFor, intervalQuality } from '../fitness/canon.js';
+import { blockMutate } from './blocks.js';
 
 // ---------------------------------------------------------------- binary (classic)
 
@@ -354,10 +355,15 @@ export function musicalMutate(genes, env, rng, strength = 1) {
     names.push('repitch');
     weights.push(3);
   }
+  if (env.blocks) {
+    names.push('block');
+    weights.push(3);
+  }
   const count = 1 + (rng.chance(0.4 * strength) ? 1 : 0) + (rng.chance(0.15 * strength) ? 1 : 0);
   for (let c = 0; c < count; c++) {
     const name = names[rng.weighted(weights)];
-    (name === 'repitch' ? repitch : MUSICAL_OPS[name])(genes, env, rng);
+    if (name === 'block') blockMutate(env.blocks, genes, env, rng);
+    else (name === 'repitch' ? repitch : MUSICAL_OPS[name])(genes, env, rng);
   }
   if (genes[0] === HOLD) genes[0] = REST;
   return genes;

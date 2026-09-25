@@ -35,6 +35,14 @@ import { makeKey, melodicAttraction, pearson } from '../core/theory.js';
 import { makeWave, archWave } from '../core/waves.js';
 import { soundingLine, smooth, clamp } from '../core/analysis.js';
 import { analyzeEnsemble, intervalMap } from './canon.js';
+import { createBlockModel } from '../ga/blocks.js';
+import blocksData from '../data/blocks-data.js';
+
+let blockModel = null;
+/** The building-block model learned from real melodies (shared, built on first use). */
+export const getBlockModel = () => (blockModel ||= createBlockModel(blocksData));
+/** Typical (P75) value of each rule in real melodies: with `caps`, rules are rewarded up to it only. */
+export const RULE_CAPS = blocksData.caps;
 import { instrument } from '../core/instruments.js';
 import { createRng } from '../core/rng.js';
 
@@ -62,7 +70,7 @@ export const BASIN_SHAPES = {
 
 export const DEFAULT_WEIGHTS = {
   key: 3, attractor: 3, proximity: 2, regression: 1, forces: 1.5, metric: 2, cadence: 2.5,
-  rhythm: 3, form: 2, tension: 1, variety: 2, canon: 0,
+  rhythm: 3, form: 2, tension: 1, variety: 2, canon: 0, idiom: 0,
 };
 
 export const FIELD_DEFAULTS = {
@@ -369,6 +377,12 @@ export function createAttractorFitness(options = {}) {
     if (canonOn) parts.canon = analyzeEnsemble(line, ensemble, { circular: !!o.circular, barLen: bpb }).score;
     else parts.canon = 0;
 
+    // idiom: how typical the blocks (beats) are of real melodies, up to the corpus median ------
+    parts.idiom = weights.idiom ? getBlockModel().idiomPart(genes, key) : 0;
+
+    // "do not maximise": each rule counts up to its typical value in real music
+    if (o.caps) for (const [k, cap] of Object.entries(RULE_CAPS)) if (parts[k] > cap) parts[k] = cap;
+
     return { parts, events, notes };
   }
 
@@ -385,6 +399,7 @@ export function createAttractorFitness(options = {}) {
     env: {
       key, waves, basins, basinFns, basin: Math.min(...basins), lowMidi, highMidi, length, stepsPerBar: bpb,
       canon: canonOn ? { voices: ensemble, circular: !!o.circular } : null,
+      blocks: o.blocks || weights.idiom ? getBlockModel() : null,
     },
     components: (genes) => components(genes).parts,
     evaluate(genes) {

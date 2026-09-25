@@ -39,6 +39,8 @@ export function defaultConfig() {
     weightsPreset: 'default',
     weights: { ...DEFAULT_WEIGHTS },
     canonWeight: 6,
+    // reward each rule only up to its typical value in real melodies (results/blocks.md)
+    capRules: false,
     classicG1: { ...CLASSIC_DEFAULTS.g1 },
     classicG2: { ...CLASSIC_DEFAULTS.g2 },
     // the two waves of the original form (Form1): periods per measure, mean in half tones
@@ -134,6 +136,8 @@ export function buildFitness(c) {
     voices: activeVoices(c),
     circular: c.circular,
     seed,
+    caps: !!c.capRules,
+    blocks: c.ga.init === 'blocks',
   });
   return {
     mode: 'field', fit, key,
