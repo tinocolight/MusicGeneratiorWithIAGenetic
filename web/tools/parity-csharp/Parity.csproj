@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Compiles the ORIGINAL rule code (AlgorithmFitness.cs, ConfigurationValues.cs, MidiSharp.cs)
+       unchanged, and exposes its private rules through reflection so web/test/parity.test.mjs
+       can compare them with the JavaScript port. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>CS0162;CS0168;CS0219;CS0414;CS8981</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../../GeneticMusic/GeneticMusic/AlgorithmFitness.cs" Link="Original/AlgorithmFitness.cs" />
+    <Compile Include="../../../GeneticMusic/GeneticMusic/ConfigurationValues.cs" Link="Original/ConfigurationValues.cs" />
+    <Compile Include="../../../GeneticMusic/GeneticMusic/MidiSharp.cs" Link="Original/MidiSharp.cs" />
+  </ItemGroup>
+  <!-- Sequential twin of the original rules: identical source, only Parallel.For replaced by a
+       plain loop (and moved to another namespace). Used to check the port without the data race. -->
+  <Target Name="GenerateSequentialTwin" BeforeTargets="BeforeBuild">
+    <Exec Command="sed -e '1i using GeneticMusic;' -e 's/namespace GeneticMusic/namespace GeneticMusicSequential/' -e 's/Parallel\.For(/SequentialLoop.For(/g' ../../../GeneticMusic/GeneticMusic/AlgorithmFitness.cs &gt; $(IntermediateOutputPath)AlgorithmFitness.Sequential.cs" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)AlgorithmFitness.Sequential.cs" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="GeneticSharp" Version="2.6.0" />
+  </ItemGroup>
+</Project>

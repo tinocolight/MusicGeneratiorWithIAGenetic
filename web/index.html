@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ondas Atratoras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Ondas Atratoras</h1>
+      <p>Algoritmo genético de composição melódica com ondas atratoras (Luz &amp; Silva, IPCA 2020), versão web com extensões da literatura, cânones à Telemann e avaliação objetiva.</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Secções">
+      <button role="tab" id="tab-compose" aria-selected="true" data-panel="compose">Compor</button>
+      <button role="tab" id="tab-explore" aria-selected="false" data-panel="explore">Explorar</button>
+      <button role="tab" id="tab-vary" aria-selected="false" data-panel="vary">Variações</button>
+      <button role="tab" id="tab-analyze" aria-selected="false" data-panel="analyze">Analisar</button>
+      <button role="tab" id="tab-evaluate" aria-selected="false" data-panel="evaluate">Avaliar</button>
+      <button role="tab" id="tab-about" aria-selected="false" data-panel="about">Sobre</button>
+    </nav>
+  </header>
+
+  <section class="stage" aria-label="Partitura">
+    <div class="stage-head">
+      <h2 id="pieceTitle">Exemplo</h2>
+      <div class="chips" id="pieceChips"></div>
+    </div>
+    <canvas id="roll" aria-label="Piano roll com as notas e as ondas atratoras"></canvas>
+    <div class="legend" id="legend"></div>
+    <div class="transport">
+      <button class="btn primary" id="playBtn" type="button">▶ Tocar</button>
+      <label for="bpm">Tempo <input type="range" id="bpm" min="40" max="160" value="84"><span id="bpmVal" class="status">84</span></label>
+      <label for="timbre">Timbre <select id="timbre"></select></label>
+      <label for="canonPlay"><input type="checkbox" id="canonPlay"> 2.º violino em cânone</label>
+      <label for="canonPlayDelay">atraso <select id="canonPlayDelay"><option value="1">1 compasso</option><option value="2">2 compassos</option><option value="3">3 compassos</option><option value="4">4 compassos</option></select></label>
+      <button class="btn" id="midiBtn" type="button">Descarregar MIDI</button>
+      <span class="note-inline" id="midiNote"></span>
+    </div>
+  </section>
+
+  <!-- COMPOR -->
+  <section class="panel active" id="panel-compose" role="tabpanel" aria-labelledby="tab-compose">
+    <div class="cols">
+      <div class="box" id="controls">
+        <h3>Modelo</h3>
+        <div class="field"><span>Modo</span>
+          <select id="mode">
+            <option value="field">Campo de atratores (novo)</option>
+            <option value="canon">Cânone à Telemann (novo)</option>
+            <option value="classic">Clássico (regras do C# original)</option>
+          </select></div>
+        <div class="field"><span>Tonalidade</span><select id="scale"></select></div>
+        <div class="field"><span>Modo tonal</span><select id="major"><option value="1">Maior</option><option value="0">Menor</option></select></div>
+        <div class="field"><span>Compassos (4/4)</span><select id="bars"><option>4</option><option selected>8</option><option>12</option><option>16</option></select></div>
+
+        <div id="fieldControls" class="group">
+          <h3>Ondas e bacias</h3>
+          <div class="field"><span>Ondas</span><select id="preset"></select></div>
+          <div class="field"><span>Forma da bacia</span>
+            <select id="basinShape">
+              <option value="gaussian">Gaussiana (decai com d²)</option>
+              <option value="gravity">Gravitacional 1/(1+d²)</option>
+              <option value="step">Degraus (como no C#)</option>
+            </select></div>
+          <div class="field"><span>Largura da bacia (σ)</span><input type="number" id="basin" min="0.5" max="8" step="0.5" value="3"></div>
+          <div class="field"><span>Amplitude (× preset)</span><input type="number" id="ampScale" min="0" max="3" step="0.1" value="1"></div>
+          <div class="field"><span>Forma musical</span><select id="form"></select></div>
+          <div class="field"><span>Frase (compassos)</span><select id="phraseBars"><option>1</option><option selected>2</option><option>4</option></select></div>
+        </div>
+
+        <div id="canonControls" class="group" hidden>
+          <h3>Cânone</h3>
+          <div class="field"><span>Entrada da 2.ª voz</span><select id="canonDelay"><option value="1">após 1 compasso</option><option value="2">após 2 compassos</option><option value="3">após 3 compassos</option><option value="4">após 4 compassos</option></select></div>
+          <div class="field"><span>Intervalo</span><select id="canonTranspose"><option value="0">Uníssono (2 violinos)</option><option value="-12">Oitava abaixo</option></select></div>
+          <div class="field"><span>Circular (ronda)</span><select id="canonCircular"><option value="0">Não</option><option value="1">Sim</option></select></div>
+        </div>
+
+        <h3>Algoritmo</h3>
+        <div class="field"><span>Gerações</span><input type="number" id="generations" min="20" max="20000" step="50" value="600"></div>
+        <div class="field"><span>População</span><input type="number" id="popSize" min="10" max="400" step="10" value="80"></div>
+        <div class="field"><span>Mutação</span><input type="number" id="mutation" min="0" max="1" step="0.05" value="0.9"></div>
+        <div class="field"><span>Operadores</span>
+          <select id="operators">
+            <option value="musical">Musicais (Matić, GenJam)</option>
+            <option value="binary">Bits (como o GeneticSharp)</option>
+          </select></div>
+        <div class="field"><span>Semente</span><input type="number" id="seed" min="1" max="999999" step="1" value="7"></div>
+
+        <details class="weights" id="weightsBox"><summary>Pesos das regras</summary><div class="wgrid" id="weights"></div></details>
+
+        <div class="row">
+          <button class="btn primary" id="runBtn" type="button">Gerar</button>
+          <button class="btn" id="stopBtn" type="button" disabled>Parar</button>
+          <button class="btn" id="reseedBtn" type="button" title="Nova semente e gerar">Outra</button>
+        </div>
+        <progress id="progress" max="1" value="0"></progress>
+        <div class="status" id="runStatus">Pronto.</div>
+      </div>
+
+      <div class="box">
+        <h3>Evolução</h3>
+        <canvas class="chart" id="historyChart" aria-label="Aptidão ao longo das gerações"></canvas>
+        <div class="legend"><span><i style="background:var(--accent)"></i>melhor</span><span><i style="background:var(--grid-strong)"></i>média da população</span><span><i style="background:var(--wave-3)"></i>diversidade (0–1, eixo próprio)</span></div>
+        <h3>Contribuição das regras (melhor indivíduo)</h3>
+        <p class="hint" id="partsHint">Cada regra é uma média por nota em [−1, 1] multiplicada pelo seu peso.</p>
+        <div class="bars" id="partsBars"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORAR -->
+  <section class="panel" id="panel-explore" role="tabpanel" aria-labelledby="tab-explore">
+    <div class="cols">
+      <div class="box">
+        <h3>Mapa de variações (MAP-Elites)</h3>
+        <p class="hint">Um AG elitista converge para uma só melodia. O MAP-Elites (Mouret &amp; Clune 2015) guarda a melhor melodia de cada célula de uma grelha de características e devolve um mapa de peças boas e diferentes. Usa os parâmetros do separador Compor.</p>
+        <div class="field"><span>Eixo horizontal</span><select id="mx"></select></div>
+        <div class="field"><span>Eixo vertical</span><select id="my"></select></div>
+        <div class="field"><span>Avaliações</span><input type="number" id="meEvals" min="2000" max="200000" step="2000" value="30000"></div>
+        <div class="row"><button class="btn primary" id="meRun" type="button">Iluminar mapa</button><button class="btn" id="meStop" type="button" disabled>Parar</button></div>
+        <progress id="meProgress" max="1" value="0"></progress>
+        <div class="status" id="meStatus">Clique numa célula para ouvir essa melodia.</div>
+      </div>
+      <div class="box">
+        <div class="axis" id="myLabel">↑</div>
+        <canvas id="eliteMap" aria-label="Mapa MAP-Elites"></canvas>
+        <div class="axis" id="mxLabel">→</div>
+        <div class="status" id="cellInfo"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VARIAÇÕES -->
+  <section class="panel" id="panel-vary" role="tabpanel" aria-labelledby="tab-vary">
+    <div class="cols">
+      <div class="box">
+        <h3>Variações por mapeamento caótico</h3>
+        <p class="hint">Dabby (1996): as notas do tema são associadas à coordenada x de uma trajetória de Lorenz; uma segunda trajetória com condição inicial ligeiramente diferente volta a ler o tema. A variação começa igual e afasta-se progressivamente, reutilizando o material do tema.</p>
+        <div class="field"><span>Divergência</span><input type="range" id="divergence" min="-3" max="-0.3" step="0.05" value="-1.3"></div>
+        <div class="status" id="divVal"></div>
+        <div class="field"><span>O que varia</span><select id="varMode"><option value="pitch">Só alturas (mantém o ritmo)</option><option value="full">Alturas e ritmo</option></select></div>
+        <div class="field"><span>Regra</span><select id="varRule"><option value="nearest">x mais próximo</option><option value="ceiling">Dabby: menor x ≥ x′</option></select></div>
+        <div class="row"><button class="btn primary" id="varRun" type="button">Gerar 3 variações</button><button class="btn" id="formRun" type="button">Montar forma A A′ B A″</button></div>
+      </div>
+      <div class="box">
+        <h3>Tema e variações</h3>
+        <div class="varlist" id="varList"><p class="hint">Gere uma melodia em Compor (ou escolha uma no mapa) e depois as variações.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALISAR -->
+  <section class="panel" id="panel-analyze" role="tabpanel" aria-labelledby="tab-analyze">
+    <div class="cols">
+      <div class="box">
+        <h3>Analisador de ondas</h3>
+        <p class="hint">Inverte o modelo: que ondas atratoras explicam uma melodia? Em cada parte ajusta ondas sinusoidais por EM (cada nota é atraída por cada onda com um peso que decai com a distância), escolhe o número de ondas pelo BIC e calcula o espectro do contorno com um teste de permutação.</p>
+        <div class="field"><span>Peça</span><select id="anSource"></select></div>
+        <div class="field" id="anCorpusRow"><span>Melodia do corpus</span><select id="anCorpus"></select></div>
+        <div class="field"><span>Ficheiro MIDI</span><input type="file" id="anFile" accept=".mid,.midi,audio/midi"></div>
+        <div class="field"><span>Partes</span><input type="range" id="anK" min="1" max="8" value="2"></div>
+        <div class="status" id="anKVal">2 partes</div>
+        <div class="field"><span>Segmentação</span><select id="anMode"><option value="phrase">Fronteiras de frase (LBDM)</option><option value="equal">Partes iguais</option></select></div>
+        <div class="field"><span>Ondas por parte</span><select id="anM"><option value="0">Automático (BIC)</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+        <div class="row"><button class="btn primary" id="anRun" type="button">Analisar</button><button class="btn" id="anUse" type="button" disabled>Usar ondas da 1.ª parte no gerador</button></div>
+        <div class="status" id="anStatus"></div>
+      </div>
+      <div class="box">
+        <h3>Resumo</h3>
+        <div id="anSummary" class="hint">Escolha uma peça e carregue em Analisar.</div>
+      </div>
+    </div>
+    <div class="segs" id="anSegments"></div>
+  </section>
+
+  <!-- AVALIAR -->
+  <section class="panel" id="panel-evaluate" role="tabpanel" aria-labelledby="tab-evaluate">
+    <div class="cols even">
+      <div class="box">
+        <h3>Avaliação independente</h3>
+        <p class="hint">Estas medidas não são usadas para gerar. O crítico é uma regressão logística treinada para distinguir 480 melodias reais (canções do Essen, música irlandesa de O'Neill, sopranos dos corais de Bach) de melodias nulas (ruído branco, castanho e 1/f, melodias reais baralhadas).</p>
+        <div id="evalSummary"></div>
+        <h3>Como cânone</h3>
+        <p class="hint">A mesma melodia contra si própria atrasada. Referência: o Vivace do TWV 40:118 obtém 83 % de consonâncias nos tempos fortes com a 2.ª voz a 1 compasso.</p>
+        <div class="scroll" id="canonTable"></div>
+      </div>
+      <div class="box">
+        <h3>Características vs. melodias reais</h3>
+        <p class="hint">Intervalo P10–P90 das 480 melodias reais. Verde: dentro do intervalo.</p>
+        <div class="scroll" id="featureTable"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section class="panel" id="panel-about" role="tabpanel" aria-labelledby="tab-about">
+    <div class="box prose" id="aboutBox"></div>
+  </section>
+</div>
+<script type="module" src="src/ui/app.js"></script>
+</body>
+</html>
