@@ -41,7 +41,9 @@ export function defaultConfig() {
     canonWeight: 6,
     classicG1: { ...CLASSIC_DEFAULTS.g1 },
     classicG2: { ...CLASSIC_DEFAULTS.g2 },
-    ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7 },
+    // start: 'seed' (from scratch with the seed), 'newSeed' (from scratch, new seed each time),
+    // 'continue' (from the previous final population); init: 'auto' | 'musical' | 'random'
+    ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7, start: 'seed', init: 'auto' },
   };
 }
 
@@ -170,7 +172,9 @@ export function autoConfigure(c) {
   c.weightsPreset = 'default';
   c.weights = { ...DEFAULT_WEIGHTS };
   c.canonWeight = 6;
-  c.ga = { ...c.ga, generations: canon ? 800 : 600, popSize: 80, mutation: 0.9, operators: 'musical' };
+  // from noise the GA needs 2-3 times more generations to reach the same fitness
+  const random = c.ga.init === 'random';
+  c.ga = { ...c.ga, generations: random ? (canon ? 2000 : 1500) : canon ? 800 : 600, popSize: 80, mutation: 0.9, operators: 'musical' };
   return c;
 }
 

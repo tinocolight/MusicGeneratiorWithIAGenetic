@@ -11,7 +11,7 @@
 
 import {
   decodeByte, randomClassicGenome, uniformBitCrossover, partialShuffleBits,
-  randomMusicalGenome, randomCanonGenome, musicalMutate, beatCrossover,
+  randomMusicalGenome, randomCanonGenome, randomUniformGenome, musicalMutate, beatCrossover,
 } from './operators.js';
 
 export function createGA(cfg) {
@@ -27,6 +27,11 @@ export function createGA(cfg) {
     tournament = 3,
     immigrants = operators === 'binary' ? 0 : 0.04,
     init = null,
+    // 'auto': musical cells (and the canon from generation 0 when there are several voices);
+    // 'musical': musical cells only; 'random': no predefined patterns at all
+    initMode = 'auto',
+    // genomes to start from (e.g. the final population of the previous run)
+    initialPopulation = null,
   } = cfg;
 
   const decode = operators === 'binary' ? (g) => g.map(decodeByte) : (g) => g;
@@ -34,9 +39,11 @@ export function createGA(cfg) {
     ? () => init(rng)
     : operators === 'binary'
       ? () => randomClassicGenome(length, rng)
-      : env && env.canon && cfg.canonInit !== false
-        ? () => randomCanonGenome(env, rng)
-        : () => randomMusicalGenome(env, rng);
+      : initMode === 'random'
+        ? () => randomUniformGenome(env, rng)
+        : env && env.canon && initMode !== 'musical' && cfg.canonInit !== false
+          ? () => randomCanonGenome(env, rng)
+          : () => randomMusicalGenome(env, rng);
 
   let evaluationCount = 0;
   let generation = 0;
@@ -53,9 +60,11 @@ export function createGA(cfg) {
   }
   const make = (genes) => evaluate({ genes, fitness: -Infinity, parts: null });
 
-  let population = Array.from({ length: popSize }, () => make(newGenome()));
+  const seeded = (initialPopulation || []).filter((g) => g && g.length === length);
+  let population = Array.from({ length: popSize }, (_, i) => make(i < seeded.length ? seeded[i].slice() : newGenome()));
   sortPop(population);
   let best = clone(population[0]);
+  let initialRecorded = false;
 
   function mutateGenes(genes) {
     if (operators === 'binary') return partialShuffleBits(genes, rng);
@@ -115,7 +124,18 @@ export function createGA(cfg) {
     return diff / (population.length * ref.length);
   }
 
+  function record() {
+    let mean = 0;
+    for (const ind of population) mean += Number.isFinite(ind.fitness) ? ind.fitness : 0;
+    history.push({ generation, best: population[0].fitness, mean: mean / population.length, diversity: diversity() });
+  }
+
   function step(n = 1) {
+    // generation 0 (the initial population) is part of the history, so convergence is visible
+    if (!initialRecorded) {
+      initialRecorded = true;
+      record();
+    }
     for (let s = 0; s < n && generation < generations; s++) {
       // a phase switch changes the fitness function: re-score the survivors
       const ph = fitness.phaseOf ? fitness.phaseOf(ctx()) : 1;
@@ -132,11 +152,7 @@ export function createGA(cfg) {
         best = clone(population[0]);
         best.phase = ph;
       }
-      if (generation % 5 === 0 || generation === generations) {
-        let mean = 0;
-        for (const ind of population) mean += Number.isFinite(ind.fitness) ? ind.fitness : 0;
-        history.push({ generation, best: population[0].fitness, mean: mean / population.length, diversity: diversity() });
-      }
+      if (generation % 5 === 0 || generation === generations) record();
     }
     return api;
   }

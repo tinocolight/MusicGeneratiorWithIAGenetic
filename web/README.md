@@ -90,16 +90,25 @@ no que interessa: tudo o resto tem valores sensatos.
 6. **Algoritmo genético** (expandir): gerações, população, mutação e operadores (musicais ou de bits
    como no GeneticSharp). A **semente** fica à vista: a mesma configuração com a mesma semente dá
    sempre a mesma peça.
-7. **Gerar**, **Outra semente**, ou **Testar 5 sementes**: gera com 5 sementes seguidas e resume
+7. **Ponto de partida**: cada «Gerar» parte do zero com a **semente** (por omissão; a mesma semente
+   dá a mesma população inicial, por isso definições parecidas dão resultados parecidos), do zero
+   com uma **semente nova**, ou **continua** da população final da experiência anterior (ou da que
+   foi carregada), reavaliada com as definições atuais. A **população inicial** pode ter **padrões
+   musicais** (células rítmicas, graus da escala e, com várias vozes, já em cânone), padrões musicais
+   sem o cânone, ou ser **aleatória, sem padrões**: cada semicolcheia é pausa, prolongamento ou uma
+   nota cromática ao acaso, para ver o AG convergir a partir do ruído (sobe as gerações para
+   1500–2000). **Ver a evolução devagar** mostra a geração 0 e depois uma geração de cada vez.
+8. **Gerar**, **Outra semente**, ou **Testar 5 sementes**: gera com 5 sementes seguidas e resume
    aptidão, crítico e consonância (média, desvio e extremos), carregando a melhor. Uma mudança só
    «ajudou» se o resumo melhorar, não só uma semente.
-8. **Experiências**: cada geração fica numa tabela (configuração, semente, aptidão, crítico,
+9. **Experiências**: cada geração fica numa tabela (configuração, semente, aptidão, crítico,
    consonância entre vozes); **Carregar** repõe a configuração e a peça dessa linha.
-9. **Copiar ou colar a configuração**: toda a configuração em JSON, para guardar, partilhar ou
+10. **Copiar ou colar a configuração**: toda a configuração em JSON, para guardar, partilhar ou
    repetir mais tarde.
 
-À direita: a evolução (melhor aptidão, média e diversidade da população) e a contribuição de cada
-regra no melhor indivíduo.
+À direita: a evolução desde a geração 0 (melhor aptidão, média e diversidade da população), a
+**convergência** (o melhor indivíduo nas gerações 0, 1, 2, 5, 10, 20, 50, 100, 200, 500, …, com o
+crítico de cada um, para ver e ouvir) e a contribuição de cada regra no melhor indivíduo.
 
 ### Explorar (MAP-Elites)
 
@@ -354,6 +363,33 @@ Leitura:
 - **MAP-Elites** cobre 81 % do mapa; 19 das 52 células têm crítico ≥ 0,7. O mapa troca tipicidade por
   diversidade, e é precisamente para ouvir variações diferentes.
 
+### Quanto do resultado vem da população inicial?
+
+A população inicial «musical» é feita de células rítmicas e graus da escala (e, com várias vozes, já
+em cânone). Para separar o mérito do AG do mérito desses padrões, `node tools/convergence.mjs 4 2000`
+compara-a com uma população **aleatória, sem padrões** (cada semicolcheia é pausa, prolongamento ou
+nota cromática ao acaso). Melhor indivíduo, média de 4 sementes, aptidão · crítico
+([`results/convergence.md`](results/convergence.md)):
+
+| Conjunto | População inicial | Geração 0 | 100 | 600 | 2000 |
+|---|---|---|---|---|---|
+| Só a melodia | com padrões musicais | 12,0 · 0,71 | 19,3 · 0,77 | 20,3 · 0,93 | 20,5 · 0,92 |
+| Só a melodia | aleatória | −5,5 · 0,00 | 16,0 · 0,67 | 19,9 · 0,80 | 20,4 · 0,84 |
+| 2 violinos (c. 2) | com padrões musicais | 16,2 · 0,88 | 22,9 · 0,75 | 24,4 · 0,86 | 24,7 · 0,87 |
+| 2 violinos (c. 2) | aleatória | −4,2 · 0,00 | 17,6 · 0,43 | 22,9 · 0,60 | 24,4 · 0,78 |
+| Trio | com padrões musicais | 16,5 · 0,81 | 21,5 · 0,75 | 23,8 · 0,76 | 24,3 · 0,83 |
+| Trio | aleatória | −6,7 · 0,00 | 13,0 · 0,42 | 19,4 · 0,64 | 21,8 · 0,72 |
+
+- **Os padrões iniciais já fazem muito**: antes de qualquer evolução, o melhor indivíduo da geração 0
+  tem crítico 0,71–0,88. O AG acrescenta sobretudo o que as regras pedem (ondas, cadências, forma,
+  contraponto); o «soar a melodia» vem em boa parte das células rítmicas e da escala.
+- **A partir do ruído o AG também converge**: com uma ou duas vozes chega à mesma aptidão em
+  1000–2000 gerações (2–3 vezes mais), mas o crítico fica ~0,1 abaixo. Com 3 vozes não chega lá em
+  2000 gerações (21,8 contra 24,3). As regras não descrevem tudo o que torna típica uma melodia
+  real — o que a análise inversa também mostra.
+- Por isso a interface deixa escolher: ver a convergência honesta a partir do ruído, ou partir de
+  padrões musicais para chegar mais depressa a algo tocável.
+
 ### As ondas existem nas melodias reais?
 
 A pergunta que o relatório original deixou fora do âmbito (§2.3). Resultado do analisador sobre as
@@ -461,6 +497,13 @@ aberturas reais (§5.1); (8) avaliar com ouvintes, com e sem ondas.
   2001). «Atratores» em música existiam em dois outros sentidos: sistemas caóticos como geradores
   (Pressing 1988, Bidlack 1992, Dabby 1996) e alturas estáveis que atraem as instáveis (Lerdahl 2001,
   Larson 2012).
+- *A própria revisão do relatório tinha a pista empírica.* Savage et al. (2015), a referência [3] do
+  relatório, encontram como universais estatísticos da música contornos **descendentes ou em arco**
+  feitos de **intervalos pequenos** (menos de 750 cents). É exatamente o que justifica trocar os senos
+  por arcos de frase e o que a análise inversa desta versão confirma: a proximidade entre notas é a
+  regra que mais separa música real de ruído. Na Fig. 2 as duas ondas desenhadas sobre o Prelúdio da
+  BWV 1007 seguem a voz grave e a aguda do arpejo: uma melodia composta, a ideia mais própria do
+  relatório (ponto seguinte).
 - *O que parece próprio* é a combinação: **várias curvas-alvo móveis, não somadas, cada uma com uma
   bacia local, a competir pelas notas dentro da aptidão de um AG**, como forma de obter o contorno e
   vozes implícitas (melodia composta) de uma só linha. Não encontrei implementações anteriores desta
@@ -524,6 +567,7 @@ Farbood 2004, [Hyperscore](https://dl.acm.org/doi/10.1109/MCG.2004.1255809);
 Herremans & Chew, [MorpheuS](https://arxiv.org/pdf/1812.04832);
 Horner & Goldberg 1991, [Genetic algorithms and computer-assisted music composition](https://quod.lib.umich.edu/i/icmc/bbp2372.1991.117?rgn=main&view=fulltext);
 Csaba 2019, [IEEE SYNASC](https://ieeexplore.ieee.org/document/9049871/);
+Savage et al. 2015, [Statistical universals](https://www.pnas.org/doi/10.1073/pnas.1414495112);
 Ariza 2009, [The Interrogator as Critic](https://direct.mit.edu/comj/article-abstract/33/2/48/94244/The-Interrogator-as-Critic-The-Turing-Test-and-the);
 Guo et al. 2020, [tension VAE](https://arxiv.org/abs/2010.06230);
 [FIGARO](https://arxiv.org/abs/2201.10936);
@@ -557,9 +601,10 @@ web/
 
 ```bash
 cd web
-npm test                              # 37 testes
+npm test                              # 41 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
+node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
 node tools/train_critic.mjs           # treina o crítico → data/critic.json, src/data/critic-data.js
 python3 tools/extract_corpus.py       # corpus a partir do music21 (pip install music21)
 python3 tools/extract_corpus.py --full  # melodias completas, para a análise inversa
@@ -596,6 +641,7 @@ dotnet run -c Release -- run 40 4 ../../test/fixtures/original-ga-runs.json   # 
 - Pearce, M. & Wiggins, G. (2012). [Auditory expectation: the information dynamics of music perception and cognition](https://onlinelibrary.wiley.com/doi/10.1111/j.1756-8765.2012.01214.x). *Topics in Cognitive Science* 4.
 - Pressing, J. (1988). Nonlinear maps as generators of musical design. *Computer Music Journal* 12(2), 35–46.
 - Prince, J. & Schmuckler, M. (2014). The tonal-metric hierarchy. *Music Perception* 31(3).
+- Savage, P. E., Brown, S., Sakai, E. & Currie, T. E. (2015). [Statistical universals reveal the structures and functions of human music](https://www.pnas.org/doi/10.1073/pnas.1414495112). *PNAS* 112(29), 8987–8992.
 - Schmidhuber, J. (2009). [Driven by compression progress](https://arxiv.org/abs/0812.4360). *Anticipatory Behavior in Adaptive Learning Systems*.
 - Telemann, G. P. (1738). *XIIX Canons mélodieux ou VI Sonates en duo* (TWV 40:118–123). [IMSLP](https://imslp.org/wiki/6_Canonic_Sonatas,_TWV_40:118-123_(Telemann,_Georg_Philipp)).
 - Schmuckler, M. A. (1999). [Testing models of melodic contour similarity](https://www.researchgate.net/publication/244443968_Testing_Models_of_Melodic_Contour_Similarity). *Music Perception* 16(3), 295–326. Schmuckler, M. A. (2010). [Melodic contour similarity using folk melodies](https://mp.ucpress.edu/content/28/2/169). *Music Perception* 28(2), 169–194.

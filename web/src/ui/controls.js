@@ -365,6 +365,9 @@ export function createControls(getConfig, onChange) {
     $('mutation').value = c.ga.mutation;
     $('operators').value = c.ga.operators;
     $('seed').value = c.ga.seed;
+    $('startMode').value = c.ga.start ?? 'seed';
+    $('initMode').value = c.ga.init ?? 'auto';
+    $('initMode').disabled = c.ga.operators === 'binary';
   }
 
   function renderAll() {
@@ -381,7 +384,11 @@ export function createControls(getConfig, onChange) {
       const c = cfg();
       c.mode = $('mode').value;
       if (c.mode === 'classic') c.ga = { ...c.ga, generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' };
-      else c.ga = { ...c.ga, generations: activeVoices(c).length >= 2 ? 800 : 600, popSize: 80, mutation: 0.9, operators: 'musical' };
+      else {
+        const canon = activeVoices(c).length >= 2;
+        const generations = c.ga.init === 'random' ? (canon ? 2000 : 1500) : canon ? 800 : 600;
+        c.ga = { ...c.ga, generations, popSize: 80, mutation: 0.9, operators: 'musical' };
+      }
       renderAll();
       onChange('piece');
     });
@@ -440,9 +447,13 @@ export function createControls(getConfig, onChange) {
       renderWaves();
       onChange('waves');
     });
-    for (const [id, key, parse] of [['generations', 'generations', Number], ['popSize', 'popSize', Number], ['mutation', 'mutation', Number], ['operators', 'operators', String], ['seed', 'seed', Number]]) {
+    for (const [id, key, parse] of [['generations', 'generations', Number], ['popSize', 'popSize', Number], ['mutation', 'mutation', Number], ['operators', 'operators', String], ['seed', 'seed', Number], ['startMode', 'start', String], ['initMode', 'init', String]]) {
       $(id).addEventListener('change', () => {
-        cfg().ga[key] = parse($(id).value);
+        const c = cfg();
+        c.ga[key] = parse($(id).value);
+        // from noise the GA needs more generations to reach the same level
+        if (key === 'init' && c.ga.init === 'random' && c.ga.generations < 1500) c.ga.generations = activeVoices(c).length >= 2 ? 2000 : 1500;
+        renderGA();
         onChange('ga');
       });
     }
