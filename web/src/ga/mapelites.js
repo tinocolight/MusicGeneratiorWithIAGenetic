@@ -6,7 +6,7 @@
 // rhythm x stepwise vs leaping melody — and returns a whole map of good but different pieces.
 
 import { toEvents } from '../core/score.js';
-import { musicalMutate, beatCrossover, randomMusicalGenome } from './operators.js';
+import { musicalMutate, beatCrossover, randomMusicalGenome, randomCanonGenome } from './operators.js';
 
 export const DESCRIPTORS = {
   density: {
@@ -60,7 +60,7 @@ export function createMapElites({ fitness, env, rng, x = 'density', y = 'leaps',
     return false;
   }
 
-  for (let i = 0; i < initial; i++) place(randomMusicalGenome(env, rng));
+  for (let i = 0; i < initial; i++) place(env.canon ? randomCanonGenome(env, rng) : randomMusicalGenome(env, rng));
 
   const filled = () => cells.filter(Boolean);
   return {

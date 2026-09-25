@@ -25,13 +25,17 @@
 //  tension    smoothed tension (tonal instability + pitch height + onset density) follows a
 //             target arch profile (Farbood 2012; Herremans & Chew 2017, MorpheuS)
 //  variety    anti-monotony: repeated notes, pitch variety, single climax (Towsey et al. 2001)
-//  canon      counterpoint of the melody against itself delayed by x bars (see canon.js)
+//  canon      counterpoint of the melody against itself played by 2 or 3 voices, each entering
+//             x bars later, possibly transposed, on instruments with their own ranges
+//             (see canon.js). It is part of the fitness from the first generation, and the
+//             initial population is already built voice-aware (operators.js).
 
 import { toEvents, STEPS_PER_BAR } from '../core/score.js';
 import { makeKey, melodicAttraction, pearson } from '../core/theory.js';
 import { makeWave, archWave } from '../core/waves.js';
 import { soundingLine, smooth, clamp } from '../core/analysis.js';
-import { analyzeCanon } from './canon.js';
+import { analyzeEnsemble, intervalMap } from './canon.js';
+import { instrument } from '../core/instruments.js';
 import { createRng } from '../core/rng.js';
 
 export const FORMS = {
@@ -65,17 +69,18 @@ export const FIELD_DEFAULTS = {
   bars: 8,
   tonic: 7, // G major, the original default scale
   mode: 'major',
-  lowMidi: 55, // G3 .. E6: violin / flute range
-  highMidi: 88,
+  lowMidi: null, // default: range of the leading instrument
+  highMidi: null,
   phraseBars: 2,
   form: "AA'BA'",
   restTarget: [0, 0.08],
   basinShape: 'gaussian',
   waves: [
-    { type: 'arch', phraseBars: 2, amplitude: 7, mean: 74, basin: 3 },
-    { type: 'rossler', periodsPerBar: 0.35, amplitude: 5, mean: 67, basin: 3 },
+    { type: 'arch', freq: 0.5, mean: 72, amplitude: 7, basin: 3, shape: 'gaussian' },
   ],
-  canon: { delayBars: 1, transpose: 0, circular: false },
+  // voices[0] is the melody; further voices play it later (delayBars) and transposed (interval)
+  voices: [{ instrument: 'violin' }],
+  circular: false,
   weights: DEFAULT_WEIGHTS,
   seed: 1,
 };
@@ -83,14 +88,30 @@ export const FIELD_DEFAULTS = {
 export function createAttractorFitness(options = {}) {
   const o = { ...FIELD_DEFAULTS, ...options };
   const weights = { ...DEFAULT_WEIGHTS, ...(options.weights || {}) };
-  const canon = { ...FIELD_DEFAULTS.canon, ...(options.canon || {}) };
+  // backwards compatible `canon: {delayBars, transpose}` -> two violins
+  let voiceSpecs = o.voices;
+  if (options.canon && !options.voices && (options.weights?.canon ?? 0) > 0) {
+    voiceSpecs = [{ instrument: 'violin' }, { instrument: 'violin', delayBars: options.canon.delayBars ?? 1, transposeSemitones: options.canon.transpose ?? 0 }];
+  }
   const bpb = STEPS_PER_BAR;
   const length = o.bars * bpb;
   const key = makeKey(o.tonic, o.mode);
   const waveRng = createRng(o.seed ?? 1);
   const waves = o.waves.map((w) => makeWave(w, length, bpb, waveRng));
   const basins = o.waves.map((w) => w.basin ?? 3);
-  const basinValue = BASIN_SHAPES[o.basinShape] ?? BASIN_SHAPES.gaussian;
+  const basinFns = o.waves.map((w) => BASIN_SHAPES[w.shape ?? o.basinShape] ?? BASIN_SHAPES.gaussian);
+  const leader = instrument(voiceSpecs[0]?.instrument);
+  const lowMidi = o.lowMidi ?? leader.range[0];
+  const highMidi = o.highMidi ?? leader.range[1];
+  const ensemble = voiceSpecs.map((v, i) => ({
+    delay: i === 0 ? 0 : Math.round((v.delayBars ?? i) * bpb),
+    map: v.transposeSemitones !== undefined ? (p) => p + v.transposeSemitones : intervalMap(v.interval ?? 'unison', key),
+    range: instrument(v.instrument).range,
+    instrument: v.instrument,
+  }));
+  // with several voices the counterpoint weighs in unless the caller set its weight explicitly
+  if (ensemble.length >= 2 && options.weights?.canon === undefined) weights.canon = 6;
+  const canonOn = ensemble.length >= 2 && (weights.canon ?? 0) !== 0;
   const phraseLen = o.phraseBars * bpb;
   const nPhrases = Math.max(1, Math.round(o.bars / o.phraseBars));
   const form = FORMS[o.form] ?? null;
@@ -137,7 +158,7 @@ export function createAttractorFitness(options = {}) {
         let v = 0;
         let kk = 0;
         for (let k = 0; k < waves.length; k++) {
-          const b = basinValue(nt.pitch - waves[k][t], basins[k]);
+          const b = basinFns[k](nt.pitch - waves[k][t], basins[k]);
           if (b > v) {
             v = b;
             kk = k;
@@ -151,7 +172,7 @@ export function createAttractorFitness(options = {}) {
         }
       }
       if (bestV > 0.3) assign[bestK]++;
-      if (nt.pitch < o.lowMidi || nt.pitch > o.highMidi) outOfRange++;
+      if (nt.pitch < lowMidi || nt.pitch > highMidi) outOfRange++;
     }
     let coverage = 1;
     if (waves.length > 1) {
@@ -345,10 +366,8 @@ export function createAttractorFitness(options = {}) {
     parts.variety = clamp(v, -1.5, 1.5);
 
     // canon -----------------------------------------------------------------------
-    if (weights.canon) {
-      const c = analyzeCanon(line, { delay: canon.delayBars * bpb, transpose: canon.transpose, circular: canon.circular, barLen: bpb });
-      parts.canon = c.score;
-    } else parts.canon = 0;
+    if (canonOn) parts.canon = analyzeEnsemble(line, ensemble, { circular: !!o.circular, barLen: bpb }).score;
+    else parts.canon = 0;
 
     return { parts, events, notes };
   }
@@ -361,8 +380,12 @@ export function createAttractorFitness(options = {}) {
     basins,
     options: o,
     weights,
-    canon,
-    env: { key, waves, basin: Math.min(...basins), lowMidi: o.lowMidi, highMidi: o.highMidi, length, stepsPerBar: bpb },
+    ensemble,
+    canonOn,
+    env: {
+      key, waves, basins, basinFns, basin: Math.min(...basins), lowMidi, highMidi, length, stepsPerBar: bpb,
+      canon: canonOn ? { voices: ensemble, circular: !!o.circular } : null,
+    },
     components: (genes) => components(genes).parts,
     evaluate(genes) {
       const { parts } = components(genes);

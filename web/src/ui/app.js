@@ -1,14 +1,13 @@
 // Page controller: wires the engine (GA, fitness, MAP-Elites, variations, analyser, critic)
-// to the interface. Everything runs in the page, in time slices, so the UI stays responsive.
+// to the interface. The composition settings live in one object (config.js) edited by the
+// controls (controls.js); every run is kept as an experiment that can be reloaded.
+// Everything runs in the page, in time slices, so the UI stays responsive.
 
 import { toEvents, eventsToCompact, compactToEvents, fromEvents, STEPS_PER_BAR, midiName } from '../core/score.js';
-import { SCALE_LABELS, keyFromScale } from '../core/theory.js';
 import { soundingLine } from '../core/analysis.js';
 import { createRng } from '../core/rng.js';
-import { createClassicFitness, CLASSIC_DEFAULTS } from '../fitness/classic.js';
-import { createAttractorFitness, DEFAULT_WEIGHTS, FORMS } from '../fitness/attractor.js';
-import { WAVE_PRESETS, resolvePreset, tonicMidi } from '../fitness/presets.js';
-import { analyzeCanon } from '../fitness/canon.js';
+import { instrument } from '../core/instruments.js';
+import { analyzeCanon, analyzeEnsemble, INTERVALS } from '../fitness/canon.js';
 import { createGA } from '../ga/ga.js';
 import { createMapElites, DESCRIPTORS } from '../ga/mapelites.js';
 import { chaoticVariation, divergencePoint, similarityToTheme } from '../variation/dabby.js';
@@ -17,60 +16,34 @@ import { loadCritic } from '../eval/critic.js';
 import { FEATURE_LABELS } from '../eval/metrics.js';
 import { writeMidi, readMidi } from '../io/midi.js';
 import { makeZip } from '../io/zip.js';
-import { REFERENCE_CANONS, referenceEvents } from '../data/references.js';
+import { REFERENCE_CANONS, referenceEvents, compactToLine } from '../data/references.js';
 import criticData from '../data/critic-data.js';
 import corpus from '../data/corpus-data.js';
 import { EXAMPLES } from '../data/examples.js';
 import { drawRoll } from './pianoroll.js';
 import { lineChart, spectrumChart, eliteMap } from './charts.js';
-import { createPlayer, TIMBRES } from './audio.js';
+import { createPlayer } from './audio.js';
 import { ABOUT_HTML } from './about.js';
+import {
+  defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves,
+  presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf,
+} from './config.js';
+import { createControls, FIELD_LABELS, CLASSIC_LABELS } from './controls.js';
 
 const $ = (id) => document.getElementById(id);
 const critic = loadCritic(criticData);
 const player = createPlayer();
-
-const FIELD_LABELS = {
-  key: 'Tonalidade (perfil K-K)',
-  attractor: 'Bacias das ondas',
-  proximity: 'Proximidade (Temperley)',
-  regression: 'Retorno após salto',
-  forces: 'Forças melódicas',
-  metric: 'Hierarquia métrica',
-  cadence: 'Cadências',
-  rhythm: 'Ritmo e pausas',
-  form: 'Forma',
-  tension: 'Onda de tensão',
-  variety: 'Variedade',
-  canon: 'Contraponto em cânone',
-};
-const CLASSIC_LABELS = {
-  rhythmicPatterns: 'Padrões rítmicos',
-  selfHarm1: 'Auto-harmonização 1 c.',
-  selfHarm2: 'Auto-harmonização 2 c.',
-  aba: 'Repetição a 4 compassos',
-  leitmotif: 'Leitmotiv rítmico',
-  wave1: 'Onda 1',
-  wave2: 'Onda 2',
-  range: 'Âmbito',
-  scale: 'Escala',
-  pauseProlongation: 'Pausas e prolongamentos',
-  reduceRepetitions: 'Repetições excessivas',
-  intervals: 'Intervalos',
-  niceRepetitions: 'Repetições interessantes',
-  ending: 'Final',
-  balance: 'Equilíbrio notas/pausas',
-};
+const pct = (x) => `${Math.round(x * 100)} %`;
 
 const state = {
+  config: defaultConfig(),
   piece: null,
   history: [],
   running: null,
-  weights: { ...DEFAULT_WEIGHTS },
-  canonWeights: { ...DEFAULT_WEIGHTS, canon: 6, form: 0 },
-  classicG1: { ...CLASSIC_DEFAULTS.g1 },
-  classicG2: { ...CLASSIC_DEFAULTS.g2 },
-  customWaves: null,
+  batch: false,
+  experiments: [],
+  selectedExperiment: -1,
+  preview: null,
   archive: null,
   meRunning: null,
   selectedCell: -1,
@@ -82,7 +55,9 @@ const state = {
   tab: 'compose',
 };
 
-// ------------------------------------------------------------------ setup of controls
+const controls = createControls(() => state.config, onConfigChange);
+
+// ------------------------------------------------------------------ setup
 
 function option(sel, value, label, selected = false) {
   const o = document.createElement('option');
@@ -92,42 +67,77 @@ function option(sel, value, label, selected = false) {
   sel.appendChild(o);
 }
 
+const sourceName = (s) => ({ essen: 'Essen', oneills: "O'Neill", 'bach-chorale': 'Bach' }[s] || s);
+
 function initControls() {
-  SCALE_LABELS.forEach((l, i) => option($('scale'), i, l, i === 1));
-  for (const [k, p] of Object.entries(WAVE_PRESETS)) option($('preset'), k, p.label, k === 'arch');
-  for (const k of Object.keys(FORMS)) option($('form'), k, k === 'none' ? 'Livre' : k.replace(/'/g, '′'), k === "AA'BA'");
-  for (const [k, v] of Object.entries(TIMBRES)) option($('timbre'), k, v, k === 'violin');
+  controls.bind();
+  controls.renderAll();
   for (const [k, d] of Object.entries(DESCRIPTORS)) {
     option($('mx'), k, d.label, k === 'density');
     option($('my'), k, d.label, k === 'leaps');
   }
   option($('anSource'), 'current', 'Peça atual');
-  option($('anSource'), 'telemann', 'Telemann — TWV 40:118, Vivace', true);
+  option($('anSource'), 'telemann', 'Telemann — Sonata I (TWV 40:118), Vivace', true);
+  option($('anSource'), 'telemann2', 'Telemann — Sonata II (TWV 40:119), Vivace');
+  option($('anSource'), 'telemann3', 'Telemann — Sonata III (TWV 40:120), Spirituoso');
   option($('anSource'), 'frereJacques', 'Frère Jacques (ronda)');
   option($('anSource'), 'rowYourBoat', 'Row, Row, Row Your Boat (ronda)');
   option($('anSource'), 'corpus', 'Melodia do corpus');
   option($('anSource'), 'midi', 'Ficheiro MIDI carregado');
   corpus.forEach((m, i) => option($('anCorpus'), i, `${sourceName(m.source)} — ${m.title}`));
   $('bpm').addEventListener('input', () => ($('bpmVal').textContent = $('bpm').value));
-  $('mode').addEventListener('change', onModeChange);
   $('divergence').addEventListener('input', showDivergence);
   $('anK').addEventListener('input', () => ($('anKVal').textContent = `${$('anK').value} parte${$('anK').value === '1' ? '' : 's'}`));
   $('anSource').addEventListener('change', () => ($('anCorpusRow').hidden = $('anSource').value !== 'corpus'));
   $('anCorpusRow').hidden = true;
   showDivergence();
-  onModeChange();
 
   document.querySelectorAll('nav.tabs button').forEach((b) => b.addEventListener('click', () => selectTab(b.dataset.panel)));
-  $('runBtn').addEventListener('click', () => runGA());
+  $('runBtn').addEventListener('click', () => runGA(cloneConfig(state.config)));
   $('reseedBtn').addEventListener('click', () => {
-    $('seed').value = String(1 + Math.floor(Math.random() * 99999));
-    runGA();
+    state.config.ga.seed = 1 + Math.floor(Math.random() * 99999);
+    controls.renderGA();
+    onConfigChange('ga');
+    runGA(cloneConfig(state.config));
   });
-  $('stopBtn').addEventListener('click', () => (state.running = null));
+  $('batchBtn').addEventListener('click', runBatch);
+  $('stopBtn').addEventListener('click', () => {
+    state.running = null;
+    state.batch = false;
+  });
+  $('autoBtn').addEventListener('click', () => {
+    autoConfigure(state.config);
+    configReplaced('Auto-configurado a partir das vozes: ondas no registo comum dos instrumentos, forma, pesos e algoritmo por omissão.');
+  });
+  $('surpriseBtn').addEventListener('click', () => {
+    surprise(state.config, createRng(1 + Math.floor(Math.random() * 1e9)));
+    configReplaced(`Surpresa: ${describe(state.config)}. Carregue em Gerar.`);
+  });
+  $('resetBtn').addEventListener('click', () => {
+    state.config = defaultConfig();
+    configReplaced('Configuração por omissão.');
+  });
+  $('wavesAuto').addEventListener('click', () => {
+    state.config.waves = autoWaves(state.config);
+    state.config.wavePreset = 'custom';
+    controls.renderWaves();
+    onConfigChange('waves');
+  });
+  $('wavesReal').addEventListener('click', () => {
+    const res = wavesFromRealMelody(state.config, corpus, createRng(1 + Math.floor(Math.random() * 1e9)));
+    if (!res) return;
+    state.config.waves = res.waves;
+    state.config.wavePreset = 'custom';
+    controls.renderWaves();
+    onConfigChange('waves');
+    $('wavesHint').textContent = `Ondas ajustadas a «${res.title}» (${sourceName(res.source)}), transpostas para a tonalidade e o registo atuais. ${$('wavesHint').textContent}`;
+  });
+  $('configBox').addEventListener('toggle', () => $('configBox').open && fillConfigText());
+  $('copyConfig').addEventListener('click', copyConfig);
+  $('applyConfig').addEventListener('click', applyConfigText);
   $('playBtn').addEventListener('click', togglePlay);
   $('midiBtn').addEventListener('click', downloadMidi);
   $('canonPlay').addEventListener('change', render);
-  $('canonPlayDelay').addEventListener('change', render);
   $('meRun').addEventListener('click', runMapElites);
   $('meStop').addEventListener('click', () => (state.meRunning = null));
   $('eliteMap').addEventListener('click', onMapClick);
@@ -142,11 +152,8 @@ function initControls() {
     if (state.archive) drawMap();
     if (state.analysis) drawSpectra();
   });
-  if (window.self !== window.top) $('midiNote').textContent = '';
   $('aboutBox').innerHTML = ABOUT_HTML;
 }
-
-const sourceName = (s) => ({ essen: 'Essen', oneills: "O'Neill", 'bach-chorale': 'Bach' }[s] || s);
 
 function selectTab(name) {
   state.tab = name;
@@ -156,67 +163,7 @@ function selectTab(name) {
   if (name === 'explore' && state.archive) drawMap();
   if (name === 'compose') drawHistory();
   if (name === 'analyze' && state.analysis) drawSpectra();
-}
-
-function onModeChange() {
-  const mode = $('mode').value;
-  $('fieldControls').hidden = mode === 'classic';
-  $('canonControls').hidden = mode !== 'canon';
-  if (mode === 'classic') {
-    $('generations').value = 1500;
-    $('popSize').value = 60;
-    $('mutation').value = 0.1;
-    $('operators').value = 'binary';
-  } else {
-    $('generations').value = 600;
-    $('popSize').value = 80;
-    $('mutation').value = 0.9;
-    $('operators').value = 'musical';
-    if (mode === 'canon') {
-      $('preset').value = 'canon';
-      $('form').value = 'none';
-      $('canonPlay').checked = true;
-    } else if ($('preset').value === 'canon') $('preset').value = 'arch';
-  }
-  buildWeightsUI();
-}
-
-function buildWeightsUI() {
-  const mode = $('mode').value;
-  const box = $('weights');
-  box.innerHTML = '';
-  const add = (label, obj, key) => {
-    const l = document.createElement('label');
-    l.textContent = label;
-    l.htmlFor = `w-${key}-${obj === state.classicG1 ? 'g1' : 'x'}`;
-    const inp = document.createElement('input');
-    inp.type = 'number';
-    inp.step = '0.5';
-    inp.id = l.htmlFor;
-    inp.value = obj[key];
-    inp.addEventListener('change', () => (obj[key] = Number(inp.value)));
-    box.append(l, inp);
-  };
-  if (mode === 'classic') {
-    box.insertAdjacentHTML('beforeend', '<span class="hint">Grupo 1 (primeiros 25 % das gerações)</span><span></span>');
-    for (const k of Object.keys(CLASSIC_LABELS)) add(CLASSIC_LABELS[k], state.classicG1, k);
-    box.insertAdjacentHTML('beforeend', '<span class="hint">Grupo 2 (resto)</span><span></span>');
-    for (const k of Object.keys(CLASSIC_LABELS)) {
-      const l = document.createElement('label');
-      l.textContent = CLASSIC_LABELS[k];
-      const inp = document.createElement('input');
-      inp.type = 'number';
-      inp.step = '0.5';
-      inp.id = `w-${k}-g2`;
-      l.htmlFor = inp.id;
-      inp.value = state.classicG2[k];
-      inp.addEventListener('change', () => (state.classicG2[k] = Number(inp.value)));
-      box.append(l, inp);
-    }
-  } else {
-    const w = mode === 'canon' ? state.canonWeights : state.weights;
-    for (const k of Object.keys(FIELD_LABELS)) add(FIELD_LABELS[k], w, k);
-  }
+  if (name === 'evaluate' && state.piece) renderEvaluation(state.piece);
 }
 
 function showDivergence() {
@@ -224,149 +171,153 @@ function showDivergence() {
   $('divVal').textContent = `perturbação inicial ${v.toFixed(3)} (x₀ = ${(1 - v).toFixed(3)})`;
 }
 
-// ------------------------------------------------------------------ fitness from the controls
+// ------------------------------------------------------------------ configuration
 
-function currentKey() {
-  return keyFromScale(Number($('scale').value), $('major').value === '1');
-}
-
-function buildFitness(seed) {
-  const mode = $('mode').value;
-  const bars = Number($('bars').value);
-  const key = currentKey();
-  if (mode === 'classic') {
-    const fit = createClassicFitness({ scale: Number($('scale').value), major: $('major').value === '1', bars, g1: state.classicG1, g2: state.classicG2 });
-    return {
-      mode, fit, key,
-      waves: fit.waves.map((values, i) => ({ values, basin: CLASSIC_DEFAULTS.waves[i].threshold, shape: 'step' })),
-    };
-  }
-  const presetName = $('preset').value;
-  let waves;
-  if (presetName === 'analyzer' && state.customWaves) waves = state.customWaves.map((w) => ({ ...w }));
-  else waves = resolvePreset(presetName, key.tonic);
-  const amp = Number($('ampScale').value);
-  const basin = Number($('basin').value);
-  const canonDelay = Number($('canonDelay').value);
-  waves = waves.map((w) => ({
-    ...w,
-    amplitude: w.amplitude * amp,
-    basin: presetName === 'analyzer' ? w.basin : basin * (w.basin / 3),
-    ...(mode === 'canon' && presetName === 'canon' ? { periodsPerBar: 1 / (2 * canonDelay) } : {}),
-  }));
-  const fit = createAttractorFitness({
-    bars,
-    tonic: key.tonic,
-    mode: key.mode,
-    waves,
-    basinShape: $('basinShape').value,
-    form: $('form').value,
-    phraseBars: Number($('phraseBars').value),
-    weights: mode === 'canon' ? state.canonWeights : state.weights,
-    canon: { delayBars: canonDelay, transpose: Number($('canonTranspose').value), circular: $('canonCircular').value === '1' },
-    seed,
-  });
-  return {
-    mode, fit, key,
-    waves: fit.waves.map((values, i) => ({ values, basin: fit.basins[i], shape: $('basinShape').value })),
-  };
-}
-
-// ------------------------------------------------------------------ GA run
-
-function runGA() {
-  player.stop();
-  const seed = Number($('seed').value) || 1;
-  const built = buildFitness(seed);
-  const operators = $('operators').value;
-  const ga = createGA({
-    fitness: built.fit,
-    rng: createRng(seed),
-    length: built.fit.length,
-    env: built.fit.env || envForClassic(built),
-    generations: Number($('generations').value),
-    popSize: Number($('popSize').value),
-    mutationRate: Number($('mutation').value),
-    strategy: built.mode === 'classic' && operators === 'binary' ? 'geneticsharp' : 'tournament',
-    operators: built.mode === 'classic' ? operators : 'musical',
-  });
-  const token = {};
-  state.running = token;
-  state.history = [];
-  $('runBtn').disabled = true;
-  $('stopBtn').disabled = false;
-  const t0 = performance.now();
-  let lastDraw = 0;
-  const slice = () => {
-    if (state.running !== token) return finish(ga, built, true);
-    const end = performance.now() + 14;
-    while (performance.now() < end && !ga.done) ga.step(1);
-    $('progress').value = ga.generation / Number($('generations').value);
-    $('runStatus').textContent = `Geração ${ga.generation} · avaliações ${ga.evaluations.toLocaleString('pt-PT')} · aptidão ${ga.best.fitness.toFixed(2)} · ${((performance.now() - t0) / 1000).toFixed(1)} s`;
-    if (performance.now() - lastDraw > 250) {
-      lastDraw = performance.now();
-      state.history = ga.history.slice();
-      showBest(ga, built, false);
-      drawHistory();
+function onConfigChange(kind, arg) {
+  const c = state.config;
+  if (kind === 'ensemble') {
+    applyEnsemble(c, arg);
+    // instruments changed: keep a named preset inside the new register
+    if (c.wavePreset !== 'custom' && c.mode === 'field') {
+      c.waves = presetWaves(c, c.wavePreset);
+      controls.renderWaves();
     }
-    if (ga.done) return finish(ga, built, false);
-    setTimeout(slice, 0);
-  };
-  setTimeout(slice, 0);
+  }
+  if (kind === 'voices' || kind === 'piece') controls.renderWaves();
+  updatePreview();
+  if ($('configBox').open) fillConfigText();
 }
 
-function envForClassic(built) {
-  return { key: built.key, waves: built.waves.map((w) => w.values), basin: 3, lowMidi: 48, highMidi: 96, length: built.fit.length, stepsPerBar: STEPS_PER_BAR };
+function configReplaced(message) {
+  controls.renderAll();
+  updatePreview();
+  if ($('configBox').open) fillConfigText();
+  $('runStatus').textContent = message;
 }
 
-function showBest(ga, built, final) {
-  const best = ga.best;
-  const modeLabel = { field: 'Campo de atratores', canon: 'Cânone', classic: 'Clássico' }[built.mode];
-  setPiece({
-    events: toEvents(best.decoded),
-    genes: best.decoded,
-    length: best.decoded.length,
+// waves of the current settings, drawn dashed on the stage until the next run
+function updatePreview() {
+  try {
+    const built = buildFitness(state.config);
+    state.preview = {
+      sig: waveSignature(state.config),
+      length: built.fit.length,
+      waves: built.waves.map((w) => ({ ...w, preview: true })),
+    };
+  } catch (e) {
+    state.preview = null;
+  }
+  render();
+}
+
+// everything that changes the drawn waves
+const waveSignature = (c) => JSON.stringify([c.mode, c.scale, c.major, c.bars, c.mode === 'classic' ? 0 : c.waves, c.ga.seed]);
+
+function fillConfigText() {
+  $('configText').value = JSON.stringify(state.config, null, 1);
+  $('configNote').textContent = 'Guarde este texto para repetir a experiência mais tarde, ou cole outro e carregue em «Aplicar o texto».';
+}
+
+async function copyConfig() {
+  fillConfigText();
+  try {
+    await navigator.clipboard.writeText($('configText').value);
+    $('configNote').textContent = 'Copiado.';
+  } catch (e) {
+    $('configText').select();
+    $('configNote').textContent = 'Selecionado: use Ctrl+C / ⌘C para copiar.';
+  }
+}
+
+function applyConfigText() {
+  try {
+    const parsed = JSON.parse($('configText').value);
+    const def = defaultConfig();
+    const c = { ...def, ...parsed, ga: { ...def.ga, ...(parsed.ga || {}) } };
+    if (!Array.isArray(c.voices) || !c.voices[0]?.instrument) throw new Error('faltam as vozes');
+    while (c.voices.length < 3) c.voices.push(def.voices[c.voices.length]);
+    if (!Array.isArray(c.waves) || !c.waves.length) throw new Error('é precisa pelo menos uma onda');
+    c.waves = c.waves.slice(0, 4);
+    state.config = c;
+    configReplaced(`Configuração aplicada: ${describe(c)}.`);
+    $('configNote').textContent = 'Aplicada.';
+  } catch (e) {
+    $('configNote').textContent = `Texto inválido (${e.message}).`;
+  }
+}
+
+// ------------------------------------------------------------------ pieces
+
+/** A piece made of genes under a configuration: events, waves, voices of the canon. */
+function pieceFromGenes(genes, built, cfg, extra = {}) {
+  return {
+    events: toEvents(genes),
+    genes,
+    length: genes.length,
     barLen: STEPS_PER_BAR,
     waves: built.waves,
     key: built.key,
-    fitness: best.fitness,
-    parts: best.parts,
     mode: built.mode,
-    weights: built.mode === 'classic' ? (built.fit.phaseOf({ generation: ga.generation, maxGenerations: Number($('generations').value) }) === 1 ? state.classicG1 : state.classicG2) : built.fit.weights,
-    title: `${modeLabel} · semente ${$('seed').value}${final ? '' : ' (a evoluir…)'}`,
-  }, final);
+    voices: voiceSpecs(cfg),
+    circular: !!cfg.circular,
+    config: cfg,
+    ...extra,
+  };
 }
 
-function finish(ga, built, stopped) {
-  state.running = null;
-  $('runBtn').disabled = false;
-  $('stopBtn').disabled = true;
-  state.history = ga.history.slice();
-  showBest(ga, built, true);
-  drawHistory();
-  $('runStatus').textContent += stopped ? ' · parado' : ' · concluído';
+/**
+ * Voices as they sound: leader and followers with absolute onsets and transposed pitches.
+ * A plain canon stops when fewer than two voices remain (like the fermata in Telemann, where
+ * the second violin stops with the first); a round goes round twice and every voice stops
+ * at the end of the second pass.
+ */
+function soundingVoices(p, all = $('canonPlay').checked) {
+  const voices = all ? p.voices : p.voices.slice(0, 1);
+  const delays = p.voices.map((v) => v.delay).sort((a, b) => b - a);
+  const reps = p.circular && voices.length > 1 ? 2 : 1;
+  const total = voices.length === 1 ? p.length : p.end ?? (p.circular ? reps * p.length : p.length + (delays[1] ?? 0));
+  return {
+    total,
+    voices: voices.map((v, i) => {
+      const map = v.map || ((x) => x);
+      const events = [];
+      for (let r = 0; v.delay + r * p.length < total; r++) {
+        if (i === 0 && r >= reps) break;
+        for (const e of p.events) {
+          const s = e.start + r * p.length + v.delay;
+          if (e.pitch === null || s >= total) continue;
+          events.push({ pitch: map(e.pitch), start: s, dur: Math.min(e.dur, total - s) });
+        }
+      }
+      return { events, instrument: v.instrument, kind: i === 0 ? 'lead' : i === 1 ? 'follower' : 'v3', spec: v };
+    }),
+  };
 }
 
-// ------------------------------------------------------------------ piece & stage
-
-function setPiece(piece, evaluate = true) {
+function setPiece(piece) {
   state.piece = piece;
-  state.variations = state.variations.filter(() => false);
-  if (evaluate) evaluatePiece();
+  state.variations = [];
+  renderChips(piece);
+  if (state.tab === 'evaluate') renderEvaluation(piece);
   render();
   renderParts();
-  if (evaluate) renderVariationsPlaceholder();
+  renderVariationsPlaceholder();
 }
 
+const stagePiece = () => (state.tab === 'analyze' && state.analysisPiece ? state.analysisPiece : state.piece);
+
 function stageScene() {
-  const analyzing = state.tab === 'analyze' && state.analysisPiece;
-  const p = analyzing ? state.analysisPiece : state.piece;
+  const p = stagePiece();
   if (!p) return null;
-  const voices = [{ events: p.events, kind: 'lead' }];
-  const delayBars = Number($('canonPlayDelay').value);
-  if ($('canonPlay').checked) voices.push({ events: p.events, offset: delayBars * p.barLen, kind: 'follower' });
+  const analyzing = p === state.analysisPiece;
+  const { voices, total } = soundingVoices(p);
   let waves = p.waves || [];
+  let length = total;
   let segments = [];
+  if (!analyzing && state.tab === 'compose' && state.preview && (!p.config || waveSignature(p.config) !== state.preview.sig)) {
+    waves = state.preview.waves;
+    length = Math.max(length, state.preview.length);
+  }
   if (analyzing && state.analysis) {
     segments = state.analysis.segments.map((s) => [s.start, s.end]);
     waves = [];
@@ -381,49 +332,33 @@ function stageScene() {
         waves.push({ values, basin: w.basin, shape: 'gaussian', start: s.start, colorIndex });
       });
     }
+  } else if (p.circular && total > p.length) {
+    // a round: the waves repeat with the melody
+    waves = waves.map((w) => ({ ...w, values: Array.from({ length: total }, (_, t) => w.values[t % w.values.length]) }));
   }
-  return { length: p.length, barLen: p.barLen, voices, waves, segments, key: p.key, playhead: state.playhead, title: p.title };
+  return { length, barLen: p.barLen, voices, waves, segments, key: p.key, playhead: state.playhead, title: p.title };
 }
 
 function render() {
   const scene = stageScene();
   if (!scene) return;
   drawRoll($('roll'), scene);
-  const p = state.tab === 'analyze' && state.analysisPiece ? state.analysisPiece : state.piece;
+  const p = stagePiece();
   $('pieceTitle').textContent = p.title;
-  if (state.chipsFor !== p || state.chipsDelay !== $('canonPlayDelay').value) {
-    state.chipsFor = p;
-    state.chipsDelay = $('canonPlayDelay').value;
-    renderChips(p);
-  }
+  if (state.chipsFor !== p) renderChips(p);
   const legend = [];
-  legend.push('<span><i style="background:var(--note)"></i>melodia</span>');
-  if ($('canonPlay').checked) legend.push(`<span><i style="background:var(--follower)"></i>2.º violino (entra ${$('canonPlayDelay').value} c. depois)</span>`);
-  (scene.waves.length && !(state.tab === 'analyze' && state.analysis) ? scene.waves : []).forEach((w, i) => legend.push(`<span><i style="background:var(--wave-${(i % 4) + 1})"></i>onda ${i + 1} · bacia σ ${Number(w.basin).toFixed(1)}</span>`));
-  if (state.tab === 'analyze' && state.analysis) legend.push('<span><i style="background:var(--wave-1)"></i>onda de frequência mais baixa</span><span><i style="background:var(--wave-2)"></i>ondas mais rápidas</span><span>faixas: partes</span>');
+  const colours = ['var(--note)', 'var(--follower)', 'var(--voice-3)'];
+  scene.voices.forEach((v, i) => {
+    const s = v.spec;
+    const inst = instrument(s.instrument).label;
+    const txt = i === 0 ? `${inst} (melodia)` : `${inst} · entra no c. ${1 + s.delay / p.barLen}${s.interval && s.interval !== 'unison' ? ` · ${INTERVALS[s.interval]?.label ?? ''}` : ''}`;
+    legend.push(`<span><i style="background:${colours[i]}"></i>${txt}</span>`);
+  });
+  const analyzing = state.tab === 'analyze' && state.analysis && p === state.analysisPiece;
+  if (!analyzing) {
+    scene.waves.forEach((w, i) => legend.push(`<span><i style="background:var(--wave-${(i % 4) + 1})"></i>onda ${i + 1} · bacia σ ${Number(w.basin).toFixed(1)}${w.preview ? ' (tracejado: configuração atual, ainda por gerar)' : ''}</span>`));
+  } else legend.push('<span><i style="background:var(--wave-1)"></i>onda de frequência mais baixa</span><span><i style="background:var(--wave-2)"></i>ondas mais rápidas</span><span>faixas: partes</span>');
   $('legend').innerHTML = legend.join('');
-}
-
-function evaluatePiece() {
-  renderChips(state.piece);
-  renderEvaluation(state.piece.evaluation, state.piece);
-}
-
-function renderChips(p) {
-  const chips = [];
-  if (p.fitness !== undefined) chips.push(`<span class="chip">aptidão <b>${p.fitness.toFixed(1)}</b></span>`);
-  const compact = eventsToCompact(p.events);
-  const first = sliceSteps(compact, 128);
-  const ev = critic.evaluate(first, { barLen: p.barLen });
-  p.evaluation = ev;
-  const cls = ev.humanLike >= 0.7 ? 'good' : ev.humanLike >= 0.4 ? 'warn' : 'bad';
-  chips.push(`<span class="chip ${cls}" title="Probabilidade de ser uma melodia real segundo o crítico">crítico <b>${Math.round(ev.humanLike * 100)}%</b></span>`);
-  chips.push(`<span class="chip" title="Características dentro do intervalo P10–P90 das melodias reais">típico <b>${Math.round(ev.typicality * criticData.features.length)}/${criticData.features.length}</b></span>`);
-  chips.push(`<span class="chip">pausas <b>${Math.round(ev.features.restRatio * 100)}%</b></span>`);
-  const line = lineOf(p);
-  const c = analyzeCanon(line, { delay: Number($('canonPlayDelay').value) * p.barLen, barLen: p.barLen });
-  chips.push(`<span class="chip" title="Consonância nos tempos fortes quando tocada em cânone">cânone <b>${Math.round(c.strongConsonance * 100)}%</b></span>`);
-  $('pieceChips').innerHTML = chips.join('');
 }
 
 function lineOf(p) {
@@ -448,13 +383,49 @@ function sliceSteps(compact, n) {
   return out;
 }
 
+/** Counterpoint of the piece's own voices (null for a single voice). */
+function ensembleOf(p) {
+  if (!p.voices || p.voices.length < 2) return null;
+  if (p.ensemble) return p.ensemble;
+  p.ensemble = analyzeEnsemble(lineOf(p), p.voices, { circular: !!p.circular, barLen: p.barLen, end: p.end ?? null });
+  return p.ensemble;
+}
+
+function evaluationOf(p) {
+  if (!p.evaluation) p.evaluation = critic.evaluate(sliceSteps(eventsToCompact(p.events), 128), { barLen: p.barLen });
+  return p.evaluation;
+}
+
+function renderChips(p) {
+  state.chipsFor = p;
+  const chips = [];
+  if (p.fitness !== undefined) chips.push(`<span class="chip">aptidão <b>${p.fitness.toFixed(1)}</b></span>`);
+  const ev = evaluationOf(p);
+  const cls = ev.humanLike >= 0.7 ? 'good' : ev.humanLike >= 0.4 ? 'warn' : 'bad';
+  chips.push(`<span class="chip ${cls}" title="Probabilidade de ser uma melodia real segundo o crítico">crítico <b>${pct(ev.humanLike)}</b></span>`);
+  chips.push(`<span class="chip" title="Características dentro do intervalo P10–P90 das melodias reais">típico <b>${Math.round(ev.typicality * criticData.features.length)}/${criticData.features.length}</b></span>`);
+  chips.push(`<span class="chip">pausas <b>${pct(ev.features.restRatio)}</b></span>`);
+  const ens = ensembleOf(p);
+  if (ens) {
+    const good = ens.strongConsonance >= 0.75 ? 'good' : ens.strongConsonance >= 0.6 ? 'warn' : 'bad';
+    chips.push(`<span class="chip ${good}" title="Consonâncias nos tempos fortes entre todas as vozes (média dos pares)">${p.voices.length} vozes · consonância <b>${pct(ens.strongConsonance)}</b></span>`);
+    chips.push(`<span class="chip" title="Quintas e oitavas paralelas entre quaisquer duas vozes">paralelas <b>${ens.parallels}</b></span>`);
+    if (p.voices.length >= 3) chips.push(`<span class="chip" title="Tempos fortes em que as três vozes formam um acorde perfeito">tríades <b>${pct(ens.triadRatio)}</b></span>`);
+    if (ens.outOfRange > 0) chips.push(`<span class="chip bad" title="Notas fora do alcance de algum instrumento">fora do registo <b>${pct(ens.outOfRange)}</b></span>`);
+  } else {
+    const c = analyzeCanon(lineOf(p), { delay: p.barLen, barLen: p.barLen });
+    chips.push(`<span class="chip" title="Se fosse tocada em cânone com uma 2.ª voz a 1 compasso">como cânone a 1 c. <b>${pct(c.strongConsonance)}</b></span>`);
+  }
+  $('pieceChips').innerHTML = chips.join('');
+}
+
 function renderParts() {
   const p = state.piece;
   const box = $('partsBars');
   box.innerHTML = '';
   if (!p || !p.parts) return;
   const labels = p.mode === 'classic' ? CLASSIC_LABELS : FIELD_LABELS;
-  const entries = Object.keys(labels).map((k) => [k, (p.weights?.[k] ?? 0) * (p.parts[k] ?? 0)]);
+  const entries = Object.keys(labels).filter((k) => p.mode === 'classic' || k !== 'canon' || (p.weights?.canon ?? 0) !== 0).map((k) => [k, (p.weights?.[k] ?? 0) * (p.parts[k] ?? 0)]);
   const maxAbs = Math.max(1e-9, ...entries.map(([, v]) => Math.abs(v)));
   $('partsHint').textContent = p.mode === 'classic'
     ? 'Regras originais: somas (não médias) multiplicadas pelo peso do grupo ativo; barras relativas à maior.'
@@ -481,6 +452,172 @@ function drawHistory() {
   ], { xLabel: 'geração' });
 }
 
+// ------------------------------------------------------------------ GA runs and experiments
+
+const MODE_LABEL = { field: 'Campo de atratores', classic: 'Clássico' };
+
+function setRunning(on) {
+  $('runBtn').disabled = on;
+  $('reseedBtn').disabled = on;
+  $('batchBtn').disabled = on;
+  $('stopBtn').disabled = !on;
+}
+
+/** Runs the GA in time slices; resolves with the experiment (or null if it could not start). */
+function runGA(cfg) {
+  return new Promise((resolve) => {
+    player.stop();
+    $('playBtn').textContent = '▶ Tocar';
+    let built;
+    try {
+      built = buildFitness(cfg);
+    } catch (e) {
+      $('runStatus').textContent = `Configuração inválida: ${e.message}`;
+      resolve(null);
+      return;
+    }
+    const seed = cfg.ga.seed || 1;
+    const binary = cfg.ga.operators === 'binary';
+    const ga = createGA({
+      fitness: built.fit,
+      rng: createRng(seed),
+      length: built.fit.length,
+      env: built.env,
+      generations: cfg.ga.generations,
+      popSize: cfg.ga.popSize,
+      mutationRate: cfg.ga.mutation,
+      strategy: binary ? 'geneticsharp' : 'tournament',
+      operators: binary ? 'binary' : 'musical',
+    });
+    const token = {};
+    state.running = token;
+    state.history = [];
+    setRunning(true);
+    const t0 = performance.now();
+    let lastDraw = 0;
+    const title = (final) => `${MODE_LABEL[built.mode]} · ${activeVoices(cfg).length > 1 ? `${activeVoices(cfg).length} vozes · ` : ''}semente ${seed}${final ? '' : ' (a evoluir…)'}`;
+    const show = (final) => {
+      const best = ga.best;
+      const weights = built.mode === 'classic'
+        ? (built.fit.phaseOf({ generation: ga.generation, maxGenerations: cfg.ga.generations }) === 1 ? cfg.classicG1 : cfg.classicG2)
+        : built.fit.weights;
+      setPiece(pieceFromGenes(best.decoded, built, cfg, { fitness: best.fitness, parts: best.parts, weights, title: title(final) }));
+    };
+    const finish = (stopped) => {
+      state.running = null;
+      setRunning(false);
+      state.history = ga.history.slice();
+      show(true);
+      drawHistory();
+      $('runStatus').textContent += stopped ? ' · parado' : ' · concluído';
+      const exp = recordExperiment(cfg, stopped);
+      resolve(exp);
+    };
+    const slice = () => {
+      if (state.running !== token) return finish(true);
+      const end = performance.now() + 14;
+      while (performance.now() < end && !ga.done) ga.step(1);
+      $('progress').value = ga.generation / cfg.ga.generations;
+      $('runStatus').textContent = `Geração ${ga.generation} · avaliações ${ga.evaluations.toLocaleString('pt-PT')} · aptidão ${ga.best.fitness.toFixed(2)} · ${((performance.now() - t0) / 1000).toFixed(1)} s`;
+      if (performance.now() - lastDraw > 250) {
+        lastDraw = performance.now();
+        state.history = ga.history.slice();
+        show(false);
+        drawHistory();
+      }
+      if (ga.done) return finish(false);
+      setTimeout(slice, 0);
+    };
+    setTimeout(slice, 0);
+  });
+}
+
+function recordExperiment(cfg, stopped) {
+  const p = state.piece;
+  const ev = evaluationOf(p);
+  const ens = ensembleOf(p);
+  const exp = {
+    n: state.experiments.length + 1,
+    config: cloneConfig(cfg),
+    desc: describe(cfg),
+    seed: cfg.ga.seed,
+    fitness: p.fitness,
+    critic: ev.humanLike,
+    rests: ev.features.restRatio,
+    consonance: ens ? ens.strongConsonance : null,
+    parallels: ens ? ens.parallels : null,
+    genes: p.genes.slice(),
+    history: state.history.slice(),
+    stopped,
+  };
+  state.experiments.unshift(exp);
+  if (state.experiments.length > 40) state.experiments.pop();
+  state.selectedExperiment = exp.n;
+  renderExperiments();
+  return exp;
+}
+
+function renderExperiments() {
+  const box = $('experiments');
+  if (!state.experiments.length) {
+    box.innerHTML = '<p class="hint">Ainda sem experiências.</p>';
+    return;
+  }
+  const rows = state.experiments.map((e) => `<tr class="${e.n === state.selectedExperiment ? 'sel' : ''}"><td class="num">${e.n}</td><td>${e.desc} · semente ${e.seed}${e.stopped ? ' · parada' : ''}</td><td class="num">${e.fitness.toFixed(1)}</td><td class="num">${pct(e.critic)}</td><td class="num">${e.consonance === null ? '—' : pct(e.consonance)}</td><td><button class="btn" type="button" data-exp="${e.n}">Carregar</button></td></tr>`);
+  box.innerHTML = `<table class="data"><thead><tr><th>#</th><th>Configuração</th><th>aptidão</th><th>crítico</th><th>consonância entre vozes</th><th></th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+  box.querySelectorAll('button[data-exp]').forEach((b) => b.addEventListener('click', () => loadExperiment(Number(b.dataset.exp))));
+}
+
+function loadExperiment(n) {
+  const e = state.experiments.find((x) => x.n === n);
+  if (!e || state.running) return;
+  state.config = cloneConfig(e.config);
+  controls.renderAll();
+  const built = buildFitness(state.config);
+  const res = built.fit.evaluate(e.genes, { generation: state.config.ga.generations, maxGenerations: state.config.ga.generations, evaluationCount: 0 });
+  state.history = e.history.slice();
+  state.selectedExperiment = n;
+  setPiece(pieceFromGenes(e.genes, built, state.config, {
+    fitness: res.score, parts: res.parts,
+    weights: built.mode === 'classic' ? state.config.classicG2 : built.fit.weights,
+    title: `Experiência ${n} · semente ${e.seed}`,
+  }));
+  updatePreview();
+  drawHistory();
+  renderExperiments();
+  $('runStatus').textContent = `Experiência ${n} carregada: ${e.desc}. «Gerar» repete-a com a mesma semente.`;
+}
+
+async function runBatch() {
+  const base = cloneConfig(state.config);
+  const results = [];
+  state.batch = true;
+  for (let k = 0; k < 5 && state.batch; k++) {
+    const cfg = cloneConfig(base);
+    cfg.ga.seed = (base.ga.seed || 1) + k;
+    $('batchSummary').innerHTML = `<p class="hint">A testar a semente ${cfg.ga.seed} (${k + 1} de 5)…</p>`;
+    const r = await runGA(cfg);
+    if (!r || r.stopped) break;
+    results.push(r);
+  }
+  state.batch = false;
+  if (!results.length) {
+    $('batchSummary').innerHTML = '';
+    return;
+  }
+  const stats = (xs) => {
+    const m = xs.reduce((a, b) => a + b, 0) / xs.length;
+    const sd = Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, xs.length - 1));
+    return { m, sd, lo: Math.min(...xs), hi: Math.max(...xs) };
+  };
+  const f = stats(results.map((r) => r.fitness));
+  const c = stats(results.map((r) => r.critic));
+  const cons = results[0].consonance === null ? null : stats(results.map((r) => r.consonance));
+  const bestR = results.slice().sort((a, b) => b.critic - a.critic || b.fitness - a.fitness)[0];
+  $('batchSummary').innerHTML = `<div class="seg"><h4>Resumo de ${results.length} sementes · ${base.ga.seed}–${base.ga.seed + results.length - 1}</h4><dl class="kv"><dt>aptidão</dt><dd>${f.m.toFixed(1)} ± ${f.sd.toFixed(1)} (${f.lo.toFixed(1)}–${f.hi.toFixed(1)})</dd><dt>crítico</dt><dd>${pct(c.m)} ± ${Math.round(c.sd * 100)} (${pct(c.lo)}–${pct(c.hi)})</dd>${cons ? `<dt>consonância entre vozes</dt><dd>${pct(cons.m)} (${pct(cons.lo)}–${pct(cons.hi)})</dd>` : ''}<dt>melhor pelo crítico</dt><dd>experiência ${bestR.n} (semente ${bestR.seed})</dd></dl><p class="hint">Uma configuração é robusta quando o crítico fica alto em todas as sementes, não só na melhor. Compare dois resumos antes de concluir que uma mudança ajudou.</p></div>`;
+  loadExperiment(bestR.n);
+}
+
 // ------------------------------------------------------------------ playback & export
 
 function togglePlay() {
@@ -491,16 +628,16 @@ function togglePlay() {
     render();
     return;
   }
-  const analyzing = state.tab === 'analyze' && state.analysisPiece;
-  const p = analyzing ? state.analysisPiece : state.piece;
-  playEvents(p.events, p.barLen);
+  playPiece(stagePiece());
 }
 
-function playEvents(events, barLen) {
-  const voices = [{ events, timbre: $('timbre').value, pan: $('canonPlay').checked ? -0.35 : 0 }];
-  if ($('canonPlay').checked) voices.push({ events, offset: Number($('canonPlayDelay').value) * barLen, timbre: $('timbre').value, pan: 0.35, gain: 0.9 });
+function playPiece(p) {
+  if (!p) return;
+  const { voices } = soundingVoices(p);
+  const n = voices.length;
+  const pans = n === 1 ? [0] : n === 2 ? [-0.35, 0.35] : [-0.45, 0.45, 0];
   $('playBtn').textContent = '■ Parar';
-  player.play(voices, {
+  player.play(voices.map((v, i) => ({ events: v.events, instrument: v.instrument, pan: pans[i], gain: i ? 0.9 : 1 })), {
     bpm: Number($('bpm').value),
     onStep: (s) => {
       state.playhead = s;
@@ -518,20 +655,25 @@ function playEvents(events, barLen) {
 // accept .mid: the file is handed over inside a .zip. Elsewhere a normal link is used.
 const downloadsCap = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
 
+const TIME_SIGNATURES = { 6: [3, 8], 8: [2, 4], 12: [6, 8], 16: [4, 4], 24: [6, 4] };
+
 async function downloadMidi() {
-  const analyzing = state.tab === 'analyze' && state.analysisPiece;
-  const p = analyzing ? state.analysisPiece : state.piece;
-  const voices = [{ events: p.events, name: 'Violino 1', program: 40 }];
-  if ($('canonPlay').checked) voices.push({ events: p.events, offset: Number($('canonPlayDelay').value) * p.barLen, name: 'Violino 2', program: 40 });
-  const num = p.barLen === 24 ? 6 : p.barLen === 12 ? 6 : 4;
-  const den = p.barLen === 12 ? 8 : 4;
-  const bytes = writeMidi(voices, { bpm: Number($('bpm').value), numerator: num, denominator: den });
+  const p = stagePiece();
+  if (!p) return;
+  const { voices } = soundingVoices(p);
+  const tracks = voices.map((v, i) => ({
+    events: v.events,
+    name: `${instrument(v.instrument).label} ${i + 1}`,
+    program: instrument(v.instrument).program,
+  }));
+  const [num, den] = TIME_SIGNATURES[p.barLen] ?? [4, 4];
+  const bytes = writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den });
   const name = `ondas-atratoras-${Date.now()}`;
   const dl = await downloadsCap;
   if (dl) {
     try {
       await dl.save({ filename: `${name}.zip`, data: makeZip([{ name: `${name}.mid`, data: bytes }]) });
-      $('midiNote').textContent = 'Guardado: ZIP com o ficheiro MIDI.';
+      $('midiNote').textContent = `Guardado: ZIP com o ficheiro MIDI (${tracks.length} pista${tracks.length > 1 ? 's' : ''}).`;
     } catch (e) {
       const code = e && e.code;
       $('midiNote').textContent = code === 'declined' ? 'Download cancelado.'
@@ -552,12 +694,12 @@ async function downloadMidi() {
 // ------------------------------------------------------------------ MAP-Elites
 
 function runMapElites() {
-  if ($('mode').value === 'classic') $('mode').value = 'field';
-  onModeChangeKeep();
-  const seed = Number($('seed').value) || 1;
-  const built = buildFitness(seed);
-  const archive = createMapElites({ fitness: built.fit, env: built.fit.env, rng: createRng(seed + 17), x: $('mx').value, y: $('my').value });
+  const cfg = cloneConfig(state.config);
+  cfg.mode = 'field'; // MAP-Elites uses the attractor field (the classic rules are not averaged)
+  const built = buildFitness(cfg);
+  const archive = createMapElites({ fitness: built.fit, env: built.env, rng: createRng((cfg.ga.seed || 1) + 17), x: $('mx').value, y: $('my').value });
   archive.built = built;
+  archive.config = cfg;
   state.archive = archive;
   state.selectedCell = -1;
   const total = Number($('meEvals').value);
@@ -584,11 +726,6 @@ function runMapElites() {
   setTimeout(slice, 0);
 }
 
-function onModeChangeKeep() {
-  $('fieldControls').hidden = $('mode').value === 'classic';
-  $('canonControls').hidden = $('mode').value !== 'canon';
-}
-
 let mapGeom = null;
 function drawMap() {
   if (!state.archive || state.tab !== 'explore') return;
@@ -603,23 +740,15 @@ function onMapClick(ev) {
   if (!cell) return;
   state.selectedCell = idx;
   const a = state.archive;
-  const built = a.built;
-  setPiece({
-    events: toEvents(cell.genes),
-    genes: cell.genes,
-    length: cell.genes.length,
-    barLen: STEPS_PER_BAR,
-    waves: built.waves,
-    key: built.key,
+  setPiece(pieceFromGenes(cell.genes, a.built, a.config, {
     fitness: cell.fitness,
     parts: cell.parts,
-    mode: built.mode,
-    weights: built.fit.weights,
+    weights: a.built.fit.weights,
     title: `Mapa · ${DESCRIPTORS[a.x].label.toLowerCase()} ${cell.vx.toFixed(2)} · ${DESCRIPTORS[a.y].label.toLowerCase()} ${cell.vy.toFixed(2)}`,
-  });
-  $('cellInfo').textContent = `Célula selecionada: aptidão ${cell.fitness.toFixed(1)} · crítico ${Math.round(state.piece.evaluation.humanLike * 100)} %`;
+  }));
+  $('cellInfo').textContent = `Célula selecionada: aptidão ${cell.fitness.toFixed(1)} · crítico ${pct(evaluationOf(state.piece).humanLike)}`;
   drawMap();
-  playEvents(state.piece.events, STEPS_PER_BAR);
+  playPiece(state.piece);
 }
 
 // ------------------------------------------------------------------ variations
@@ -639,34 +768,36 @@ function makeVariations() {
   state.variations = list;
   const box = $('varList');
   box.innerHTML = '';
-  const addItem = (label, events, info, idx) => {
+  const addItem = (label, events, info) => {
     const div = document.createElement('div');
     div.className = 'varitem';
     div.innerHTML = `<strong>${label}</strong><span class="status">${info}</span>`;
+    const variant = () => {
+      const genes = fromEvents(events, theme.length);
+      return { ...theme, events: toEvents(genes), genes, ensemble: null, evaluation: null };
+    };
     const play = document.createElement('button');
     play.className = 'btn';
     play.type = 'button';
     play.textContent = '▶';
     play.setAttribute('aria-label', `Tocar ${label}`);
-    play.addEventListener('click', () => playEvents(events, theme.barLen));
+    play.addEventListener('click', () => playPiece(variant()));
     const load = document.createElement('button');
     load.className = 'btn';
     load.type = 'button';
     load.textContent = 'Ver na partitura';
     load.addEventListener('click', () => {
-      const genes = fromEvents(events, theme.length);
-      setPiece({ ...theme, events: toEvents(genes), genes, title: `${label} de «${theme.title}»`, fitness: undefined, parts: null });
-      if (idx >= 0) makeVariationsKeep(list);
+      const v = variant();
+      state.piece = { ...v, title: `${label} de «${theme.title}»`, fitness: undefined, parts: null };
+      renderChips(state.piece);
+      render();
+      renderParts();
     });
     div.append(play, load);
     box.appendChild(div);
   };
-  addItem('Tema', theme.events, 'original', -1);
-  list.forEach((v, i) => addItem(`Variação ${i + 1}`, v.events, `perturbação ${v.divergence.toFixed(3)} · igual até à nota ${v.from + 1} · ${Math.round(v.sim * 100)} % das notas iguais`, i));
-}
-
-function makeVariationsKeep() {
-  /* the list stays visible after loading one variation */
+  addItem('Tema', theme.events, 'original');
+  list.forEach((v, i) => addItem(`Variação ${i + 1}`, v.events, `perturbação ${v.divergence.toFixed(3)} · igual até à nota ${v.from + 1} · ${Math.round(v.sim * 100)} % das notas iguais`));
 }
 
 function buildForm() {
@@ -683,26 +814,39 @@ function buildForm() {
   });
   const length = 4 * A.length;
   const genes = fromEvents(events, length);
-  setPiece({ ...A, events: toEvents(genes), genes, length, waves: [], title: 'Forma A A′ B A″ (variações de Dabby)', fitness: undefined, parts: null });
+  setPiece({ ...A, events: toEvents(genes), genes, length, waves: [], circular: false, config: null, ensemble: null, evaluation: null, title: 'Forma A A′ B A″ (variações de Dabby)', fitness: undefined, parts: null });
 }
 
 // ------------------------------------------------------------------ analyser
 
+const REFERENCE_VOICES = { telemann: 'violin', telemann2: 'flute', telemann3: 'violin', frereJacques: 'soprano', rowYourBoat: 'soprano' };
+
+function referenceVoices(key, r) {
+  const inst = REFERENCE_VOICES[key] ?? 'violin';
+  const second = inst === 'soprano' ? 'alto' : inst;
+  const id = (x) => x;
+  return [
+    { instrument: inst, delay: 0, delayBars: 0, interval: 'unison', map: id, range: instrument(inst).range },
+    { instrument: second, delay: r.delayBars * r.barLen, delayBars: r.delayBars, interval: 'unison', map: id, range: instrument(second).range },
+  ];
+}
+
 function analysisSource() {
   const src = $('anSource').value;
+  const solo = (inst) => [{ instrument: inst, delay: 0, delayBars: 0, interval: 'unison', map: (x) => x, range: instrument(inst).range }];
   if (src === 'current') {
     const p = state.piece;
-    return { compact: eventsToCompact(p.events), barLen: p.barLen, title: p.title, key: p.key };
+    return { compact: eventsToCompact(p.events), barLen: p.barLen, title: p.title, key: p.key, voices: p.voices, circular: p.circular };
   }
   if (REFERENCE_CANONS[src]) {
     const r = REFERENCE_CANONS[src];
-    return { compact: referenceEvents(r), barLen: r.barLen, title: r.title, key: { tonic: r.tonic }, canonDelay: r.delayBars };
+    return { compact: referenceEvents(r), barLen: r.barLen, title: r.title, key: { tonic: r.tonic }, voices: referenceVoices(src, r), circular: !!r.circular, end: r.endStep };
   }
   if (src === 'corpus') {
     const m = corpus[Number($('anCorpus').value)];
-    return { compact: m.events, barLen: m.barLen, title: `${sourceName(m.source)} — ${m.title}`, key: { tonic: m.tonic } };
+    return { compact: m.events, barLen: m.barLen, title: `${sourceName(m.source)} — ${m.title}`, key: { tonic: m.tonic }, voices: solo(state.config.voices[0].instrument) };
   }
-  if (src === 'midi') return state.midiUpload;
+  if (src === 'midi') return state.midiUpload && { ...state.midiUpload, voices: solo(state.config.voices[0].instrument) };
   return null;
 }
 
@@ -738,8 +882,10 @@ function runAnalysis() {
   });
   state.analysis = res;
   const events = compactToEvents(src.compact);
-  state.analysisPiece = { events, length: res.total, barLen: src.barLen, title: `Análise · ${src.title}`, key: src.key, waves: [] };
-  if (src.canonDelay) $('canonPlayDelay').value = String(src.canonDelay);
+  state.analysisPiece = {
+    events, length: res.total, barLen: src.barLen, title: `Análise · ${src.title}`, key: src.key, waves: [],
+    voices: src.voices, circular: !!src.circular, end: src.end, tonic: src.key?.tonic,
+  };
   $('anStatus').textContent = `Análise em ${Math.round(performance.now() - t0)} ms.`;
   $('anUse').disabled = !res.segments[0]?.fit;
   renderAnalysis(res, src);
@@ -789,7 +935,7 @@ function renderAnalysis(res, src) {
   if (lows.length) html += `<dt>freq. mais baixa (média)</dt><dd>${fmtF(avg(lows, (w) => w.freq))}</dd><dt>valor médio dessa onda</dt><dd>${noteHz(avg(lows, (w) => w.mean))}</dd>`;
   if (highs.length) html += `<dt>freq. mais alta (média)</dt><dd>${fmtF(avg(highs, (w) => w.freq))}</dd><dt>valor médio dessa onda</dt><dd>${noteHz(avg(highs, (w) => w.mean))}</dd>`;
   html += `<dt>R² médio</dt><dd>${avg(res.segments.filter((s) => s.fit), (s) => s.fit.r2).toFixed(2)}</dd></dl>`;
-  html += '<p class="hint">R² mede quanto da altura das notas as ondas explicam. Com poucas notas por parte o R² sobe sempre; compare com uma melodia baralhada no separador Avaliar/README antes de concluir.</p>';
+  html += '<p class="hint">R² mede quanto da altura das notas as ondas explicam. Com poucas notas por parte o R² sobe sempre; compare com uma melodia baralhada (README) antes de concluir.</p>';
   $('anSummary').innerHTML = html;
 }
 
@@ -803,28 +949,72 @@ function drawSpectra() {
   });
 }
 
+// the waves of the 1st part become the generator's waves (frequency per 4/4 bar, current key)
 function useAnalysisWaves() {
   const s = state.analysis?.segments[0];
-  if (!s?.fit) return;
-  state.customWaves = s.fit.waves.map((w) => waveToSpec(w, state.analysisPiece.barLen));
-  if (![...$('preset').options].some((o) => o.value === 'analyzer')) option($('preset'), 'analyzer', 'Do analisador (1.ª parte)');
-  $('preset').value = 'analyzer';
-  if ($('mode').value === 'classic') $('mode').value = 'field';
-  onModeChangeKeep();
-  $('anStatus').textContent = 'Ondas copiadas para o gerador (Compor → Ondas: «Do analisador»).';
+  const ap = state.analysisPiece;
+  if (!s?.fit || !ap) return;
+  const c = state.config;
+  let shift = 0;
+  if (ap.tonic !== undefined && ap.tonic !== null) {
+    shift = (((keyOf(c).tonic - ap.tonic) % 12) + 12) % 12;
+    if (shift > 6) shift -= 12;
+  }
+  c.waves = s.fit.waves.slice(0, 4).map((w) => {
+    const spec = waveToSpec(w, ap.barLen);
+    return {
+      ...spec,
+      freq: +((spec.freq * STEPS_PER_BAR) / ap.barLen).toFixed(4),
+      mean: +(spec.mean + shift).toFixed(1),
+      amplitude: +spec.amplitude.toFixed(1),
+      basin: +spec.basin.toFixed(1),
+      phase: +spec.phase.toFixed(1),
+    };
+  });
+  c.wavePreset = 'custom';
+  c.mode = 'field';
+  controls.renderAll();
+  updatePreview();
+  $('anStatus').textContent = `${c.waves.length} onda(s) copiadas para Compor → Ondas atratoras${shift ? `, transpostas ${shift > 0 ? '+' : ''}${shift} semitons para a tonalidade escolhida` : ''}. Pode editá-las lá.`;
 }
 
 // ------------------------------------------------------------------ evaluation tab
 
-function renderEvaluation(ev, p) {
-  const pct = (x) => `${Math.round(x * 100)} %`;
-  $('evalSummary').innerHTML = `<dl class="kv"><dt>crítico (melodia real?)</dt><dd>${pct(ev.humanLike)}</dd><dt>características típicas</dt><dd>${Math.round(ev.typicality * criticData.features.length)} de ${criticData.features.length}</dd><dt>surpresa melódica</dt><dd>${ev.features.icPitch.toFixed(2)} bits/nota (real: ${criticData.percentiles[criticData.features.indexOf('icPitch')].map((v) => v.toFixed(2)).join(' / ')})</dd><dt>complexidade LZ</dt><dd>${ev.features.lzComplexity.toFixed(2)}</dd><dt>validação do crítico</dt><dd>AUC ${criticData.cv.auc.toFixed(3)} (5-fold)</dd></dl><p class="hint">Avaliado nos primeiros 8 compassos de 4/4 (128 semicolcheias), como as melodias de referência.</p>`;
-  const line = lineOf(p);
-  const rows = [1, 2, 3].map((d) => {
-    const c = analyzeCanon(line, { delay: d * p.barLen, barLen: p.barLen });
-    return `<tr><td>${d} c.</td><td class="num">${pct(c.strongConsonance)}</td><td class="num">${c.parallels}</td><td class="num">${pct(c.unisonRatio)}</td><td class="num">${pct(c.contraryRatio)}</td><td class="num">${c.score.toFixed(2)}</td></tr>`;
+let referenceRows = null;
+function referenceCanonRows() {
+  if (referenceRows) return referenceRows;
+  referenceRows = ['telemann', 'telemann2', 'telemann3'].map((k) => {
+    const r = REFERENCE_CANONS[k];
+    const c = analyzeCanon(compactToLine(referenceEvents(r)), { delay: r.delayBars * r.barLen, barLen: r.barLen, end: r.endStep });
+    const roman = { telemann: 'I', telemann2: 'II', telemann3: 'III' }[k];
+    return canonRow(`<span title="${r.title}">Telemann ${roman} · ${r.delayBars} c.</span>`, c);
   });
-  $('canonTable').innerHTML = `<table class="data"><thead><tr><th>2.ª voz</th><th>consonância (tempos fortes)</th><th>5.as/8.as paralelas</th><th>uníssonos</th><th>mov. contrário</th><th>pontuação</th></tr></thead><tbody>${rows.join('')}</tbody><tfoot><tr><td>Telemann</td><td class="num">83 %</td><td class="num">1</td><td class="num">6 %</td><td class="num">32 %</td><td class="num">0.61</td></tr></tfoot></table>`;
+  return referenceRows;
+}
+
+const canonHead = (first) => `<tr><th>${first}</th><th title="Consonâncias nos tempos fortes">consonância</th><th title="Quintas e oitavas paralelas">paralelas</th><th>uníssonos</th><th title="Movimento contrário">contrário</th><th>pontuação</th></tr>`;
+const canonRow = (label, c) => `<tr><td>${label}</td><td class="num">${pct(c.strongConsonance)}</td><td class="num">${c.parallels}</td><td class="num">${pct(c.unisonRatio)}</td><td class="num">${pct(c.contraryRatio)}</td><td class="num">${c.score.toFixed(2)}</td></tr>`;
+
+function renderEvaluation(p) {
+  const ev = evaluationOf(p);
+  $('evalSummary').innerHTML = `<dl class="kv"><dt>crítico (melodia real?)</dt><dd>${pct(ev.humanLike)}</dd><dt>características típicas</dt><dd>${Math.round(ev.typicality * criticData.features.length)} de ${criticData.features.length}</dd><dt>surpresa melódica</dt><dd>${ev.features.icPitch.toFixed(2)} bits/nota (real: ${criticData.percentiles[criticData.features.indexOf('icPitch')].map((v) => v.toFixed(2)).join(' / ')})</dd><dt>complexidade LZ</dt><dd>${ev.features.lzComplexity.toFixed(2)}</dd><dt>validação do crítico</dt><dd>AUC ${criticData.cv.auc.toFixed(3)} (5-fold)</dd></dl><p class="hint">Avaliado nos primeiros 8 compassos de 4/4 (128 semicolcheias), como as melodias de referência. Todas as vozes tocam a mesma melodia, por isso o crítico avalia-a uma vez.</p>`;
+  const line = lineOf(p);
+  let html = '';
+  const ens = ensembleOf(p);
+  if (ens) {
+    const vrows = p.voices.map((v, i) => {
+      const ps = [];
+      for (let s = 0; s < line.pitch.length; s++) if (line.onset[s]) ps.push(v.map(line.pitch[s]));
+      const out = ps.filter((q) => q < v.range[0] || q > v.range[1]).length / Math.max(1, ps.length);
+      return `<tr><td>${i + 1}</td><td>${instrument(v.instrument).label}</td><td>c. ${1 + v.delay / p.barLen}</td><td>${i ? INTERVALS[v.interval]?.label ?? '—' : 'melodia'}</td><td>${midiName(Math.min(...ps))}–${midiName(Math.max(...ps))}</td><td class="num ${out ? 'off' : 'ok'}">${pct(out)}</td></tr>`;
+    });
+    html += `<h4>Vozes</h4><table class="data"><thead><tr><th>#</th><th>instrumento</th><th>entrada</th><th>intervalo</th><th>registo</th><th>fora do alcance</th></tr></thead><tbody>${vrows.join('')}</tbody></table>`;
+    const prows = ens.pairs.map((pr) => canonRow(`${pr.i + 1} e ${pr.j + 1}`, pr));
+    html += `<h4>Pares de vozes</h4><table class="data"><thead>${canonHead('vozes')}</thead><tbody>${prows.join('')}</tbody><tfoot><tr><td>todas</td><td class="num">${pct(ens.strongConsonance)}</td><td class="num">${ens.parallels}</td><td class="num">${pct(ens.unisonRatio)}</td><td class="num">${pct(ens.contraryRatio)}</td><td class="num">${ens.score.toFixed(2)}</td></tr></tfoot></table>${p.voices.length >= 3 ? `<p class="hint">Tempos fortes em que as três vozes formam um acorde perfeito: ${pct(ens.triadRatio)}.</p>` : ''}`;
+  }
+  const rows = [1, 2, 3].map((d) => canonRow(`a ${d} c.`, analyzeCanon(line, { delay: d * p.barLen, barLen: p.barLen })));
+  html += `<h4>A melodia contra si própria, em uníssono</h4><table class="data"><thead>${canonHead('2.ª voz')}</thead><tbody>${rows.join('')}</tbody><tfoot>${referenceCanonRows().join('')}</tfoot></table>`;
+  $('canonTable').innerHTML = html;
   const frows = criticData.features.map((f) => {
     const pf = ev.perFeature[f];
     return `<tr><td>${FEATURE_LABELS[f] || f}</td><td class="num ${pf.ok ? 'ok' : 'off'}">${fmtNum(pf.value)}</td><td class="num">${fmtNum(pf.p10)} – ${fmtNum(pf.p90)}</td></tr>`;
@@ -839,24 +1029,15 @@ const fmtNum = (v) => (Math.abs(v) >= 10 ? v.toFixed(1) : v.toFixed(2));
 function start() {
   initControls();
   const ex = EXAMPLES[0];
-  const built = buildFitness(ex.seed);
+  const cfg = cloneConfig(state.config);
+  cfg.ga.seed = ex.seed;
+  const built = buildFitness(cfg);
   const res = built.fit.evaluate(ex.genes);
-  setPiece({
-    events: toEvents(ex.genes),
-    genes: ex.genes,
-    length: ex.genes.length,
-    barLen: STEPS_PER_BAR,
-    waves: built.waves,
-    key: built.key,
-    fitness: res.score,
-    parts: res.parts,
-    mode: built.mode,
-    weights: built.fit.weights,
-    title: ex.title,
-  });
+  setPiece(pieceFromGenes(ex.genes, built, cfg, { fitness: res.score, parts: res.parts, weights: built.fit.weights, title: ex.title }));
   state.history = ex.history || [];
+  updatePreview();
   drawHistory();
-  void tonicMidi;
+  $('runStatus').textContent = `Pronto. ${describe(state.config)}.`;
 }
 
 start();

@@ -3,12 +3,18 @@ export const ABOUT_HTML = `
 <h3>O que é</h3>
 <p>Uma versão web do <em>GeneticMusic</em> (Rui Luz e Rafael Silva, IPCA 2020): um algoritmo genético compõe uma melodia e a aptidão inclui <strong>ondas atratoras</strong>, curvas que puxam as notas para uma bacia à sua volta. Tudo corre no navegador; a mesma semente dá sempre a mesma peça.</p>
 
-<h3>Três modos</h3>
+<h3>Dois modelos, até três vozes</h3>
 <ul>
 <li><strong>Clássico</strong>: as 15 regras de <code>AlgorithmFitness.cs</code>, portadas regra a regra (validado contra o C# original compilado: 0 diferenças em 795 comparações), com os pesos do formulário original e operadores ao nível do bit como no GeneticSharp.</li>
 <li><strong>Campo de atratores</strong>: as ondas passam a ter bacias contínuas (a influência decai com a distância), podem ser arcos de frase, ruído 1/f ou atratores caóticos, e juntam-se regras da cognição musical (ver abaixo). Cada regra é uma média por nota, por isso as pausas deixaram de ser um refúgio.</li>
-<li><strong>Cânone</strong>: a melodia é avaliada contra si própria atrasada x compassos, com regras de contraponto a duas vozes, para que dois violinistas leiam a mesma parte como nos <em>Canons mélodieux</em> de Telemann (TWV 40:118–123).</li>
+<li><strong>Vozes</strong>: em qualquer dos modelos a melodia pode ser tocada por 2 ou 3 vozes, cada uma com o seu instrumento, compasso de entrada e intervalo (uníssono, oitavas, 5.ª ou 4.ª diatónicas), para que vários músicos leiam a mesma parte como nos <em>Canons mélodieux</em> de Telemann (TWV 40:118–123). O contraponto entre todos os pares de vozes entra na aptidão e na população inicial, desde a geração 0.</li>
 </ul>
+
+<h3>Ondas editáveis e experiências</h3>
+<p>Cada onda tem tipo, frequência, desfasamento, valor médio e amplitude (ou mínimo e máximo) e uma bacia com largura e forma; pode haver até 4. As ondas da configuração aparecem a tracejado na partitura antes de gerar. Os botões de auto-configuração sugerem ondas, forma, pesos e algoritmo a partir das vozes; cada geração fica registada com a sua configuração, e «Testar 5 sementes» mostra se uma mudança ajuda de forma consistente.</p>
+
+<h3>Análise inversa</h3>
+<p>235 melodias reais completas, os seus retrógrados e modelos nulos foram passados pelas regras. As regras originais dão à música real a mesma pontuação que ao ruído branco (50 % dos pares); as novas separam-nas em 96 % dos pares, sobretudo pela proximidade e pelas forças melódicas. Quase nenhuma regra distingue uma melodia do seu retrógrado (52 %), e o AG leva as regras ao dobro do valor que a música real atinge. Os pesos aprendidos com estes dados estão disponíveis como predefinição («Aprendidos da música real»). Detalhes em <code>web/results/reverse.md</code>.</p>
 
 <h3>O que se encontrou no código original</h3>
 <ul>
@@ -29,17 +35,22 @@ export const ABOUT_HTML = `
 <tr><td>Programa C# original</td><td class="num">0,00</td><td class="num">—</td><td class="num">2,4–3,4</td><td class="num">—</td><td class="num">46–61 %</td></tr>
 <tr><td>Clássico (port)</td><td class="num">0,00</td><td class="num">11,5</td><td class="num">2,80</td><td class="num">6,15</td><td class="num">57 %</td></tr>
 <tr><td>Clássico + operadores musicais</td><td class="num">0,93</td><td class="num">15,5</td><td class="num">2,84</td><td class="num">3,78</td><td class="num">49 %</td></tr>
-<tr><td>Campo: arco de frase</td><td class="num">0,87</td><td class="num">18,8</td><td class="num">1,51</td><td class="num">3,32</td><td class="num">99 %</td></tr>
-<tr><td>Campo: Rössler</td><td class="num">0,79</td><td class="num">19,5</td><td class="num">1,30</td><td class="num">3,35</td><td class="num">94 %</td></tr>
-<tr><td>Cânone</td><td class="num">0,78</td><td class="num">16,5</td><td class="num">1,31</td><td class="num">3,67</td><td class="num">100 %</td></tr>
+<tr><td>Campo: arco de frase</td><td class="num">0,93</td><td class="num">17,5</td><td class="num">1,63</td><td class="num">3,22</td><td class="num">96 %</td></tr>
+<tr><td>Campo: Rössler</td><td class="num">0,90</td><td class="num">19,7</td><td class="num">1,48</td><td class="num">3,20</td><td class="num">94 %</td></tr>
+<tr><td>Cânone (2 violinos)</td><td class="num">0,89</td><td class="num">16,8</td><td class="num">1,47</td><td class="num">3,44</td><td class="num">100 %</td></tr>
+<tr><td>Trio em cânone (desde a geração 0)</td><td class="num">0,79</td><td class="num">18,5</td><td class="num">—</td><td class="num">—</td><td class="num">87 % (tríades 87 %)</td></tr>
 </tbody></table></div>
 <ul>
 <li>As saídas das regras originais têm a surpresa melódica do ruído branco e 2–3 vezes mais notas do que melodias reais. Em cânone a 1 compasso soam tão consonantes como ruído ao acaso: as regras de auto-harmonização não chegavam para dois violinistas lerem a mesma parte.</li>
 <li>Só trocar os operadores de bits por operadores musicais já leva o crítico de 0,00 a 0,93.</li>
+<li>Considerar o cânone desde a população inicial: com 2 vozes o contraponto chega a 0,8 na 1.ª geração (22 gerações sem isso); com 3 vozes o resultado final também melhora (tríades 87 % contra 72 %, crítico 0,79 contra 0,63).</li>
 <li>Sem as bacias (ablação) o crítico fica igual: as ondas atratoras controlam a forma do contorno, não a qualidade por si só.</li>
 <li>Pausas: com os pesos por defeito o original quase não gera pausas; quando se reforçam as ondas, deixa de atacar notas (ataques de 0,7 para 0,2 por semicolcheia, pausas até 10 %), porque a regra da onda só penaliza ataques.</li>
 <li>Nas 480 melodias reais uma onda lenta (1 ciclo a cada 4–8 compassos, ±2,9 semitons) é significativa em 73 % dos casos, contra 7 % nas mesmas melodias baralhadas; mas também aparece em 84 % dos passeios aleatórios. A oscilação é um fator real, partilhado por qualquer contorno que avance por graus.</li>
 </ul>
+
+<h3>O trabalho original à luz da literatura</h3>
+<p>A observação de que o contorno melódico tem componentes cíclicas já existia (Schmuckler 1999, 2010, com análise de Fourier do contorno), tal como guiar a geração por curvas desenhadas (Xenakis, Hyperscore, MorpheuS). O que o relatório tinha de próprio era a combinação: várias curvas-alvo móveis, não somadas, cada uma com uma bacia, a competir pelas notas na aptidão de um AG, para dar forma à melodia e vozes implícitas. Não encontrei reutilizações do repositório. A ideia geral — controlar a geração com curvas ao longo do tempo (tensão, altura média por compasso, contornos desenhados) — tornou-se corrente depois de 2020 nas redes neuronais (FIGARO, MIDI-Draw, Music ControlNet), por caminhos independentes. A análise completa, com fontes, está no README.</p>
 
 <h3>Literatura usada</h3>
 <ul>
@@ -59,5 +70,5 @@ export const ABOUT_HTML = `
 </ul>
 
 <h3>Corpus de referência</h3>
-<p>480 melodias do corpus do music21, em domínio público: 240 canções da coleção Essen, 120 temas de <em>O'Neill's Music of Ireland</em> (1850) e 120 sopranos de corais de Bach, cortadas nos primeiros 8 compassos. O Vivace do TWV 40:118 foi transcrito a partir da edição de Johan Tufvesson (ornamentos omitidos, tercinas aproximadas).</p>
+<p>480 melodias do corpus do music21, em domínio público: 240 canções da coleção Essen, 120 temas de <em>O'Neill's Music of Ireland</em> (1850) e 120 sopranos de corais de Bach, cortadas nos primeiros 8 compassos. Três andamentos dos cânones de Telemann (Sonata I Vivace, Sonata II Vivace, Sonata III Spirituoso) foram transcritos das partituras (ornamentos omitidos, tercinas aproximadas); em todos, a análise de contraponto dá o máximo na entrada real da 2.ª voz.</p>
 `;

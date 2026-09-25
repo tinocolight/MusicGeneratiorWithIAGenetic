@@ -13,7 +13,9 @@ Output: web/data/corpus.json
   { "melodies": [ { "id", "source", "title", "barLen", "pickup", "tonic", "mode",
                     "events": [[midi | -1, dur16], ...] } ] }
 
-Run:  python3 web/tools/extract_corpus.py
+Run:  python3 web/tools/extract_corpus.py            -> data/corpus.json (first 8 bars)
+      python3 web/tools/extract_corpus.py --full     -> data/corpus-full.json (whole melodies
+      up to 32 bars, starting on the first downbeat, used by tools/reverse.mjs)
 """
 import json
 import os
@@ -22,7 +24,8 @@ import sys
 
 from music21 import converter, corpus, note, chord, meter
 
-MAX_STEPS = 128
+FULL = '--full' in sys.argv
+MAX_STEPS = 32 * 16 if FULL else 128
 MIN_STEPS = 64
 MIN_NOTES = 16
 random.seed(1)
@@ -94,6 +97,8 @@ def melody_from_part(part, source, title):
     if total < MIN_STEPS or len(notes) < MIN_NOTES:
         return None
 
+    if FULL and sum(d for _, d in merged) > MAX_STEPS:
+        return None  # longer than 32 bars: skip rather than cut the real ending
     # Anacrusis: offset of the first full bar (music21 pads pickups via paddingLeft)
     measures = part.getElementsByClass('Measure')
     pickup = 0
@@ -174,7 +179,7 @@ def main():
     for i, m in enumerate(melodies):
         m['id'] = i
     here = os.path.dirname(os.path.abspath(__file__))
-    out = os.path.join(here, '..', 'data', 'corpus.json')
+    out = os.path.join(here, '..', 'data', 'corpus-full.json' if FULL else 'corpus.json')
     with open(out, 'w') as fh:
         json.dump({'description': 'Reference melodies (music21 corpus: Essen folksongs, '
                                   "O'Neill 1850, Bach chorale sopranos), 16th-note grid, "

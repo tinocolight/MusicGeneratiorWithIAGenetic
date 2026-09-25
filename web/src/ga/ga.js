@@ -11,7 +11,7 @@
 
 import {
   decodeByte, randomClassicGenome, uniformBitCrossover, partialShuffleBits,
-  randomMusicalGenome, musicalMutate, beatCrossover,
+  randomMusicalGenome, randomCanonGenome, musicalMutate, beatCrossover,
 } from './operators.js';
 
 export function createGA(cfg) {
@@ -34,7 +34,9 @@ export function createGA(cfg) {
     ? () => init(rng)
     : operators === 'binary'
       ? () => randomClassicGenome(length, rng)
-      : () => randomMusicalGenome(env, rng);
+      : env && env.canon && cfg.canonInit !== false
+        ? () => randomCanonGenome(env, rng)
+        : () => randomMusicalGenome(env, rng);
 
   let evaluationCount = 0;
   let generation = 0;

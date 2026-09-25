@@ -17,10 +17,65 @@
 // Every generator returns a Float64Array of `length` values in the same unit as `mean`
 // (MIDI in the attractor-field fitness, genes in the classic fitness).
 
-export const WAVE_TYPES = ['sine', 'arch', 'pink', 'rossler', 'lorenz'];
+export const WAVE_TYPES = {
+  sine: 'Seno',
+  arch: 'Arco de frase',
+  pink: 'Flutuação 1/f',
+  rossler: 'Atrator de Rössler',
+  lorenz: 'Atrator de Lorenz',
+  flat: 'Constante (tessitura)',
+};
 
-export function makeWave(spec, length, stepsPerBar, rng) {
+/**
+ * Wave described the way a musician sets it in the editor:
+ *   {type, freq (cycles per bar), mean (MIDI), amplitude (semitones, the wave spans
+ *    mean - amplitude .. mean + amplitude), phase (time shift in 16ths: the wave is moved
+ *    that many steps earlier)}
+ * mapped onto each generator's own parameters:
+ *   sine / Rössler / Lorenz: periodsPerBar = freq;  arch: one arch every 1/freq bars;
+ *   1/f: the fastest fluctuation has `freq` cycles per bar;  flat: constant at `mean`.
+ */
+export function normalizeWave(spec, stepsPerBar = 16) {
+  if (spec.freq === undefined) return spec; // already in generator form
+  const f = Math.max(1 / 64, spec.freq);
+  const base = { type: spec.type, mean: spec.mean, amplitude: spec.amplitude ?? 0 };
   switch (spec.type) {
+    case 'sine':
+      // `phase` is a time shift in 16ths; sineWave's `shift` is in 1/stepsPerBar of a cycle
+      return { ...base, periodsPerBar: f, shift: f * (spec.phase ?? 0) };
+    case 'arch': {
+      // the phrase ends `d` lower than it began (final cadence); archWave's centre and span
+      // are set so that the climax is at mean + a and the end of the phrase at mean - a
+      const a = spec.amplitude ?? 3.5;
+      const d = Math.min(2, (2 * a) / 3.5);
+      const peakAt = 0.62;
+      return {
+        ...base,
+        mean: spec.mean + ((1 + peakAt) / 2) * d,
+        amplitude: 2 * a - (1 - peakAt) * d,
+        phraseBars: 1 / f,
+        shift: spec.phase ?? 0,
+        descent: d,
+        peakAt,
+      };
+    }
+    case 'pink':
+      return { ...base, resolution: Math.max(1, Math.round(stepsPerBar / (2 * f))) };
+    case 'rossler':
+    case 'lorenz':
+      return { ...base, periodsPerBar: f };
+    case 'flat':
+      return { ...base, amplitude: 0 };
+    default:
+      return { ...base, periodsPerBar: f };
+  }
+}
+
+export function makeWave(input, length, stepsPerBar, rng) {
+  const spec = normalizeWave(input, stepsPerBar);
+  switch (spec.type) {
+    case 'flat':
+      return new Float64Array(length).fill(spec.mean);
     case 'sine':
       return sineWave(length, stepsPerBar, spec);
     case 'arch':
