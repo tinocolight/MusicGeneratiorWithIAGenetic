@@ -33,7 +33,8 @@ se ativado, o 2.º violino do cânone. Por baixo:
 - **▶ Tocar**: sintetizador no navegador (violino, flauta ou cravo), tempo ajustável.
 - **2.º violino em cânone** + **atraso**: toca a mesma melodia uma segunda vez, x compassos depois,
   como dois violinistas a ler a mesma parte.
-- **Descarregar MIDI**: um ficheiro com uma pista por voz (duas no cânone).
+- **Descarregar MIDI**: um ficheiro com uma pista por voz (duas no cânone). Dentro do visualizador
+  do claude.ai o MIDI vem dentro de um `.zip` (é a única forma de o visualizador aceitar o ficheiro).
 - As fichas no topo resumem a peça: aptidão, **crítico** (probabilidade de ser uma melodia real),
   características **típicas** (de 26), percentagem de **pausas** e consonância nos tempos fortes
   quando tocada em **cânone**.

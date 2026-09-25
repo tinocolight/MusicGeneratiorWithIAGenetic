@@ -16,6 +16,7 @@ import { analyzePiece, waveToSpec, hz } from '../analysis/wavefit.js';
 import { loadCritic } from '../eval/critic.js';
 import { FEATURE_LABELS } from '../eval/metrics.js';
 import { writeMidi, readMidi } from '../io/midi.js';
+import { makeZip } from '../io/zip.js';
 import { REFERENCE_CANONS, referenceEvents } from '../data/references.js';
 import criticData from '../data/critic-data.js';
 import corpus from '../data/corpus-data.js';
@@ -513,7 +514,11 @@ function playEvents(events, barLen) {
   });
 }
 
-function downloadMidi() {
+// Inside the claude.ai viewer, downloads go through the `downloads` capability, which does not
+// accept .mid: the file is handed over inside a .zip. Elsewhere a normal link is used.
+const downloadsCap = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+
+async function downloadMidi() {
   const analyzing = state.tab === 'analyze' && state.analysisPiece;
   const p = analyzing ? state.analysisPiece : state.piece;
   const voices = [{ events: p.events, name: 'Violino 1', program: 40 }];
@@ -521,14 +526,27 @@ function downloadMidi() {
   const num = p.barLen === 24 ? 6 : p.barLen === 12 ? 6 : 4;
   const den = p.barLen === 12 ? 8 : 4;
   const bytes = writeMidi(voices, { bpm: Number($('bpm').value), numerator: num, denominator: den });
+  const name = `ondas-atratoras-${Date.now()}`;
+  const dl = await downloadsCap;
+  if (dl) {
+    try {
+      await dl.save({ filename: `${name}.zip`, data: makeZip([{ name: `${name}.mid`, data: bytes }]) });
+      $('midiNote').textContent = 'Guardado: ZIP com o ficheiro MIDI.';
+    } catch (e) {
+      const code = e && e.code;
+      $('midiNote').textContent = code === 'declined' ? 'Download cancelado.'
+        : code === 'rate_limited' ? 'Já há um pedido de download aberto; tente daqui a pouco.'
+          : 'Este visualizador não permite downloads; use web/dist/ondas-atratoras.html do repositório.';
+    }
+    return;
+  }
   const blob = new Blob([bytes], { type: 'audio/midi' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `ondas-atratoras-${Date.now()}.mid`;
+  a.download = `${name}.mid`;
   document.body.appendChild(a);
   a.click();
   a.remove();
-  if (window.self !== window.top) $('midiNote').textContent = 'Se nada foi descarregado, abra a versão do repositório (web/index.html): esta pré-visualização bloqueia downloads.';
 }
 
 // ------------------------------------------------------------------ MAP-Elites

@@ -12,3 +12,13 @@ test('two-track canon MIDI can be read back', () => {
   assert.deepEqual(one.tracks.map((t) => t.name), ['Violino 1', 'Violino 2']);
   assert.equal(one.barLen, 16);
 });
+
+test('zip wrapper stores the MIDI bytes verbatim', async () => {
+  const { makeZip, crc32 } = await import('../src/io/zip.js');
+  const data = new Uint8Array([1, 2, 3, 250]);
+  const zip = makeZip([{ name: 'a.mid', data }]);
+  assert.equal(new DataView(zip.buffer).getUint32(0, true), 0x04034b50);
+  assert.equal(crc32(new TextEncoder().encode('123456789')), 0xcbf43926);
+  const nameLen = new DataView(zip.buffer).getUint16(26, true);
+  assert.deepEqual([...zip.slice(30 + nameLen, 30 + nameLen + 4)], [...data]);
+});
