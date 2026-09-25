@@ -1,4 +1,10 @@
 # MusicGeneratiorWithIAGenetic
+
+> **Versão web (2026):** a pasta [`web/`](web/) contém uma versão do programa que corre no navegador,
+> com o modelo original (validado contra este código C#), extensões da literatura às ondas
+> atratoras, um modo de cânone à Telemann, um analisador de ondas e avaliação objetiva.
+> Abrir `web/dist/ondas-atratoras.html` ou ler [`web/README.md`](web/README.md).
+
 [2021-07-27]
 
 This project was performed as part of the AI curricular unit in IPCA School (Barcelos, Portugal 2020). Although very basic, it can produce interesting music patterns.
