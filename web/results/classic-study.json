@@ -4419,6 +4419,316 @@
     "generations": 1500,
     "operators": "binary"
    }
+  },
+  "chorale": {
+   "constants": {
+    "rangeAttractor": 7,
+    "balanceMin": 71,
+    "balanceMax": 81,
+    "waves": [
+     {
+      "threshold": 4,
+      "periodsPerBar": 0.125,
+      "amplitude": 4,
+      "mean": 39,
+      "shift": 0
+     },
+     {
+      "threshold": 3,
+      "periodsPerBar": 1,
+      "amplitude": 2,
+      "mean": 39,
+      "shift": 0
+     }
+    ]
+   },
+   "rounds": [
+    {
+     "weights": {
+      "rhythmicPatterns": 0,
+      "selfHarm1": 1.8,
+      "selfHarm2": 1.3,
+      "aba": 2.2,
+      "leitmotif": 0.79,
+      "wave1": 0,
+      "wave2": 0,
+      "range": 1.3,
+      "scale": 4.3,
+      "pauseProlongation": 1.9,
+      "reduceRepetitions": 0,
+      "intervals": 0.94,
+      "niceRepetitions": 20,
+      "ending": 1.4,
+      "balance": 0,
+      "cadence": 1
+     },
+     "pairAccuracy": 0.90345,
+     "ga": {
+      "critic": 0.00002056482490387175,
+      "typical": 10.25,
+      "notesPerBeat": 0.68359375,
+      "step": 0.11013698147318834,
+      "range": 33.75,
+      "rests": 0.013671875,
+      "repeated": 0.22222087459156423,
+      "endsOnTonic": 0.125,
+      "cadenceLogP": -19.847618695799742,
+      "style": {
+       "song": 0.35096153846153844,
+       "dance": 0.2692307692307692,
+       "chorale": 0.32211538461538464
+      }
+     }
+    },
+    {
+     "weights": {
+      "rhythmicPatterns": 2.3,
+      "selfHarm1": 0.032,
+      "selfHarm2": 2,
+      "aba": 2.5,
+      "leitmotif": 1.4,
+      "wave1": 0,
+      "wave2": 0,
+      "range": 2,
+      "scale": 20,
+      "pauseProlongation": 7.6,
+      "reduceRepetitions": 0,
+      "intervals": 3.7,
+      "niceRepetitions": 19,
+      "ending": 0,
+      "balance": 0,
+      "cadence": 4.3
+     },
+     "pairAccuracy": 0.89225,
+     "ga": {
+      "critic": 0.000006925040131700188,
+      "typical": 11.375,
+      "notesPerBeat": 1.44140625,
+      "step": 0.13474025156065486,
+      "range": 51.75,
+      "rests": 0.015625,
+      "repeated": 0.08279701486466372,
+      "endsOnTonic": 0.25,
+      "cadenceLogP": -17.644347934091478,
+      "style": {
+       "song": 0.3990384615384615,
+       "dance": 0.3509615384615385,
+       "chorale": 0.3701923076923077
+      }
+     }
+    },
+    {
+     "weights": {
+      "rhythmicPatterns": 2.3,
+      "selfHarm1": 0,
+      "selfHarm2": 0,
+      "aba": 0.69,
+      "leitmotif": 2.4,
+      "wave1": 0,
+      "wave2": 0,
+      "range": 2.8,
+      "scale": 0.29,
+      "pauseProlongation": 0.052,
+      "reduceRepetitions": 0,
+      "intervals": 5.7,
+      "niceRepetitions": 20,
+      "ending": 0,
+      "balance": 0,
+      "cadence": 5.6
+     },
+     "pairAccuracy": 0.90765,
+     "ga": {
+      "critic": 0.0008925424831351334,
+      "typical": 8.625,
+      "notesPerBeat": 1.16796875,
+      "step": 0.17733065469381531,
+      "range": 31.875,
+      "rests": 0.03125,
+      "repeated": 0.016314519306540584,
+      "endsOnTonic": 0.375,
+      "cadenceLogP": -16.3847172352953,
+      "style": {
+       "song": 0.2932692307692307,
+       "dance": 0.27403846153846156,
+       "chorale": 0.28365384615384615
+      }
+     }
+    },
+    {
+     "weights": {
+      "rhythmicPatterns": 1.5,
+      "selfHarm1": 0,
+      "selfHarm2": 0,
+      "aba": 2.7,
+      "leitmotif": 2.7,
+      "wave1": 0,
+      "wave2": 0,
+      "range": 2.5,
+      "scale": 20,
+      "pauseProlongation": 19,
+      "reduceRepetitions": 0,
+      "intervals": 0.087,
+      "niceRepetitions": 8.8,
+      "ending": 0,
+      "balance": 0,
+      "cadence": 6
+     },
+     "pairAccuracy": 0.90375,
+     "ga": {
+      "critic": 0.000011348602333609468,
+      "typical": 11,
+      "notesPerBeat": 1.07421875,
+      "step": 0.10238898877628855,
+      "range": 49.875,
+      "rests": 0.0048828125,
+      "repeated": 0.11071728233627547,
+      "endsOnTonic": 0.375,
+      "cadenceLogP": -16.97144530837989,
+      "style": {
+       "song": 0.38461538461538464,
+       "dance": 0.32692307692307687,
+       "chorale": 0.3605769230769231
+      }
+     }
+    },
+    {
+     "weights": {
+      "rhythmicPatterns": 1.6,
+      "selfHarm1": 0,
+      "selfHarm2": 0,
+      "aba": 2.3,
+      "leitmotif": 0.88,
+      "wave1": 0,
+      "wave2": 0.46,
+      "range": 1.4,
+      "scale": 12,
+      "pauseProlongation": 20,
+      "reduceRepetitions": 0,
+      "intervals": 2.6,
+      "niceRepetitions": 7.1,
+      "ending": 0,
+      "balance": 0,
+      "cadence": 5.1
+     },
+     "pairAccuracy": 0.90065,
+     "ga": {
+      "critic": 0.00011928720098281035,
+      "typical": 11,
+      "notesPerBeat": 1.00390625,
+      "step": 0.21303938411810677,
+      "range": 39.375,
+      "rests": 0.03515625,
+      "repeated": 0.015400857312622019,
+      "endsOnTonic": 0.5,
+      "cadenceLogP": -16.648244444562124,
+      "style": {
+       "song": 0.36057692307692313,
+       "dance": 0.3125,
+       "chorale": 0.3557692307692307
+      }
+     }
+    },
+    {
+     "weights": {
+      "rhythmicPatterns": 1.9,
+      "selfHarm1": 0,
+      "selfHarm2": 0.16,
+      "aba": 1,
+      "leitmotif": 1.3,
+      "wave1": 0.57,
+      "wave2": 0.08,
+      "range": 1.5,
+      "scale": 8.6,
+      "pauseProlongation": 20,
+      "reduceRepetitions": 0,
+      "intervals": 0,
+      "niceRepetitions": 15,
+      "ending": 0,
+      "balance": 0,
+      "cadence": 6.1
+     },
+     "pairAccuracy": 0.8985,
+     "ga": {
+      "critic": 0.00015130892754457447,
+      "typical": 11.875,
+      "notesPerBeat": 1.1328125,
+      "step": 0.149271611596338,
+      "range": 56.25,
+      "rests": 0.0244140625,
+      "repeated": 0.18235706998959395,
+      "endsOnTonic": 0.25,
+      "cadenceLogP": -17.355673844004084,
+      "style": {
+       "song": 0.38461538461538464,
+       "dance": 0.3269230769230769,
+       "chorale": 0.3942307692307692
+      }
+     }
+    }
+   ],
+   "preset": {
+    "g1": {
+     "rhythmicPatterns": 1.7,
+     "selfHarm1": 0,
+     "selfHarm2": 0.054,
+     "aba": 2,
+     "leitmotif": 1.7,
+     "wave1": 0.19,
+     "wave2": 0.18,
+     "range": 1.8,
+     "scale": 14,
+     "pauseProlongation": 20,
+     "reduceRepetitions": 0,
+     "intervals": 0.91,
+     "niceRepetitions": 10,
+     "ending": 0,
+     "balance": 0,
+     "cadence": 5.8
+    },
+    "g2": {
+     "rhythmicPatterns": 1.7,
+     "selfHarm1": 0,
+     "selfHarm2": 0.054,
+     "aba": 2,
+     "leitmotif": 1.7,
+     "wave1": 0.19,
+     "wave2": 0.18,
+     "range": 1.8,
+     "scale": 14,
+     "pauseProlongation": 20,
+     "reduceRepetitions": 0,
+     "intervals": 0.91,
+     "niceRepetitions": 10,
+     "ending": 0,
+     "balance": 0,
+     "cadence": 5.8
+    },
+    "waves": [
+     {
+      "threshold": 4,
+      "periodsPerBar": 0.125,
+      "amplitude": 4,
+      "mean": 39,
+      "shift": 0
+     },
+     {
+      "threshold": 3,
+      "periodsPerBar": 1,
+      "amplitude": 2,
+      "mean": 39,
+      "shift": 0
+     }
+    ],
+    "balanceMin": 71,
+    "balanceMax": 81,
+    "rangeAttractor": 7,
+    "fixLapses": true,
+    "phase1Fraction": 0,
+    "mutation": 0.1,
+    "popSize": 60,
+    "generations": 1500,
+    "operators": "binary"
+   }
   }
  }
 }

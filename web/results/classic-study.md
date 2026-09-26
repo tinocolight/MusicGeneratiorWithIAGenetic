@@ -47,22 +47,22 @@ As constantes vêm diretamente das melodias reais de cada estilo: âmbito atrato
 
 | Regra | Original (grupo 2) | Canção popular | Dança (reels, hornpipes) | Coral |
 |---|---|---|---|---|
-| Padrões rítmicos | 7.02 | 1.3 | 0 | 3 |
-| Auto-harmonização 1 | 2 | 0.37 | 0.49 | 0 |
-| Auto-harmonização 2 | 4 | 0 | 0 | 0.35 |
-| Repetição ABA (4 c.) | 0.5 | 3.3 | 3 | 3.6 |
-| Leitmotiv (ritmo do 1.º c.) | 16 | 2 | 1.7 | 2.1 |
-| Onda 1 | 3.1 | 0 | 0.89 | 0.66 |
-| Onda 2 | 2.15 | 0.46 | 0.53 | 0.47 |
-| Âmbito | 42 | 5.3 | 1.1 | 3.2 |
-| Escala | 16 | 20 | 20 | 20 |
-| Pausas e prolongamentos | 4 | 1.3 | 0.92 | 9.6 |
+| Padrões rítmicos | 7.02 | 1.8 | 0.02 | 1.7 |
+| Auto-harmonização 1 | 2 | 0.34 | 0.32 | 0 |
+| Auto-harmonização 2 | 4 | 0.13 | 0 | 0.054 |
+| Repetição ABA (4 c.) | 0.5 | 3.3 | 3.2 | 2 |
+| Leitmotiv (ritmo do 1.º c.) | 16 | 2.3 | 1.8 | 1.7 |
+| Onda 1 | 3.1 | 0 | 0.95 | 0.19 |
+| Onda 2 | 2.15 | 0.083 | 0.52 | 0.18 |
+| Âmbito | 42 | 5.8 | 1.2 | 1.8 |
+| Escala | 16 | 20 | 20 | 14 |
+| Pausas e prolongamentos | 4 | 0.83 | 1 | 20 |
 | Repetições excessivas | 2 | 0 | 0 | 0 |
-| Intervalos | 14 | 1.2 | 4.1 | 0.96 |
-| Repetições interessantes | 10.05 | 13 | 9.3 | 14 |
+| Intervalos | 14 | 0.85 | 4.9 | 0.91 |
+| Repetições interessantes | 10.05 | 14 | 11 | 10 |
 | Terminação (nota longa) | 2 | 0 | 0 | 0 |
 | Equilíbrio notas/pausas | 15 | 1.1 | 0 | 0 |
-| Fórmulas de final (corpus) | 0 | 17 | 4.2 | 8.6 |
+| Fórmulas de final (corpus) | 0 | 13 | 5.6 | 5.8 |
 
 | Constante | Original | Canção popular | Dança (reels, hornpipes) | Coral |
 |---|---|---|---|---|
@@ -73,7 +73,7 @@ As constantes vêm diretamente das melodias reais de cada estilo: âmbito atrato
 
 Evolução das voltas (8 sementes cada; crítico · estilo próprio · notas por tempo · âmbito):
 
-- Canção popular: 0,00 · 42 % · 0,97 · 36,4 → 0,00 · 38 % · 0,96 · 33,6 → 0,00 · 41 % · 0,95 · 35,8 → 0,00 · 38 % · 1,09 · 40,8 → 0,00 · 40 % · 0,98 · 42,1 → 0,00 · 39 % · 1,21 · 40,1
-- Dança (reels, hornpipes): 0,00 · 34 % · 1,43 · 60,8 → 0,00 · 37 % · 1,31 · 54,6 → 0,00 · 34 % · 1,73 · 57,4 → 0,00 · 33 % · 1,21 · 41,0 → 0,00 · 37 % · 1,81 · 56,3 → 0,00 · 36 % · 1,65 · 56,8
-- Coral: 0,00 · 36 % · 0,95 · 35,3 → 0,00 · 37 % · 1,58 · 63,4 → 0,00 · 38 % · 0,94 · 37,0 → 0,00 · 38 % · 1,39 · 54,3 → 0,00 · 37 % · 1,09 · 40,5 → 0,00 · 36 % · 0,96 · 43,4
+- Canção popular: 0,00 · 39 % · 0,96 · 30,3 → 0,00 · 38 % · 1,00 · 42,0 → 0,00 · 39 % · 0,93 · 34,1 → 0,00 · 40 % · 1,15 · 33,9 → 0,00 · 37 % · 0,89 · 31,3 → 0,00 · 41 % · 1,26 · 32,3
+- Dança (reels, hornpipes): 0,00 · 36 % · 1,62 · 56,9 → 0,00 · 33 % · 1,66 · 54,4 → 0,00 · 31 % · 1,24 · 51,0 → 0,00 · 33 % · 1,50 · 53,0 → 0,00 · 33 % · 1,20 · 45,8 → 0,00 · 31 % · 1,55 · 49,9
+- Coral: 0,00 · 32 % · 0,68 · 33,8 → 0,00 · 37 % · 1,44 · 51,8 → 0,00 · 28 % · 1,17 · 31,9 → 0,00 · 36 % · 1,07 · 49,9 → 0,00 · 36 % · 1,00 · 39,4 → 0,00 · 39 % · 1,13 · 56,3
 
