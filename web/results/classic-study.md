@@ -128,7 +128,7 @@ Valores escolhidos:
 
 Plackett–Burman de 32 ensaios × 3 sementes à volta de cada combinação escolhida: cada peso a metade ou ao dobro, cada constante um passo abaixo ou acima, 6 fatores fictícios. Efeito em J (+ = aumentar o valor ajuda). Só os efeitos acima da margem de erro de Lenth.
 
-- **Canção popular, bits** (J médio 0,21, margem 0,02): nenhum fator acima do ruído.
-- **Dança (reels, hornpipes), bits** (J médio 0,20, margem 0,01): População 45 / 80 +0,02 · Peso: Equilíbrio notas/pausas +0,01 · Âmbito atrator ±2 +0,01.
-- **Coral, bits** (J médio 0,21, margem 0,02): Peso: Escala +0,02.
+- **Canção popular, bits** (J médio 0,19, margem 0,11): nenhum fator acima do ruído.
+- **Dança (reels, hornpipes), bits** (J médio 0,22, margem 0,03): nenhum fator acima do ruído.
+- **Coral, bits** (J médio 0,14, margem 0,11): nenhum fator acima do ruído.
 
