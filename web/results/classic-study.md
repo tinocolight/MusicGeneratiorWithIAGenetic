@@ -89,32 +89,40 @@ Método da entropia cruzada (um desenho sequencial: em cada iteração 16 combin
 | Dança (reels, hornpipes) | 0,26 0,24 0,26 0,25 0,26 0,27 0,26 0,28 0,25 0,26 0,27 0,27 0,28 0,27 | -0,45 ± 0,20 (crítico 0,00, estilo 34 %) | 0,23 ± 0,03 (crítico 0,00, estilo 37 %) | 0,25 ± 0,04 (crítico 0,00, estilo 40 %) | melhor avaliada 1 |
 | Coral | 0,25 0,29 0,27 0,28 0,27 0,30 0,27 0,31 0,30 0,30 0,31 0,29 0,29 0,33 | -0,55 ± 0,30 (crítico 0,00, estilo 39 %) | 0,26 ± 0,20 (crítico 0,00, estilo 44 %) | 0,22 ± 0,20 (crítico 0,00, estilo 45 %) | melhor avaliada 3 |
 
+**Operadores musicais**
+
+| Estilo | J por iteração (melhor da iteração) | De partida | Média final | Melhor avaliada | Escolhida |
+|---|---|---|---|---|---|
+| Canção popular | 0,73 0,79 0,78 0,79 0,82 0,81 0,82 0,84 0,81 0,82 0,84 0,81 | 0,42 ± 0,03 (crítico 1,00, estilo 42 %) | 0,77 ± 0,04 (crítico 0,89, estilo 70 %) | 0,77 ± 0,04 (crítico 0,93, estilo 67 %) | melhor avaliada 2 |
+| Dança (reels, hornpipes) | 0,81 0,78 0,78 0,80 0,82 0,82 0,84 0,84 0,82 0,82 0,83 0,82 | 0,41 ± 0,05 (crítico 0,98, estilo 41 %) | 0,77 ± 0,06 (crítico 0,90, estilo 69 %) | 0,78 ± 0,06 (crítico 0,94, estilo 66 %) | melhor avaliada 3 |
+| Coral | 0,63 0,77 0,72 0,72 0,76 0,75 0,77 0,75 0,75 0,77 0,76 0,78 | 0,15 ± 0,01 (crítico 0,98, estilo 40 %) | 0,74 ± 0,04 (crítico 0,96, estilo 58 %) | 0,77 ± 0,03 (crítico 0,95, estilo 65 %) | melhor avaliada 1 |
+
 Valores escolhidos:
 
-| | Original | Canção popular (bits) | Dança (reels, hornpipes) (bits) | Coral (bits) |
-|---|---|---|---|---|
-| Peso: Padrões rítmicos | 7.02 | 0.58 | 0.13 | 0.013 |
-| Peso: Auto-harmonização 1 | 2 | 0.27 | 0.053 | 0.17 |
-| Peso: Auto-harmonização 2 | 4 | 0.17 | 0.11 | 0.27 |
-| Peso: Repetição ABA (4 c.) | 0.5 | 1.4 | 0.078 | 0.18 |
-| Peso: Leitmotiv (ritmo do 1.º c.) | 16 | 1.9 | 0.079 | 0.34 |
-| Peso: Onda 1 | 3.1 | 0.59 | 0.071 | 0.069 |
-| Peso: Onda 2 | 2.15 | 0.065 | 0.019 | 0.03 |
-| Peso: Âmbito | 42 | 20 | 20 | 20 |
-| Peso: Escala | 16 | 18 | 1.9 | 2.2 |
-| Peso: Pausas e prolongamentos | 4 | 1.8 | 0.34 | 5 |
-| Peso: Repetições excessivas | 2 | 1.3 | 0.97 | 0.67 |
-| Peso: Intervalos | 14 | 1.8 | 0.34 | 0.077 |
-| Peso: Repetições interessantes | 10.05 | 13 | 0.93 | 1.9 |
-| Peso: Terminação (nota longa) | 2 | 4.4 | 0.97 | 16 |
-| Peso: Equilíbrio notas/pausas | 15 | 1.1 | 0.032 | 0.17 |
-| Peso: Fórmulas de final (corpus) | 0 | 10 | 1.4 | 3.3 |
-| Âmbito atrator (±) | 15 | 3 | 5 | 3 |
-| Pausas + prolongamentos (%) | 7–40 | 52–75 | 6–62 | 78–88 |
-| Onda 1 (média, amplitude, períodos, bacia) | +0, 12, 0.5, 3 | +2, 3, 0.0625, 4 | +3, 6, 0.0625, 5 | +2, 2, 0.0625, 3 |
-| Onda 2 (média, amplitude, períodos, bacia) | -7, 4, 2, 2 | +2, 1, 1, 2 | +5, 1, 1, 5 | +2, 2, 0.25, 3 |
-| Mutação | 0,1 | 0,176 | 0,208 | 0,167 |
-| Operadores · gerações · população | bits · 1500 · 60 | bits · 1500 · 60 | bits · 1500 · 60 | bits · 1500 · 60 |
+| | Original | Canção popular (bits) | Dança (reels, hornpipes) (bits) | Coral (bits) | Canção popular (mus.) | Dança (reels, hornpipes) (mus.) | Coral (mus.) |
+|---|---|---|---|---|---|---|---|
+| Peso: Padrões rítmicos | 7.02 | 0.58 | 0.13 | 0.013 | 0.26 | 5.9 | 1 |
+| Peso: Auto-harmonização 1 | 2 | 0.27 | 0.053 | 0.17 | 1.7 | 4.7 | 0.8 |
+| Peso: Auto-harmonização 2 | 4 | 0.17 | 0.11 | 0.27 | 0.39 | 1.4 | 1 |
+| Peso: Repetição ABA (4 c.) | 0.5 | 1.4 | 0.078 | 0.18 | 0.46 | 2 | 0.96 |
+| Peso: Leitmotiv (ritmo do 1.º c.) | 16 | 1.9 | 0.079 | 0.34 | 0.65 | 1.6 | 0.5 |
+| Peso: Onda 1 | 3.1 | 0.59 | 0.071 | 0.069 | 0.17 | 1.5 | 0.48 |
+| Peso: Onda 2 | 2.15 | 0.065 | 0.019 | 0.03 | 0.27 | 0.45 | 0.69 |
+| Peso: Âmbito | 42 | 20 | 20 | 20 | 1.5 | 20 | 1.1 |
+| Peso: Escala | 16 | 18 | 1.9 | 2.2 | 3.1 | 13 | 2 |
+| Peso: Pausas e prolongamentos | 4 | 1.8 | 0.34 | 5 | 4.2 | 4.5 | 20 |
+| Peso: Repetições excessivas | 2 | 1.3 | 0.97 | 0.67 | 1.1 | 6.4 | 8.2 |
+| Peso: Intervalos | 14 | 1.8 | 0.34 | 0.077 | 0.89 | 1.8 | 0.7 |
+| Peso: Repetições interessantes | 10.05 | 13 | 0.93 | 1.9 | 3.4 | 1.3 | 2.3 |
+| Peso: Terminação (nota longa) | 2 | 4.4 | 0.97 | 16 | 20 | 11 | 11 |
+| Peso: Equilíbrio notas/pausas | 15 | 1.1 | 0.032 | 0.17 | 3.2 | 0.82 | 0.46 |
+| Peso: Fórmulas de final (corpus) | 0 | 10 | 1.4 | 3.3 | 3 | 10 | 0.71 |
+| Âmbito atrator (±) | 15 | 3 | 5 | 3 | 3 | 10 | 4 |
+| Pausas + prolongamentos (%) | 7–40 | 52–75 | 6–62 | 78–88 | 50–69 | 23–81 | 70–80 |
+| Onda 1 (média, amplitude, períodos, bacia) | +0, 12, 0.5, 3 | +2, 3, 0.0625, 4 | +3, 6, 0.0625, 5 | +2, 2, 0.0625, 3 | +3, 3, 0.0625, 4 | +2, 5, 0.0625, 6 | +2, 1, 0.0625, 2 |
+| Onda 2 (média, amplitude, períodos, bacia) | -7, 4, 2, 2 | +2, 1, 1, 2 | +5, 1, 1, 5 | +2, 2, 0.25, 3 | +2, 0, 0.5, 2 | +5, 1, 2, 3 | +2, 3, 0.25, 3 |
+| Mutação | 0,1 | 0,176 | 0,208 | 0,167 | 0,89 | 0,939 | 0,869 |
+| Operadores · gerações · população | bits · 1500 · 60 | bits · 1500 · 60 | bits · 1500 · 60 | bits · 1500 · 60 | musicais · 600 · 80 | musicais · 600 · 80 | musicais · 600 · 80 |
 
 ## 4. O que ainda conta, à volta de cada combinação (triagem local)
 
