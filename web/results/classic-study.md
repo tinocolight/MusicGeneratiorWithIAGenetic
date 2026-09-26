@@ -135,3 +135,24 @@ Plackett–Burman de 32 ensaios × 3 sementes à volta de cada combinação esco
 - **Dança (reels, hornpipes), operadores musicais** (J médio 0,69, margem 0,06): Peso: Escala +0,08.
 - **Coral, operadores musicais** (J médio 0,60, margem 0,06): Peso: Padrões rítmicos +0,10.
 
+## 5. Confirmação (24 sementes)
+
+Estilo: parte das 26 características dentro do P10–P90 do estilo · distância ao estilo (0 = na mediana, 3 = teto).
+
+| Configuração | Crítico | Típicas /26 | Canção | Dança | Coral | Notas/tempo | Graus conjuntos | Âmbito | Acaba na tónica |
+|---|---|---|---|---|---|---|---|---|---|
+| Original (valores do programa de 2020) | 0,00 ± 0,01 | 11,5 | 36 % · 1,80 | 35 % · 1,92 | 43 % · 1,78 | 2,72 | 0,15 | 35,8 | 8 % |
+| Original, com os lapsos corrigidos | 0,01 ± 0,01 | 11,6 | 38 % · 1,79 | 33 % · 1,93 | 43 % · 1,78 | 2,69 | 0,17 | 39,1 | 21 % |
+| Combinação «Canção popular» | 0,00 ± 0,00 | 12,6 | 50 % · 1,57 | 33 % · 1,91 | 45 % · 1,74 | 0,63 | 0,48 | 13,8 | 33 % |
+| Combinação «Dança (reels, hornpipes)» | 0,00 ± 0,00 | 11,8 | 41 % · 1,65 | 39 % · 1,82 | 36 % · 1,89 | 1,52 | 0,34 | 10,6 | 21 % |
+| Combinação «Coral» | 0,00 ± 0,00 | 13,5 | 53 % · 1,52 | 34 % · 1,87 | 46 % · 1,70 | 0,93 | 0,49 | 21,0 | 29 % |
+| Original + operadores musicais | 0,95 ± 0,04 | 14,8 | 62 % · 1,24 | 73 % · 0,96 | 47 % · 1,54 | 2,98 | 0,35 | 22,0 | 17 % |
+| Original, lapsos corrigidos + operadores musicais | 0,95 ± 0,03 | 16,0 | 65 % · 1,13 | 75 % · 0,90 | 51 % · 1,43 | 2,61 | 0,26 | 19,9 | 21 % |
+| Combinação «Canção popular» afinada para os operadores musicais | 0,90 ± 0,07 | 18,0 | 75 % · 0,95 | 62 % · 1,20 | 57 % · 1,36 | 1,99 | 0,52 | 9,8 | 71 % |
+| Combinação «Dança (reels, hornpipes)» afinada para os operadores musicais | 0,91 ± 0,08 | 16,0 | 67 % · 1,07 | 72 % · 0,92 | 52 % · 1,41 | 2,52 | 0,50 | 11,6 | 75 % |
+| Combinação «Coral» afinada para os operadores musicais | 0,92 ± 0,07 | 19,5 | 71 % · 0,97 | 60 % · 1,08 | 58 % · 1,32 | 1,33 | 0,66 | 8,1 | 54 % |
+| *Reais: canção popular (433)* | *0,86* | *21,4* | *85 % · 0,73* | *65 % · 1,09* | *72 % · 1,06* | *1,24* | *0,48* | *12,5* | *73 %* |
+| *Reais: dança (reels, hornpipes) (159)* | *0,89* | *19,1* | *78 % · 0,91* | *79 % · 0,82* | *62 % · 1,22* | *2,36* | *0,49* | *17,6* | *85 %* |
+| *Reais: coral (25)* | *0,90* | *23,1* | *81 % · 0,80* | *56 % · 1,23* | *86 % · 0,73* | *0,94* | *0,68* | *11,7* | *76 %* |
+
+Melodias reais: as de teste (1 em cada 5, não usadas na calibração). Estilo = parte das 26 características dentro do intervalo P10–P90 das melodias reais desse estilo.
