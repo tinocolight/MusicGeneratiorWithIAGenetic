@@ -97,15 +97,21 @@ no que interessa: tudo o resto tem valores sensatos.
    ajusta ondas a uma melodia do corpus e transpõe-as. Um aviso aparece se uma onda sair do registo
    tocável.
 
-   No **modo clássico** aparecem os campos do formulário original para as duas ondas W1 e W2:
-   períodos por compasso, valor médio em meios-tons (Lá4 = 0), amplitude e bacia de atração em
-   meios-tons e desfasamento horizontal (16 = um ciclo, como em `NoteAtractionFunction`), com
-   inteiros onde o C# usava `int.Parse`. Há ainda a opção de simular a 1.ª execução do original
-   (onda 1 plana no gene 0) e um botão para repor os valores do original.
+   No **modo clássico** há primeiro as **combinações de partida**: *Original (2020)* e três
+   combinações calibradas em música real (*Canção popular*, *Dança*, *Coral*; ver «Estudo do
+   algoritmo original»), cada uma afinada para os operadores musicais (soa melhor) ou para os
+   operadores de bits do original (seletor «Afinada para»). Depois, os campos do formulário
+   original para as duas ondas W1 e W2: períodos por compasso, valor médio em meios-tons (Lá4 = 0),
+   amplitude e bacia de atração em meios-tons e desfasamento horizontal (16 = um ciclo, como em
+   `NoteAtractionFunction`), com inteiros onde o C# usava `int.Parse`; as constantes que o original
+   fixava no código (âmbito atrator ±15 à volta do Lá4 e 7–40 % de pausas e prolongamentos); a
+   caixa **Corrigir os lapsos do original**; a opção de simular a 1.ª execução do original (onda 1
+   plana no gene 0) e um botão para repor os valores do original.
 5. **Pesos das regras** (expandir): o peso de cada regra, com predefinições (por omissão,
    **aprendidos da música real**, ênfase no contraponto, ênfase nas ondas), incluindo **Idioma do
    corpus (blocos)** (a 0 por omissão, ver abaixo); e **Não maximizar** (ligado por omissão): cada regra conta só até ao seu valor
-   típico na música real. No modo clássico, os dois grupos do original.
+   típico na música real. No modo clássico, os dois grupos do original, mais a regra nova
+   **Fórmulas de final (corpus)** (0 nos valores originais).
 6. **Algoritmo genético** (expandir): gerações, população, mutação e operadores (musicais ou de bits
    como no GeneticSharp). A **semente** fica à vista: a mesma configuração com a mesma semente dá
    sempre a mesma peça.
@@ -204,9 +210,40 @@ Tudo o que se segue foi verificado executando o C# original: `tools/parity-cshar
    «recozimento» do âmbito usa divisão inteira; a amplitude da onda 2 no formulário é 5, mas o
    construtor copia por cima o valor por defeito (4).
 
+8. **Mais lapsos, que o próprio código ou o relatório contradizem.** Encontrados ao estudar o
+   algoritmo com música real (secção «Estudo do algoritmo original» abaixo):
+   - `EvaluatePauseAndProlongation`: o ramo «prolongamento de prolongamento» (+0,5) é
+     inalcançável, porque o teste anterior («prolongamento de uma nota», +2) também o apanha;
+   - `ScoreBalance`: sem nenhuma pausa ou prolongamento divide por 0 e dá −∞ (o relatório descreve
+     a regra só como penalização fora de [7, 40] %; a assimetria é intencional, o −∞ não);
+   - `EvaluateInterestingRepetitions`: a condição `!= pausa || == prolongamento` deixa entrar os
+     prolongamentos, que passam a contar como «repetições interessantes» de colcheias; os autores
+     corrigiram exatamente esta condição em `EvaluateIntervals` («Alterado para && e != em
+     2020-08-21»), mas não aqui;
+   - `EvaluateInterestingRitmicPatterns`: o bónus «maior mérito se for no início do compasso»
+     testa `i % 16 == 4`, mas a figura começa em `i − 3`: nunca calha no início do compasso;
+   - `EvaluateIntervals`: compara semicolcheias vizinhas e marca com −100 os intervalos sem nota
+     («evitar avaliar intervalos que não contêm notas»), mas −100 cai no ramo «mais de 12
+     semitons: −1». Resultado: com notas mais longas do que uma semicolcheia a regra nunca julga a
+     melodia, e cada nota depois de um prolongamento perde um ponto;
+   - `ScoreMSelfHarmonizationPreviousMeasures`: compara com o código do prolongamento (74) ou da
+     pausa (0) como se fosse uma altura (ver 5).
+9. **Fórmulas de final que ficaram por fazer.** `ScoreTerminationQualifyers` só pede que a última
+   nota seja longa; não olha para os graus, para o movimento nem para o tempo em que a melodia
+   acaba.
+
 O modo **Clássico** reproduz as regras exatamente (0 diferenças em 795 comparações com a versão
 sequencial do C#), sem a corrida entre threads, com a onda 1 correta e com as duas gralhas
-corrigidas (a opção `strict: true` mantém-nas, para o teste de paridade).
+corrigidas (a opção `strict: true` mantém-nas, para o teste de paridade). Por omissão corrige
+também os lapsos do ponto 8 (caixa «Corrigir os lapsos do original»; `fixLapses` em
+`src/fitness/classic.js`) e junta uma regra nova, **Fórmulas de final (corpus)**, com peso 0 nos
+valores originais: a probabilidade do final da peça segundo 6758 melodias reais
+(`tools/build_cadences.mjs`, [`results/cadences.md`](results/cadences.md)) — graus das três últimas
+notas, último movimento, tempo e duração da última nota e o seu registo em relação ao centro da
+melodia. Nas melodias em maior, 73 % acabam na tónica; as fórmulas mais comuns são 3–2–1 (19 %),
+2–2–1 (8 %) e a sensível 7–1; a última nota começa no 1.º tempo em 48 % e no 3.º em 35 %, dura uma
+mínima ou uma semínima, e fica 2–5 meios-tons abaixo da nota mediana da melodia. As danças acabam
+mais vezes a repetir a tónica (1–1–1, 22 %); os corais de Bach quase sempre em 3–2–1 (35 %).
 
 ## Da literatura para o código
 

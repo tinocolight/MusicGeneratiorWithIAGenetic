@@ -29,6 +29,8 @@ export const ABOUT_HTML = `
 <li>Pausas e prolongamentos recebem pontos fixos ou são neutros em várias regras, enquanto as notas só podem perder pontos; o <code>ScoreBalance</code> pede 7–40 % de figuras sem ataque, mas nas melodias reais esse valor é 58–83 %.</li>
 <li>A auto-harmonização compara genes e não as notas que soam (um prolongamento conta como a nota 74), premeia quartas e penaliza sextas, ao contrário do contraponto a duas vozes.</li>
 <li>Duas gralhas de atribuição (<code>result = 2f</code> e <code>result = +10f</code>) e um ramo inalcançável em <code>EvaluateRange</code>.</li>
+<li>Mais lapsos que o próprio código ou relatório contradizem: o «prolongamento de prolongamento» nunca é avaliado; o equilíbrio dá −∞ sem pausas; as «repetições interessantes» comparam prolongamentos (a mesma condição que os autores corrigiram nos intervalos); o bónus de figura «no início do compasso» chega uma semicolcheia tarde; os intervalos só se medem entre semicolcheias vizinhas e a marca −100 (para os saltar) custa um ponto a cada nota depois de um prolongamento. No modo clássico estão corrigidos por omissão (caixa «Corrigir os lapsos do original»).</li>
+<li>A regra de terminação só pede uma nota final longa: as fórmulas de final que o original previa ficaram por fazer. Há agora uma regra «Fórmulas de final (corpus)», aprendida com 6758 melodias reais (3–2–1, 2–2–1, 7–1…, no 1.º ou 3.º tempo, abaixo do centro da melodia).</li>
 </ul>
 
 <h3>O que os testes mostraram</h3>
