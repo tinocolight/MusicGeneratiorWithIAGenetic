@@ -77,3 +77,37 @@ Evolução das voltas (8 sementes cada; crítico · estilo próprio · notas por
 - Dança (reels, hornpipes): 0,00 · 36 % · 1,62 · 56,9 → 0,00 · 33 % · 1,66 · 54,4 → 0,00 · 31 % · 1,24 · 51,0 → 0,00 · 33 % · 1,50 · 53,0 → 0,00 · 33 % · 1,20 · 45,8 → 0,00 · 31 % · 1,55 · 49,9
 - Coral: 0,00 · 32 % · 0,68 · 33,8 → 0,00 · 37 % · 1,44 · 51,8 → 0,00 · 28 % · 1,17 · 31,9 → 0,00 · 36 % · 1,07 · 49,9 → 0,00 · 36 % · 1,00 · 39,4 → 0,00 · 39 % · 1,13 · 56,3
 
+## 3. Do início para o fim: otimização a partir da calibração
+
+Método da entropia cruzada (um desenho sequencial: em cada iteração 16 combinações à volta da média atual, 3 sementes comuns, as 5 melhores definem a nova média e a nova dispersão), 14 iterações, sobre os 16 pesos (em escala logarítmica) e 11 constantes (âmbito atrator, intervalo de pausas, as duas ondas, mutação). Objetivo J = ½ crítico + ½ tipicidade do estilo. No fim, a combinação calibrada, a média final e as 3 melhores avaliadas são confirmadas com 12 sementes novas; fica a melhor.
+
+| Estilo | J por iteração (melhor da iteração) | Calibrada | Média final | Melhor avaliada | Escolhida |
+|---|---|---|---|---|---|
+| Canção popular | 0,22 0,25 0,25 0,22 0,26 0,24 0,26 0,28 0,26 0,26 0,24 0,26 0,24 0,26 | 0,20 ± 0,02 (crítico 0,00) | 0,21 ± 0,07 (crítico 0,01) | 0,22 ± 0,03 (crítico 0,00) | melhor avaliada 2 |
+| Dança (reels, hornpipes) | 0,21 0,22 0,22 0,23 0,24 0,23 0,25 0,22 0,24 0,24 0,24 0,25 0,24 0,25 | 0,17 ± 0,04 (crítico 0,00) | 0,23 ± 0,02 (crítico 0,00) | 0,23 ± 0,03 (crítico 0,00) | melhor avaliada 3 |
+| Coral | 0,21 0,23 0,22 0,24 0,23 0,23 0,22 0,24 0,24 0,21 0,22 0,24 0,24 0,23 | 0,19 ± 0,03 (crítico 0,00) | 0,20 ± 0,03 (crítico 0,00) | 0,21 ± 0,03 (crítico 0,00) | melhor avaliada 2 |
+
+| Regra | Original (grupo 2) | Canção popular | Dança (reels, hornpipes) | Coral |
+|---|---|---|---|---|
+| Padrões rítmicos | 7.02 | 1.1 | 0.16 | 0.28 |
+| Auto-harmonização 1 | 2 | 0.58 | 0.26 | 0.08 |
+| Auto-harmonização 2 | 4 | 0.03 | 0.081 | 0.52 |
+| Repetição ABA (4 c.) | 0.5 | 1.6 | 0.77 | 1.3 |
+| Leitmotiv (ritmo do 1.º c.) | 16 | 0.67 | 0.34 | 0.64 |
+| Onda 1 | 3.1 | 0.17 | 0.18 | 0.1 |
+| Onda 2 | 2.15 | 0.25 | 0.092 | 0.088 |
+| Âmbito | 42 | 7 | 0.33 | 0.69 |
+| Escala | 16 | 15 | 20 | 20 |
+| Pausas e prolongamentos | 4 | 1.1 | 0.42 | 8.6 |
+| Repetições excessivas | 2 | 2.2 | 0.41 | 0.3 |
+| Intervalos | 14 | 0.35 | 1.8 | 0.36 |
+| Repetições interessantes | 10.05 | 20 | 14 | 14 |
+| Terminação (nota longa) | 2 | 9.7 | 0.56 | 5 |
+| Equilíbrio notas/pausas | 15 | 1.2 | 0.019 | 0.031 |
+| Fórmulas de final (corpus) | 0 | 11 | 2.1 | 4.3 |
+| Âmbito atrator (±) | 15 | 6 | 4 | 6 |
+| Pausas + prolongamentos (%) | 7–40 | 48–83 | 0–53 | 90–100 |
+| Onda 1 (média, amplitude, períodos, bacia) | +0, 12, 0.5, 3 | +2, 4, 0.125, 4 | +5, 4, 0.125, 5 | +1, 2, 0.0625, 4 |
+| Onda 2 (média, amplitude, períodos, bacia) | -7, 4, 2, 2 | +2, 1, 0.25, 3 | +5, 1, 1, 5 | +2, 2, 1, 2 |
+| Mutação | 0,1 | 0,137 | 0,212 | 0,118 |
+
