@@ -381,7 +381,7 @@ foram repetidas com 24 sementes (`node tools/solo_defaults.mjs 24`,
 
 | Melodia só, com «não maximizar» | Crítico | Típicas /26 |
 |---|---|---|
-| Padrões musicais | 0,93 ± 0,05 | 18,8 ± 1,4 |
+| Padrões musicais | 0,93 ± 0,04 | 18,8 ± 1,4 |
 | **Blocos do corpus** | 0,91 ± 0,05 | **20,8 ± 2,0** |
 | Blocos + idioma 0,75 | 0,87 ± 0,06 | 20,5 ± 2,1 |
 | Blocos + idioma 1,5 | 0,84 ± 0,09 | 20,5 ± 2,3 |
