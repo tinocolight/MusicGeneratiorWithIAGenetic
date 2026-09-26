@@ -74,9 +74,9 @@ export function adaptToVoices(c) {
 }
 
 const CLASSIC_PRESET_HINTS = {
-  song: 'Calibrada em canções populares reais (Essen): notas mais longas, graus conjuntos, final na tónica.',
-  dance: 'Calibrada em danças reais (reels e hornpipes irlandeses e escoceses): figuração mais rápida e âmbito maior.',
-  chorale: 'Calibrada em sopranos de corais de Bach: semínimas e mínimas, movimento por grau, cadências 3–2–1.',
+  song: 'Calibrada em canções populares reais (Essen). Com operadores musicais: crítico 0,90, 75 % das características no intervalo típico das canções (reais: 85 %), acaba na tónica em 71 % (reais: 73 %), âmbito ~10 meios-tons. Com operadores de bits: notas mais longas e âmbito de ~14 meios-tons em vez de 36, mas o crítico fica em 0 (os ataques fora do tempo e os saltos são invisíveis para as regras).',
+  dance: 'Calibrada em reels e hornpipes irlandeses e escoceses. Com operadores musicais: figuração rápida (2,5 notas por tempo; reais: 2,4), 72 % das características no intervalo típico das danças (reais: 79 %), acaba na tónica em 75 %.',
+  chorale: 'Calibrada em sopranos de corais de Bach. Com operadores musicais: movimento por grau conjunto (66 %; reais: 68 %), âmbito ~8 meios-tons, final 3–2–1; ainda mais notas do que um coral (1,3 por tempo; reais: 0,9), o estilo mais difícil de aproximar.',
 };
 
 // Starting combinations for the original algorithm: its own values, and three calibrated on real
@@ -84,7 +84,7 @@ const CLASSIC_PRESET_HINTS = {
 export const CLASSIC_PRESETS = [
   {
     id: 'original', label: 'Original (2020)',
-    hint: 'Os valores do programa original: muitas semicolcheias, saltos grandes, âmbito de várias oitavas.',
+    hint: 'Os valores do programa original. Com operadores de bits: ~2,7 notas por tempo, âmbito de ~36 meios-tons, crítico 0. Com operadores musicais: crítico 0,95, mas raramente acaba na tónica (17 %) e continua denso (3 notas por tempo).',
     g1: { ...CLASSIC_DEFAULTS.g1 }, g2: { ...CLASSIC_DEFAULTS.g2 },
     waves: null, rangeAttractor: CLASSIC_DEFAULTS.rangeAttractor, balanceMin: CLASSIC_DEFAULTS.balanceMin,
     balanceMax: CLASSIC_DEFAULTS.balanceMax, phase1Fraction: CLASSIC_DEFAULTS.phase1Fraction,
