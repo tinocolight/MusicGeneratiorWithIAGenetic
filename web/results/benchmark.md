@@ -42,8 +42,8 @@ Configurações de `autoConfigure` (ondas no registo comum dos instrumentos). «
 | Trio · cânone só na aptidão | 0.27 ± 0.10 | 1.25 ± 0.05 | 26 ± 5 | 91 % ± 2 % | 0.00 ± 0.00 | 86 % ± 7 % | 0.68 ± 0.10 | 18.3 ± 1.6 |
 | Cânone à 5.ª: oboé e fagote (c. 2) | 0.84 ± 0.07 | 1.06 ± 0.04 | 3 ± 3 | 99 % ± 2 % | 0.00 ± 0.00 | — | 0.91 ± 0.02 | 20.7 ± 1.0 |
 | Ronda circular a 3 vozes (entradas a cada 2 c.) | 0.97 ± 0.07 | 1.30 ± 0.02 | 1 ± 0 | 88 % ± 1 % | 0.00 ± 0.00 | 96 % ± 4 % | 0.79 ± 0.06 | 18.2 ± 1.8 |
-| Só a melodia · pesos por omissão | — | — | — | — | — | — | 0.85 ± 0.06 | 21.8 ± 2.5 |
-| Só a melodia · pesos aprendidos da música real | — | — | — | — | — | — | 0.79 ± 0.15 | 21.3 ± 2.7 |
+| Só a melodia · pesos por omissão | — | — | — | — | — | — | 0.90 ± 0.05 | 21.3 ± 2.0 |
+| Só a melodia · pesos aprendidos da música real | — | — | — | — | — | — | 0.86 ± 0.05 | 21.8 ± 1.9 |
 
 ## MAP-Elites
 
