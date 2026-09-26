@@ -125,7 +125,7 @@ export function measure(genes, stats) {
     rests: c.features.restRatio,
     repeated: c.features.repeatedPitch,
     endsOnTonic: e ? (e.pcs[2] === 0 ? 1 : 0) : 0,
-    cadenceLogP: e ? cadenceLogP(cadence, 'major', e.pcs, e.last, e.pos, e.dur) : -30,
+    cadenceLogP: e ? cadenceLogP(cadence, 'major', e.pcs, e.last, e.pos, e.dur, e.reg) : -30,
   };
 }
 

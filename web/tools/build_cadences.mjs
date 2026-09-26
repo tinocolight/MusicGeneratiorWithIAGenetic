@@ -25,7 +25,10 @@ function endingOf(m) {
   if (notes.length < 3) return null;
   const [a, b, c] = notes.slice(-3);
   const rel = (n) => mod(n.p - m.tonic, 12);
+  const sorted = notes.map((n) => n.p).sort((x, y) => x - y);
+  const median = sorted[Math.floor(sorted.length / 2)];
   return {
+    reg: Math.max(-12, Math.min(12, c.p - median)),
     mode: m.mode, style: STYLE[m.source] ?? m.source, barLen: m.barLen,
     pcs: [rel(a), rel(b), rel(c)], // antepenultimate, penultimate, last
     last: Math.max(-12, Math.min(12, c.p - b.p)),
@@ -59,10 +62,13 @@ for (const e of four) {
   pos[e.pos]++;
   dur[e.dur]++;
 }
-const counts = { major: tableCounts('major'), minor: tableCounts('minor'), pos, dur };
+// register: the last note relative to the median pitch of the melody (semitones, clamped)
+const reg = zeros(25);
+for (const e of endings) reg[e.reg + 12]++;
+const counts = { major: tableCounts('major'), minor: tableCounts('minor'), pos, dur, reg };
 const data = cadenceModel(counts);
 
-const lp = four.map((e) => cadenceLogP(data, e.mode, e.pcs, e.last, e.pos, e.dur)).sort((a, b) => a - b);
+const lp = four.map((e) => cadenceLogP(data, e.mode, e.pcs, e.last, e.pos, e.dur, e.reg)).sort((a, b) => a - b);
 const q = (f) => lp[Math.floor(f * (lp.length - 1))];
 counts.ref = data.ref = { p10: q(0.1), p50: q(0.5), p90: q(0.9) };
 
@@ -106,6 +112,10 @@ for (const [s, v] of Object.entries(report.byStyle)) md += `| ${s} (${v.n}) | ${
 md += `\n## Ritmo da última nota (4/4, ${four.length} melodias)\n\n`;
 md += `Onde começa: ${report.pos.map(([p, v]) => `${POS[p] || `semicolcheia ${p + 1}`} ${pct(v)}`).join(' · ')}\n\n`;
 md += `Duração (semicolcheias): ${report.dur.map(([d, v]) => `${d === 16 ? '≥ 16' : d} ${pct(v)}`).join(' · ')}\n\n`;
+{
+  const r = data.reg.map((v, i) => [i - 12, v]).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  md += `Registo da última nota em relação à nota mediana da melodia (meios-tons): ${r.map(([k, v]) => `${k > 0 ? '+' : ''}${k} ${pct(v)}`).join(' · ')}\n\n`;
+}
 md += `Último movimento (meios-tons, maior): ${report.lastMove.major.map(([k, v]) => `${k > 0 ? '+' : ''}${k} ${pct(v)}`).join(' · ')}\n\n`;
 md += `Log-probabilidade de um final real: P10 ${data.ref.p10.toFixed(2)}, mediana ${data.ref.p50.toFixed(2)}, P90 ${data.ref.p90.toFixed(2)}.\n`;
 writeFileSync(`${here}../results/cadences.md`, md);

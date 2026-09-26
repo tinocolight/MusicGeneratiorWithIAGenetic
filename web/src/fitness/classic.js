@@ -23,7 +23,8 @@
 //      - rhythmic patterns: the bonus for a figure at the start of the bar looked one 16th late;
 //      - intervals: measured between consecutive notes (a prolongation continues the note, a rest
 //        breaks the line); on the 16th grid a prolongation made the interval "not a note", so the
-//        rule never judged the melody once notes were longer than a 16th;
+//        rule never judged the melody once notes were longer than a 16th, and the -100 marker meant
+//        to skip it fell into "> 12 semitones: -1", so every note after a prolongation lost a point;
 //      - self-harmonisation: compares with the pitch sounding one/two bars before; C# used the
 //        code of a prolongation (74) or a rest (0) there as if it were a pitch;
 //  * `cadence` (weight 0 in the original) completes the ending rule with the ways real melodies
@@ -197,7 +198,8 @@ export function evaluateIntervalsBetweenNotes(seq, major) {
       p1 = p2 = null;
       continue;
     }
-    if (i > 4) result += intervalsCore(p1 === null ? -100 : s - p1, p2 === null ? -100 : s - p2, major, false, false);
+    // after a rest there is no interval to judge (C#'s -100 marker fell into "> 12 semitones: -1")
+    if (i > 4 && p1 !== null) result += intervalsCore(s - p1, p2 === null ? -100 : s - p2, major, false, false);
     p2 = p1;
     p1 = s;
   }

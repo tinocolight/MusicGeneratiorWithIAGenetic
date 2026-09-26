@@ -54,6 +54,8 @@ Onde começa: 1.º tempo 48,2 % · 3.º tempo 35,4 % · 4.º tempo 8,7 % · 2.º
 
 Duração (semicolcheias): 8 40,3 % · 4 37,0 % · 12 9,6 % · 2 7,1 % · ≥ 16 3,5 % · 6 1,7 %
 
+Registo da última nota em relação à nota mediana da melodia (meios-tons): -4 19,1 % · -2 17,1 % · 0 15,7 % · -5 12,4 % · -7 10,5 % · -3 5,7 %
+
 Último movimento (meios-tons, maior): -2 42,9 % · +1 16,5 % · 0 14,7 % · -1 6,7 % · -4 5,0 % · -3 4,3 %
 
-Log-probabilidade de um final real: P10 -11.55, mediana -6.94, P90 -4.40.
+Log-probabilidade de um final real: P10 -14.52, mediana -9.43, P90 -6.25.

@@ -21,16 +21,23 @@ export function cadenceModel(counts) {
     p3: Array.from({ length: 144 }, (_, k) => smooth(t.p3[k], 12)),
     pint: t.pint.map((r) => smooth(r, 25)),
   });
-  return { major: mode(counts.major), minor: mode(counts.minor), pos: smooth(counts.pos, 16), dur: smooth(counts.dur, 17), ref: counts.ref };
+  return {
+    major: mode(counts.major), minor: mode(counts.minor), pos: smooth(counts.pos, 16), dur: smooth(counts.dur, 17),
+    reg: smooth(counts.reg, 25), ref: counts.ref,
+  };
 }
 
-/** log P(ending): pcs = [antepenultimate, penultimate, last] relative to the tonic. */
-export function cadenceLogP(model, mode, pcs, last, pos, dur) {
+/**
+ * log P(ending): pcs = [antepenultimate, penultimate, last] relative to the tonic, the last move,
+ * the position and length of the last note, and its register (semitones from the melody's median).
+ */
+export function cadenceLogP(model, mode, pcs, last, pos, dur, reg = null) {
   const t = model[mode === 'minor' ? 'minor' : 'major'];
   const [x, y, z] = pcs;
   const move = Math.max(-12, Math.min(12, last));
+  const r = reg === null ? 0 : Math.log(model.reg[Math.max(-12, Math.min(12, reg)) + 12]);
   return Math.log(t.p1[z]) + Math.log(t.p2[z][y]) + Math.log(t.p3[z * 12 + y][x]) + Math.log(t.pint[z][move + 12]) +
-    Math.log(model.pos[pos % 16]) + Math.log(model.dur[Math.min(16, dur)]);
+    Math.log(model.pos[pos % 16]) + Math.log(model.dur[Math.min(16, dur)]) + r;
 }
 
 /** The last three notes of a gene sequence (16th grid, MIDI = gene + 32). */
@@ -45,7 +52,9 @@ export function endingOfGenes(seq, tonic) {
   }
   if (notes.length < 3) return null;
   const [a, b, c] = notes.slice(-3);
-  return { pcs: [a, b, c].map((n) => mod12(n.midi - tonic)), last: c.midi - b.midi, pos: c.on % 16, dur: c.d };
+  const sorted = notes.map((n) => n.midi).sort((x, y) => x - y);
+  const median = sorted[Math.floor(sorted.length / 2)];
+  return { pcs: [a, b, c].map((n) => mod12(n.midi - tonic)), last: c.midi - b.midi, pos: c.on % 16, dur: c.d, reg: c.midi - median };
 }
 
 /**
@@ -56,6 +65,6 @@ export function cadenceScore(seq, model, tonic, mode) {
   const bars = seq.length / 16;
   const e = endingOfGenes(seq, tonic);
   if (!e) return (model.ref.p10 - model.ref.p50 - 10) * bars;
-  const lp = Math.min(model.ref.p90, cadenceLogP(model, mode, e.pcs, e.last, e.pos, e.dur));
+  const lp = Math.min(model.ref.p90, cadenceLogP(model, mode, e.pcs, e.last, e.pos, e.dur, e.reg));
   return (lp - model.ref.p50) * bars;
 }
