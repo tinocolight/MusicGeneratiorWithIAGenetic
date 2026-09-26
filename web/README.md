@@ -298,7 +298,7 @@ Com 2 vozes, considerar o cânone desde o início só acelera: o AG acaba no mes
 também muda o resultado: mais tríades completas (90 % contra 86 %) e melodias mais típicas (crítico
 0,79 contra 0,68), porque o AG não gasta a diversidade inicial a reparar o contraponto. Para uma
 melodia só (com os blocos do corpus e «não maximizar», ver abaixo), os pesos por omissão deram
-crítico 0,85 ± 0,06 contra 0,79 ± 0,15 com os pesos aprendidos da música real; com 6 sementes a
+crítico 0,90 ± 0,05 contra 0,86 ± 0,05 com os pesos aprendidos da música real; com 6 sementes a
 diferença não é conclusiva. (Números com «não maximizar» ligado, como agora por omissão.)
 
 ### Ondas editáveis
