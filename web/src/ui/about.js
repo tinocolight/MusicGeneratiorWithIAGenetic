@@ -10,6 +10,9 @@ export const ABOUT_HTML = `
 <li><strong>Vozes</strong>: em qualquer dos modelos a melodia pode ser tocada por 2 ou 3 vozes, cada uma com o seu instrumento, compasso de entrada e intervalo (uníssono, oitavas, 5.ª ou 4.ª diatónicas), para que vários músicos leiam a mesma parte como nos <em>Canons mélodieux</em> de Telemann (TWV 40:118–123). O contraponto entre todos os pares de vozes entra na aptidão e na população inicial, desde a geração 0.</li>
 </ul>
 
+<h3>Blocos de construção do corpus</h3>
+<p>6758 melodias reais (Essen, Aird's Airs, O'Neill, Ryan's Mammoth, Bach) foram cortadas em tempos: cada bloco é um ritmo e um contorno em graus da escala. Aprendeu-se que bloco se segue a qual, como se entra em cada um, e regras de associação («se A aparece, B aparece com probabilidade p»). Uma melodia só é agora escrita a partir destes blocos, com uma mutação que reescreve tempos e uma regra que pede idiomatismo típico, e cada regra conta só até ao seu valor típico na música real («não maximizar»). Resultado: melodias mais típicas (21 de 26 características, contra 17,5), inícios menos presos à tónica, e no cânone o crítico sobe de 0,84 para 0,90. O painel «Padrões do corpus», no separador Analisar, mostra os blocos e as associações.</p>
+
 <h3>Partitura e LilyPond</h3>
 <p>O botão «Partitura» mostra a peça em notação tradicional, uma pauta por voz, com a fonte Gonville (feita como substituta da fonte do LilyPond) e a disposição habitual do LilyPond. «LilyPond (.ly)» descarrega o código para gravar a partitura com o próprio LilyPond. No modo clássico, as duas ondas W1 e W2 editam-se com os mesmos campos do formulário original.</p>
 

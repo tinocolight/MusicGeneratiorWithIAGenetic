@@ -103,8 +103,9 @@ no que interessa: tudo o resto tem valores sensatos.
    inteiros onde o C# usava `int.Parse`. Há ainda a opção de simular a 1.ª execução do original
    (onda 1 plana no gene 0) e um botão para repor os valores do original.
 5. **Pesos das regras** (expandir): o peso de cada regra, com predefinições (por omissão,
-   **aprendidos da música real**, ênfase no contraponto, ênfase nas ondas); no modo clássico, os dois
-   grupos do original.
+   **aprendidos da música real**, ênfase no contraponto, ênfase nas ondas), incluindo **Idioma do
+   corpus (blocos)**; e **Não maximizar** (ligado por omissão): cada regra conta só até ao seu valor
+   típico na música real. No modo clássico, os dois grupos do original.
 6. **Algoritmo genético** (expandir): gerações, população, mutação e operadores (musicais ou de bits
    como no GeneticSharp). A **semente** fica à vista: a mesma configuração com a mesma semente dá
    sempre a mesma peça.
@@ -113,9 +114,10 @@ no que interessa: tudo o resto tem valores sensatos.
    com uma **semente nova**, ou **continua** da população final da experiência anterior (ou da que
    foi carregada), reavaliada com as definições atuais. A **população inicial** pode ter **padrões
    musicais** (células rítmicas, graus da escala e, com várias vozes, já em cânone), padrões musicais
-   sem o cânone, ou ser **aleatória, sem padrões**: cada semicolcheia é pausa, prolongamento ou uma
-   nota cromática ao acaso, para ver o AG convergir a partir do ruído (sobe as gerações para
-   1500–2000). **Ver a evolução devagar** mostra a geração 0 e depois uma geração de cada vez.
+   sem o cânone, ser **aleatória, sem padrões** (cada semicolcheia é pausa, prolongamento ou uma
+   nota cromática ao acaso, para ver o AG convergir a partir do ruído; sobe as gerações para
+   1500–2000), ou ser escrita com os **blocos do corpus** (ver «Blocos de construção» abaixo; é a
+   omissão para uma melodia só). **Ver a evolução devagar** mostra a geração 0 e depois uma geração de cada vez.
 8. **Gerar**, **Outra semente**, ou **Testar 5 sementes**: gera com 5 sementes seguidas e resume
    aptidão, crítico e consonância (média, desvio e extremos), carregando a melhor. Uma mudança só
    «ajudou» se o resumo melhorar, não só uma semente.
@@ -285,18 +287,19 @@ Resultado (`node tools/benchmark.mjs 6`, 6 sementes, configurações de «Auto-c
 
 | Conjunto | Contraponto na geração 0 | Gerações até 0,8 | Contraponto final | Consonância nos tempos fortes | Paralelas | Tríades | Crítico |
 |---|---|---|---|---|---|---|---|
-| 2 violinos (c. 2), cânone desde a geração 0 | 0,89 | 1 | 1,10 | 100 % | 0 | — | 0,84 |
-| 2 violinos, cânone só na aptidão | 0,43 | 22 | 1,09 | 100 % | 0 | — | 0,85 |
-| Trio (viola c. 3, violoncelo 8.ª abaixo c. 5), desde a geração 0 | 0,89 | 2 | 1,17 | 87 % | 0 | 87 % | 0,79 |
-| Trio, só na aptidão | 0,27 | 33 | 1,17 | 90 % | 0 | 72 % | 0,63 |
-| Cânone à 5.ª diatónica (oboé, fagote c. 2) | 0,84 | 2 | 0,99 | 98 % | 0 | — | 0,91 |
-| Ronda circular a 3 vozes | 0,97 | 1 | 1,19 | 87 % | 0 | 80 % | 0,79 |
+| 2 violinos (c. 2), cânone desde a geração 0 | 0,84 | 3 | 1,13 | 99 % | 0 | — | 0,89 |
+| 2 violinos, cânone só na aptidão | 0,43 | 21 | 1,13 | 100 % | 0 | — | 0,88 |
+| Trio (viola c. 3, violoncelo 8.ª abaixo c. 5), desde a geração 0 | 0,91 | 1 | 1,24 | 88 % | 0 | 90 % | 0,79 |
+| Trio, só na aptidão | 0,27 | 26 | 1,25 | 91 % | 0 | 86 % | 0,68 |
+| Cânone à 5.ª diatónica (oboé, fagote c. 2) | 0,84 | 3 | 1,06 | 99 % | 0 | — | 0,91 |
+| Ronda circular a 3 vozes | 0,97 | 1 | 1,30 | 88 % | 0 | 96 % | 0,79 |
 
 Com 2 vozes, considerar o cânone desde o início só acelera: o AG acaba no mesmo sítio. Com 3 vozes
-também muda o resultado: mais tríades completas (87 % contra 72 %) e melodias mais típicas (crítico
-0,79 contra 0,63), porque o AG não gasta a diversidade inicial a reparar o contraponto. Para uma
-melodia só, os pesos aprendidos da música real deram crítico 0,86 ± 0,09 contra 0,79 ± 0,18 com os
-pesos por omissão: melhor e mais estável, mas com 6 sementes a diferença não é conclusiva.
+também muda o resultado: mais tríades completas (90 % contra 86 %) e melodias mais típicas (crítico
+0,79 contra 0,68), porque o AG não gasta a diversidade inicial a reparar o contraponto. Para uma
+melodia só (com os blocos do corpus e «não maximizar», ver abaixo), os pesos por omissão deram
+crítico 0,85 ± 0,06 contra 0,79 ± 0,15 com os pesos aprendidos da música real; com 6 sementes a
+diferença não é conclusiva. (Números com «não maximizar» ligado, como agora por omissão.)
 
 ### Ondas editáveis
 
@@ -307,6 +310,84 @@ amplitude e o fim da frase em média − amplitude (o arco desce no fim, por iss
 ponto médio da curva); o seno respeita o desfasamento como deslocamento no tempo. Há até 4 ondas
 por peça; com mais do que uma, cada nota é atraída pela onda mais próxima (as bacias competem) e
 a regra premeia usar todas.
+
+### Blocos de construção do corpus
+
+Pedido: os inícios soavam muitas vezes iguais (nota longa, pausa, a mesma nota, uma abaixo, de
+volta). Diagnóstico, em 16 sementes: 13 começavam na tónica, quase sempre repetida no 1.º tempo, e
+as regras de regressão, forças melódicas, hierarquia métrica e variedade estavam todas no máximo.
+O AG levava cada regra ao extremo, e há muito poucas melodias nesse extremo.
+
+**Corpus.** `tools/extract_large_corpus.py` junta 6758 melodias reais em 2/4, 3/4 e 4/4 do corpus do
+music21 (Essen 5290, Aird's Airs 571, O'Neill 313, Bach 300, Ryan's Mammoth 284), sem as 480
+melodias do crítico, que continua a ser um juiz independente.
+
+**Blocos.** `tools/build_blocks.mjs` corta cada melodia em tempos. Um bloco é o ritmo do tempo (nota,
+prolongamento ou pausa em cada semicolcheia) e o contorno interno em graus da escala, por isso é
+transponível. 349 blocos cobrem 99,5 % dos tempos. O modelo guarda:
+
+- que bloco se segue a qual, conforme o tempo do compasso (forte, meio, fraco), à maneira das
+  cadeias de Markov de «pontos de vista» de Conklin & Witten (1995);
+- o intervalo de entrada em cada bloco, dado o grau da nota anterior e o tempo (tendências tonais);
+- **regras de associação** entre blocos da mesma melodia, com suporte, confiança e *lift*
+  (Agrawal & Srikant 1994; Brin et al. 1997): «se o bloco A aparece, o bloco B aparece com
+  probabilidade p, lift vezes mais do que ao acaso»;
+- como começam as melodias reais e o valor típico (P25/P50/P75) de cada regra da aptidão.
+
+Relatório em [`results/blocks.md`](results/blocks.md) e no separador Analisar («Padrões do corpus»).
+Algumas conclusões:
+
+- A primeira nota das melodias reais é a **dominante em 49 %**, a tónica em 28 % e a mediante em 13 %;
+  24 % começam com anacrusa (pausa + colcheia). O AG começava na tónica em 81–88 %.
+- 44 % dos tempos são uma semínima; a seguir vêm duas colcheias por grau (a descer 7 %, a repetir 5 %,
+  a subir 4,5 %).
+- As associações mostram coerência de estilo. Por exemplo, o «Scotch snap» (semicolcheia + colcheia
+  com ponto) a descer traz o mesmo a subir em 31 % das melodias (29× o acaso), e os padrões de
+  semicolcheias puxam outros padrões de semicolcheias (lift 10–20). Pelo contrário, semínimas ligadas
+  e corridas de semicolcheias quase nunca aparecem juntas (lift 0,02).
+- Na música real a regressão após salto fica em 0 no P75, as forças melódicas em 0,27 e a hierarquia
+  métrica em 0,60. O AG levava as três a 1,00.
+
+**Uso no AG** (cada peça é opcional):
+
+1. **População «Blocos do corpus»**: cada indivíduo é escrito bloco a bloco pelas transições; os
+   blocos associados aos que já foram usados ficam mais prováveis (o produto dos *lifts*, com teto) e a
+   1.ª nota segue a distribuição real.
+2. **Mutação por blocos**: reescreve um ou dois tempos com blocos que encaixam no anterior e no resto
+   da peça.
+3. **Regra «Idioma do corpus»**: log-probabilidade média por tempo (e coerência das associações),
+   recompensada só até à mediana das melodias reais. Recompensar o máximo daria sempre os blocos mais
+   prováveis, ou seja, o mesmo problema.
+4. **Não maximizar**: cada regra conta só até ao seu P75 na música real. É a melhoria que a análise
+   inversa sugeria («pontuar a distância ao valor típico em vez do máximo»).
+
+**Resultado** (`node tools/openings.mjs 8`, 8 sementes, [`results/openings.md`](results/openings.md)):
+
+| Conjunto | Variante | Crítico | Típicas /26 | 1.ª nota tónica / dominante / mediante |
+|---|---|---|---|---|
+| Melodia | Anterior (padrões musicais, regras ao máximo) | 0,93 | 17,5 | 88 % / 0 % / 13 % |
+| Melodia | Não maximizar | 0,92 | 18,3 | 63 % / 0 % / 13 % |
+| Melodia | Blocos (população + mutação), regras ao máximo | 0,82 | 18,4 | 100 % / 0 % / 0 % |
+| Melodia | **Não maximizar + blocos + idioma 1,5** (nova omissão) | 0,91 | **21,0** | 38 % / 0 % / 25 % |
+| 2 violinos | Anterior | 0,84 | 18,1 | 38 % / 13 % / 50 % |
+| 2 violinos | **Não maximizar** (nova omissão) | **0,90** | 19,1 | 0 % / 13 % / 38 % |
+| 2 violinos | Não maximizar + blocos + idioma 1,5 | 0,74 | 19,0 | 38 % / 63 % / 0 % |
+
+- **Não maximizar** é uma melhoria sem custo: o crítico mantém-se na melodia e sobe no cânone (0,84 →
+  0,90), as melodias ficam mais típicas e menos presas à tónica.
+- **Os blocos, sozinhos, não chegam**: a população começa variada (a 1.ª nota é a dominante em metade
+  dos indivíduos), mas as regras ao máximo puxam tudo de volta à tónica (100 %). Com «não maximizar»
+  as melodias ficam as mais típicas (21 de 26 características no intervalo real, contra 17,5) com o
+  crítico praticamente igual (0,91 contra 0,93, dentro da variação entre sementes).
+- **No cânone os blocos custam contraponto** (crítico 0,74): por omissão, com duas ou mais vozes a
+  população continua a ser a que já nasce em cânone e o idioma fica a 0.
+- **A dominante quase nunca fica como 1.ª nota numa melodia só**, apesar de ser a mais comum na
+  música real: a onda por omissão (arco de frase) começa perto da tónica. Mudar a onda muda isto; as
+  regras deixaram de o impor.
+- O padrão exato descrito («nota longa, pausa, a mesma, abaixo, a mesma») não apareceu em nenhuma
+  destas sementes: o que se repetia era o esqueleto (tónica repetida no 1.º tempo e salto para a 3.ª ou
+  a 5.ª). Com a mesma semente a população inicial é a mesma, por isso definições parecidas dão inícios
+  parecidos; «Do zero (semente nova)» evita-o.
 
 ## Avaliação e resultados
 
@@ -612,6 +693,8 @@ web/
   src/io/midi.js                 escrita/leitura de MIDI
   src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond
   src/ui/score.js                partitura na página (VexFlow + Gonville)
+  src/ga/blocks.js               blocos do corpus: modelo, escrita por blocos, mutação, regra «idioma»
+  data/corpus-large.json         6758 melodias reais para os blocos (sem as 480 do crítico)
   vendor/                        VexFlow 4.2.5 com a fonte Gonville (MIT, LICENSE-vexflow.txt)
   src/data/                      corpus, crítico treinado, 3 cânones de Telemann e rondas, pesos aprendidos, exemplo
   src/ui/                        interface (config.js: configuração e auto-configuração; controls.js: painel Compor)
@@ -622,13 +705,16 @@ web/
 
 ```bash
 cd web
-npm test                              # 46 testes
+npm test                              # 50 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
 node tools/train_critic.mjs           # treina o crítico → data/critic.json, src/data/critic-data.js
 python3 tools/extract_corpus.py       # corpus a partir do music21 (pip install music21)
 python3 tools/extract_corpus.py --full  # melodias completas, para a análise inversa
+python3 tools/extract_large_corpus.py # 6758 melodias para os blocos (music21, ~5 min)
+node tools/build_blocks.mjs           # blocos e associações → src/data/blocks-data.js, results/blocks.md
+node tools/openings.mjs 8             # inícios e qualidade por variante → results/openings.md
 node tools/make_examples.mjs          # exemplo mostrado ao abrir a página
 node tools/build_single.mjs           # dist/ondas-atratoras.html (usa esbuild via npx)
 
@@ -640,12 +726,15 @@ dotnet run -c Release -- run 40 4 ../../test/fixtures/original-ga-runs.json   # 
 
 ## Referências
 
+- Agrawal, R. & Srikant, R. (1994). Fast algorithms for mining association rules. *VLDB*.
 - Ariza, C. (2009). [The interrogator as critic: the Turing test and the evaluation of generative music systems](https://direct.mit.edu/comj/article-abstract/33/2/48/94244/The-Interrogator-as-Critic-The-Turing-Test-and-the). *Computer Music Journal* 33(2), 48–70.
 - Biles, J. A. (1994). GenJam: A genetic algorithm for generating jazz solos. *ICMC*.
 - Bidlack, R. (1992). Chaotic systems as simple (but complex) compositional algorithms. *Computer Music Journal* 16(3), 33–47.
+- Brin, S., Motwani, R., Ullman, J. & Tsur, S. (1997). Dynamic itemset counting and implication rules for market basket data. *SIGMOD*.
 - Bregman, A. S. (1990). *Auditory Scene Analysis*. MIT Press.
 - Cambouropoulos, E. (2001). The Local Boundary Detection Model (LBDM) and its application in the study of expressive timing. *ICMC*.
 - Caplin, W. (1998). *Classical Form*. Oxford University Press.
+- Conklin, D. & Witten, I. (1995). Multiple viewpoint systems for music prediction. *Journal of New Music Research* 24(1), 51–73.
 - Dabby, D. S. (1996). [Musical variations from a chaotic mapping](https://pubs.aip.org/aip/cha/article/6/2/95/135460/Musical-variations-from-a-chaotic-mapping). *Chaos* 6(2), 95–107.
 - Davis, S. (2006). Implied polyphony in the solo string works of J. S. Bach. *Music Perception* 23(5).
 - Farbood, M. M. (2012). [A parametric, temporal model of musical tension](https://online.ucpress.edu/mp/article-abstract/29/4/387/46442/A-Parametric-Temporal-Model-of-Musical-Tension). *Music Perception* 29(4), 387–428.

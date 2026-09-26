@@ -36,14 +36,14 @@ Configurações de `autoConfigure` (ondas no registo comum dos instrumentos). «
 
 | Configuração | Contraponto na geração 0 | Contraponto final | Gerações até 0,8 | Consonância forte | 5.as/8.as paral./c. | Tríades | Crítico | Típicas /26 |
 |---|---|---|---|---|---|---|---|---|
-| Telemann: 2 violinos, 2.º no c. 2 · cânone desde a geração 0 | 0.89 ± 0.07 | 1.10 ± 0.03 | 1 ± 0 | 100 % ± 0 % | 0.00 ± 0.00 | — | 0.84 ± 0.12 | 18.0 ± 1.8 |
-| Telemann · cânone só na aptidão | 0.43 ± 0.11 | 1.09 ± 0.04 | 22 ± 5 | 100 % ± 0 % | 0.00 ± 0.00 | — | 0.85 ± 0.08 | 18.3 ± 1.5 |
-| Trio: violino, viola (c. 3), violoncelo 8.ª abaixo (c. 5) · desde a geração 0 | 0.89 ± 0.09 | 1.17 ± 0.06 | 2 ± 1 | 87 % ± 2 % | 0.00 ± 0.00 | 87 % ± 11 % | 0.79 ± 0.11 | 18.5 ± 1.5 |
-| Trio · cânone só na aptidão | 0.27 ± 0.10 | 1.17 ± 0.04 | 33 ± 7 | 90 % ± 2 % | 0.00 ± 0.00 | 72 % ± 10 % | 0.63 ± 0.17 | 17.5 ± 1.6 |
-| Cânone à 5.ª: oboé e fagote (c. 2) | 0.84 ± 0.07 | 0.99 ± 0.03 | 2 ± 2 | 98 % ± 4 % | 0.00 ± 0.00 | — | 0.91 ± 0.04 | 19.3 ± 2.5 |
-| Ronda circular a 3 vozes (entradas a cada 2 c.) | 0.97 ± 0.07 | 1.19 ± 0.03 | 1 ± 0 | 87 % ± 1 % | 0.00 ± 0.00 | 80 % ± 5 % | 0.79 ± 0.05 | 19.0 ± 1.3 |
-| Só a melodia · pesos por omissão | — | — | — | — | — | — | 0.79 ± 0.18 | 17.7 ± 2.0 |
-| Só a melodia · pesos aprendidos da música real | — | — | — | — | — | — | 0.86 ± 0.09 | 17.8 ± 2.3 |
+| Telemann: 2 violinos, 2.º no c. 2 · cânone desde a geração 0 | 0.84 ± 0.09 | 1.13 ± 0.03 | 3 ± 3 | 99 % ± 1 % | 0.00 ± 0.00 | — | 0.89 ± 0.03 | 19.2 ± 1.0 |
+| Telemann · cânone só na aptidão | 0.43 ± 0.11 | 1.13 ± 0.05 | 21 ± 3 | 100 % ± 0 % | 0.00 ± 0.00 | — | 0.88 ± 0.05 | 19.0 ± 1.5 |
+| Trio: violino, viola (c. 3), violoncelo 8.ª abaixo (c. 5) · desde a geração 0 | 0.91 ± 0.10 | 1.24 ± 0.04 | 1 ± 0 | 88 % ± 4 % | 0.00 ± 0.00 | 90 % ± 9 % | 0.79 ± 0.07 | 20.0 ± 1.3 |
+| Trio · cânone só na aptidão | 0.27 ± 0.10 | 1.25 ± 0.05 | 26 ± 5 | 91 % ± 2 % | 0.00 ± 0.00 | 86 % ± 7 % | 0.68 ± 0.10 | 18.3 ± 1.6 |
+| Cânone à 5.ª: oboé e fagote (c. 2) | 0.84 ± 0.07 | 1.06 ± 0.04 | 3 ± 3 | 99 % ± 2 % | 0.00 ± 0.00 | — | 0.91 ± 0.02 | 20.7 ± 1.0 |
+| Ronda circular a 3 vozes (entradas a cada 2 c.) | 0.97 ± 0.07 | 1.30 ± 0.02 | 1 ± 0 | 88 % ± 1 % | 0.00 ± 0.00 | 96 % ± 4 % | 0.79 ± 0.06 | 18.2 ± 1.8 |
+| Só a melodia · pesos por omissão | — | — | — | — | — | — | 0.85 ± 0.06 | 21.8 ± 2.5 |
+| Só a melodia · pesos aprendidos da música real | — | — | — | — | — | — | 0.79 ± 0.15 | 21.3 ± 2.7 |
 
 ## MAP-Elites
 

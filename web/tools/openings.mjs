@@ -17,15 +17,17 @@ const SEEDS = Number(process.argv[2] || 8);
 const critic = loadCritic(criticData);
 const mod = (a, n) => ((a % n) + n) % n;
 
+// every variant starts from the previous defaults (musical population, no idiom, rules maximised)
+const base = (c) => ((c.ga.init = 'auto'), (c.weights.idiom = 0), (c.capRules = false), c);
 const VARIANTS = [
-  { id: 'default', label: 'Atual (padrões musicais)', set: () => {} },
-  { id: 'caps', label: 'Não maximizar (regras até ao P75 real)', set: (c) => (c.capRules = true) },
-  { id: 'blocks', label: 'Blocos do corpus (população + mutação)', set: (c) => (c.ga.init = 'blocks') },
-  { id: 'blocks-idiom', label: 'Blocos + regra «idioma»', set: (c) => ((c.ga.init = 'blocks'), (c.weights.idiom = 3)) },
-  { id: 'blocks-idiom-caps', label: 'Blocos + idioma + não maximizar', set: (c) => ((c.ga.init = 'blocks'), (c.weights.idiom = 3), (c.capRules = true)) },
-  { id: 'caps-idiom15', label: 'Não maximizar + idioma 1,5 (população musical)', set: (c) => ((c.weights.idiom = 1.5), (c.capRules = true)) },
-  { id: 'caps-blocks', label: 'Não maximizar + população de blocos (sem idioma)', set: (c) => ((c.ga.init = 'blocks'), (c.capRules = true)) },
-  { id: 'caps-blocks-idiom15', label: 'Não maximizar + blocos + idioma 1,5', set: (c) => ((c.ga.init = 'blocks'), (c.weights.idiom = 1.5), (c.capRules = true)) },
+  { id: 'default', label: 'Anterior (padrões musicais, regras ao máximo)', set: (c) => base(c) },
+  { id: 'caps', label: 'Não maximizar (regras até ao P75 real)', set: (c) => ((base(c).capRules = true)) },
+  { id: 'blocks', label: 'Blocos do corpus (população + mutação)', set: (c) => (base(c).ga.init = 'blocks') },
+  { id: 'blocks-idiom', label: 'Blocos + regra «idioma» 3', set: (c) => ((base(c).ga.init = 'blocks'), (c.weights.idiom = 3)) },
+  { id: 'blocks-idiom-caps', label: 'Blocos + idioma 3 + não maximizar', set: (c) => ((base(c).ga.init = 'blocks'), (c.weights.idiom = 3), (c.capRules = true)) },
+  { id: 'caps-idiom15', label: 'Não maximizar + idioma 1,5 (população musical)', set: (c) => ((base(c).weights.idiom = 1.5), (c.capRules = true)) },
+  { id: 'caps-blocks', label: 'Não maximizar + população de blocos (sem idioma)', set: (c) => ((base(c).ga.init = 'blocks'), (c.capRules = true)) },
+  { id: 'caps-blocks-idiom15', label: 'Não maximizar + blocos + idioma 1,5 (nova omissão da melodia)', set: (c) => ((base(c).ga.init = 'blocks'), (c.weights.idiom = 1.5), (c.capRules = true)) },
 ].filter((v) => !process.argv[3] || process.argv[3].split(',').includes(v.id));
 const ENSEMBLES = [['solo', 'Melodia'], ['telemann', '2 violinos em cânone']];
 
