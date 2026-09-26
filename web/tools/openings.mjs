@@ -23,7 +23,10 @@ const VARIANTS = [
   { id: 'blocks', label: 'Blocos do corpus (população + mutação)', set: (c) => (c.ga.init = 'blocks') },
   { id: 'blocks-idiom', label: 'Blocos + regra «idioma»', set: (c) => ((c.ga.init = 'blocks'), (c.weights.idiom = 3)) },
   { id: 'blocks-idiom-caps', label: 'Blocos + idioma + não maximizar', set: (c) => ((c.ga.init = 'blocks'), (c.weights.idiom = 3), (c.capRules = true)) },
-];
+  { id: 'caps-idiom15', label: 'Não maximizar + idioma 1,5 (população musical)', set: (c) => ((c.weights.idiom = 1.5), (c.capRules = true)) },
+  { id: 'caps-blocks', label: 'Não maximizar + população de blocos (sem idioma)', set: (c) => ((c.ga.init = 'blocks'), (c.capRules = true)) },
+  { id: 'caps-blocks-idiom15', label: 'Não maximizar + blocos + idioma 1,5', set: (c) => ((c.ga.init = 'blocks'), (c.weights.idiom = 1.5), (c.capRules = true)) },
+].filter((v) => !process.argv[3] || process.argv[3].split(',').includes(v.id));
 const ENSEMBLES = [['solo', 'Melodia'], ['telemann', '2 violinos em cânone']];
 
 // the pattern described by the user: long first note, rest, the same note, a lower note, back
@@ -81,6 +84,6 @@ const pct = (x) => `${Math.round(x * 100)} %`;
 let md = `# Inícios das melodias geradas\n\nGerado por \`node tools/openings.mjs ${SEEDS}\` (${SEEDS} sementes por linha, configuração por omissão e «Auto-configurar» para o cânone). Primeiros compassos distintos = fração de sementes com um 1.º compasso (ritmo + contorno) diferente de todos os outros.\n\nReferência, ${large.melodies} melodias reais: 1.ª nota na tónica ${pct(large.firstDeg[0] / tot)}, na dominante ${pct(large.firstDeg[4] / tot)}, na mediante ${pct(large.firstDeg[2] / tot)}.\n\n`;
 md += '| Conjunto | Variante | Crítico | Típicas /26 | Pausas | 1.ª nota tónica / dominante / mediante | 1.os compassos distintos | Padrão «nota longa, pausa, mesma, abaixo, mesma» |\n|---|---|---|---|---|---|---|---|\n';
 for (const r of results) md += `| ${r.ensemble} | ${r.label} | ${r.critic.toFixed(2)} | ${r.typical.toFixed(1)} | ${pct(r.rests)} | ${pct(r.tonic)} / ${pct(r.dominant)} / ${pct(r.mediant)} | ${pct(r.distinctFirstBars)} | ${pct(r.userPattern)} |\n`;
-writeFileSync(`${here}../results/openings.json`, JSON.stringify({ seeds: SEEDS, results }, null, 1));
-writeFileSync(`${here}../results/openings.md`, md);
+if (!process.argv[3]) writeFileSync(`${here}../results/openings.json`, JSON.stringify({ seeds: SEEDS, results }, null, 1));
+if (!process.argv[3]) writeFileSync(`${here}../results/openings.md`, md);
 console.log(md);

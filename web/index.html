@@ -108,6 +108,7 @@
 
         <details id="weightsBox"><summary>Pesos das regras</summary>
           <div class="row" id="weightPresets" style="margin-top:8px"></div>
+          <label class="hint" for="capRules" id="capRulesRow"><input type="checkbox" id="capRules"> Não maximizar: cada regra conta só até ao seu valor típico na música real (P75 de 6758 melodias)</label>
           <div class="wgrid" id="weights"></div>
         </details>
         <details id="gaBox"><summary>Algoritmo genético</summary>
@@ -134,6 +135,7 @@
             <option value="auto">Com padrões musicais</option>
             <option value="musical">Com padrões musicais, sem cânone</option>
             <option value="random">Aleatória, sem padrões</option>
+            <option value="blocks">Blocos do corpus</option>
           </select></div>
         <div class="field"><span>Semente</span><input type="number" id="seed" min="1" max="999999" step="1" value="7"></div>
         <label class="hint" for="slowRun"><input type="checkbox" id="slowRun"> Ver a evolução devagar (geração a geração no início)</label>
@@ -240,6 +242,10 @@
       </div>
     </div>
     <div class="segs" id="anSegments"></div>
+    <details class="box" id="blocksBox"><summary>Padrões do corpus: blocos de construção e associações</summary>
+      <p class="hint">Aprendidos com 6758 melodias reais (Essen, Aird's Airs, O'Neill, Ryan's Mammoth, sopranos de Bach), sem as 480 do crítico. Um bloco é um tempo: ritmo e contorno em graus da escala, transponível. O gerador pode usá-los na população inicial («Blocos do corpus»), numa mutação e na regra «Idioma do corpus». Relatório completo em <code>web/results/blocks.md</code>.</p>
+      <div class="cols even" id="blocksTables"></div>
+    </details>
   </section>
 
   <!-- AVALIAR -->

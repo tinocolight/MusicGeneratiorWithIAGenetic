@@ -27,6 +27,7 @@ export const FIELD_LABELS = {
   tension: 'Onda de tensão',
   variety: 'Variedade',
   canon: 'Contraponto entre as vozes',
+  idiom: 'Idioma do corpus (blocos)',
 };
 
 export const CLASSIC_LABELS = {
@@ -420,6 +421,8 @@ export function createControls(getConfig, onChange) {
     $('seed').value = c.ga.seed;
     $('startMode').value = c.ga.start ?? 'seed';
     $('initMode').value = c.ga.init ?? 'auto';
+    $('capRules').checked = !!c.capRules;
+    $('capRulesRow').hidden = c.mode === 'classic';
     $('initMode').disabled = c.ga.operators === 'binary';
   }
 
@@ -488,6 +491,10 @@ export function createControls(getConfig, onChange) {
       c.waves = presetWaves(c, c.wavePreset);
       renderWaves();
       onChange('waves');
+    });
+    $('capRules').addEventListener('change', () => {
+      cfg().capRules = $('capRules').checked;
+      onChange('weights');
     });
     $('classicFirstRun').addEventListener('change', () => {
       cfg().classicFirstRun = $('classicFirstRun').checked;

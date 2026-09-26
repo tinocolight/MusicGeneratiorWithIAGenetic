@@ -9,6 +9,8 @@ import { createRng } from '../core/rng.js';
 import { instrument } from '../core/instruments.js';
 import { analyzeCanon, analyzeEnsemble, INTERVALS } from '../fitness/canon.js';
 import { createGA } from '../ga/ga.js';
+import { describeBlock } from '../ga/blocks.js';
+import { getBlockModel } from '../fitness/attractor.js';
 import { createMapElites, DESCRIPTORS } from '../ga/mapelites.js';
 import { chaoticVariation, divergencePoint, similarityToTheme } from '../variation/dabby.js';
 import { analyzePiece, waveToSpec, hz } from '../analysis/wavefit.js';
@@ -29,7 +31,7 @@ import { loadVexFlow, renderScore } from './score.js';
 import { ABOUT_HTML } from './about.js';
 import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves,
-  presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf,
+  presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf, adaptToVoices,
 } from './config.js';
 import { createControls, FIELD_LABELS, CLASSIC_LABELS } from './controls.js';
 
@@ -168,6 +170,7 @@ function initControls() {
   $('anRun').addEventListener('click', runAnalysis);
   $('anUse').addEventListener('click', useAnalysisWaves);
   $('anFile').addEventListener('change', onMidiFile);
+  $('blocksBox').addEventListener('toggle', () => $('blocksBox').open && renderBlocksBox());
   window.addEventListener('resize', () => {
     render();
     drawHistory();
@@ -199,11 +202,18 @@ function onConfigChange(kind, arg) {
   const c = state.config;
   if (kind === 'ensemble') {
     applyEnsemble(c, arg);
+    controls.renderGA();
+    controls.renderWeights();
     // instruments changed: keep a named preset inside the new register
     if (c.wavePreset !== 'custom' && c.mode === 'field') {
       c.waves = presetWaves(c, c.wavePreset);
       controls.renderWaves();
     }
+  }
+  if (kind === 'voices') {
+    adaptToVoices(c);
+    controls.renderGA();
+    controls.renderWeights();
   }
   if (kind === 'voices' || kind === 'piece') controls.renderWaves();
   updateStartHint();
@@ -565,7 +575,7 @@ function renderParts() {
   box.innerHTML = '';
   if (!p || !p.parts) return;
   const labels = p.mode === 'classic' ? CLASSIC_LABELS : FIELD_LABELS;
-  const entries = Object.keys(labels).filter((k) => p.mode === 'classic' || k !== 'canon' || (p.weights?.canon ?? 0) !== 0).map((k) => [k, (p.weights?.[k] ?? 0) * (p.parts[k] ?? 0)]);
+  const entries = Object.keys(labels).filter((k) => p.mode === 'classic' || !['canon', 'idiom'].includes(k) || (p.weights?.[k] ?? 0) !== 0).map((k) => [k, (p.weights?.[k] ?? 0) * (p.parts[k] ?? 0)]);
   const maxAbs = Math.max(1e-9, ...entries.map(([, v]) => Math.abs(v)));
   $('partsHint').textContent = p.mode === 'classic'
     ? 'Regras originais: somas (não médias) multiplicadas pelo peso do grupo ativo; barras relativas à maior.'
@@ -790,6 +800,7 @@ function updateStartHint() {
   if (c.ga.operators === 'binary') parts.push('Com operadores de bits a população inicial é sempre a do programa original (genes ao acaso entre 0 e 74).');
   else if (c.ga.init === 'random') parts.push('População inicial sem padrões: cada semicolcheia é, ao acaso, pausa, prolongamento ou uma nota cromática do registo. Parte do ruído (crítico ≈ 0) e precisa de 2–3 vezes mais gerações para chegar ao mesmo nível.');
   else if (c.ga.init === 'musical') parts.push('População inicial com células rítmicas e graus da escala, sem ter em conta o cânone.');
+  else if (c.ga.init === 'blocks') parts.push('População inicial escrita com os blocos das melodias reais: cada tempo segue o anterior com as probabilidades do corpus, os blocos associados aos já usados ficam mais prováveis, e a 1.ª nota segue a distribuição real (5.ª 49 %, tónica 28 %, 3.ª 13 %). Uma mutação reescreve tempos da mesma forma.');
   else parts.push(activeVoices(c).length > 1 ? 'População inicial com células rítmicas e graus da escala, já escrita em cânone com as outras vozes.' : 'População inicial com células rítmicas e graus da escala: já soa a melodia antes de evoluir.');
   $('startHint').textContent = parts.join(' ');
 }
@@ -1220,6 +1231,33 @@ function useAnalysisWaves() {
   controls.renderAll();
   updatePreview();
   $('anStatus').textContent = `${c.waves.length} onda(s) copiadas para Compor → Ondas atratoras${shift ? `, transpostas ${shift > 0 ? '+' : ''}${shift} semitons para a tonalidade escolhida` : ''}. Pode editá-las lá.`;
+}
+
+// ------------------------------------------------------------------ corpus building blocks (analyser)
+
+function renderBlocksBox() {
+  const data = getBlockModel().data;
+  const pct = (x) => `${(x * 100).toFixed(1)} %`;
+  const total = data.blocks.reduce((a, [, c]) => a + c, 0);
+  const top = data.blocks.slice(0, 12).map(([id, c]) => `<tr><td>${describeBlock(id)}</td><td class="num">${pct(c / total)}</td></tr>`).join('');
+  const degTot = Object.values(data.firstDeg).reduce((a, b) => a + b, 0);
+  const DEG = ['1 (tónica)', '2', '3 (mediante)', '4', '5 (dominante)', '6', '7'];
+  const degs = Object.entries(data.firstDeg).sort((a, b) => b[1] - a[1]).map(([d, c]) => `<tr><td>${DEG[d]}</td><td class="num">${pct(c / degTot)}</td></tr>`).join('');
+  const rules = [];
+  for (const [a, list] of Object.entries(data.assoc)) for (const [b, lift, nab, conf] of list) if (!a.startsWith('?') && !b.startsWith('?')) rules.push([a, b, lift, nab, conf]);
+  // strong and frequent: lift weighted by how many melodies have both; one line per pair
+  const seen = new Set();
+  const pos = rules.filter((r) => r[2] >= 1 && r[3] >= 25).sort((x, y) => y[2] * Math.log(y[3]) - x[2] * Math.log(x[3])).filter((r) => {
+    const k = [r[0], r[1]].sort().join('|');
+    return !seen.has(k) && seen.add(k);
+  }).slice(0, 10);
+  const neg = rules.filter((r) => r[2] < 1).sort((x, y) => x[2] - y[2]).slice(0, 6);
+  const row = ([a, b, l, , conf]) => `<tr><td>${describeBlock(a)}</td><td>${describeBlock(b)}</td><td class="num">${l >= 1 ? `${Math.round(conf * 100)} % · ` : ''}${l.toFixed(2)}</td></tr>`;
+  $('blocksTables').innerHTML = `<div><h4>Blocos mais frequentes</h4><table class="data"><thead><tr><th>bloco (um tempo)</th><th>dos tempos</th></tr></thead><tbody>${top}</tbody></table>
+    <h4>1.ª nota das melodias reais</h4><table class="data"><thead><tr><th>grau</th><th>melodias</th></tr></thead><tbody>${degs}</tbody></table></div>
+    <div><h4>Se aparece A, B aparece com probabilidade p (lift &gt; 1)</h4><table class="data"><thead><tr><th>A</th><th>B</th><th>p · lift</th></tr></thead><tbody>${pos.map(row).join('')}</tbody></table>
+    <h4>Raramente juntos (lift &lt; 1)</h4><table class="data"><thead><tr><th>A</th><th>B</th><th>lift</th></tr></thead><tbody>${neg.map(row).join('')}</tbody></table>
+    <p class="hint">Lift = quantas vezes mais (ou menos) B aparece numa melodia que tem A do que numa melodia qualquer. Ritmo: ♩ semínima, ♪ colcheia, ♪. colcheia com ponto, sc semicolcheia. Contornos em graus da escala: «sobe 1» é um grau acima.</p></div>`;
 }
 
 // ------------------------------------------------------------------ evaluation tab

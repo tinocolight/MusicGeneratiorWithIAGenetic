@@ -170,7 +170,7 @@ for (const run of ENSEMBLE_RUNS) {
     const ga = createGA({
       fitness: built.fit, rng: createRng(s), length: built.fit.length, env: built.env,
       generations: cfg.ga.generations, popSize: cfg.ga.popSize, mutationRate: cfg.ga.mutation,
-      strategy: 'tournament', operators: 'musical', canonInit: run.init,
+      strategy: 'tournament', operators: 'musical', canonInit: run.init, initMode: run.init ? cfg.ga.init : 'musical',
     });
     const multi = !!built.env.canon;
     const gen0 = multi ? ga.best.parts.canon : null;

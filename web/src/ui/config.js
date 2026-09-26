@@ -12,7 +12,7 @@ import { analyzePiece } from '../analysis/wavefit.js';
 import { LEARNED_WEIGHTS } from '../data/learned-weights.js';
 
 export const WEIGHT_PRESETS = {
-  default: { label: 'Por omissão', weights: () => ({ ...DEFAULT_WEIGHTS }) },
+  default: { label: 'Por omissão', weights: () => ({ ...DEFAULT_WEIGHTS, idiom: SOLO_IDIOM }) },
   learned: { label: 'Aprendidos da música real', weights: () => ({ ...DEFAULT_WEIGHTS, ...LEARNED_WEIGHTS }) },
   counterpoint: { label: 'Ênfase no contraponto', weights: () => ({ ...DEFAULT_WEIGHTS, canon: 10 }) },
   waves: { label: 'Ênfase nas ondas', weights: () => ({ ...DEFAULT_WEIGHTS, attractor: 8 }) },
@@ -37,10 +37,10 @@ export function defaultConfig() {
     waveDef: 'meanAmp',
     waves: resolvePreset('arch', 7),
     weightsPreset: 'default',
-    weights: { ...DEFAULT_WEIGHTS },
+    weights: { ...DEFAULT_WEIGHTS, idiom: SOLO_IDIOM },
     canonWeight: 6,
     // reward each rule only up to its typical value in real melodies (results/blocks.md)
-    capRules: false,
+    capRules: true,
     classicG1: { ...CLASSIC_DEFAULTS.g1 },
     classicG2: { ...CLASSIC_DEFAULTS.g2 },
     // the two waves of the original form (Form1): periods per measure, mean in half tones
@@ -49,8 +49,21 @@ export function defaultConfig() {
     classicFirstRun: false,
     // start: 'seed' (from scratch with the seed), 'newSeed' (from scratch, new seed each time),
     // 'continue' (from the previous final population); init: 'auto' | 'musical' | 'random'
-    ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7, start: 'seed', init: 'auto' },
+    ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7, start: 'seed', init: 'blocks' },
   };
+}
+
+// Measured (results/openings.md): for a single melody the corpus blocks (initial population,
+// mutation, idiom rule at 1.5) make the melodies more typical and their beginnings more varied;
+// in a canon they cost counterpoint, so there the canon-aware population is kept, without idiom.
+export const SOLO_IDIOM = 1.5;
+
+/** Default population and idiom weight for the number of voices, unless the user chose others. */
+export function adaptToVoices(c) {
+  const canon = activeVoices(c).length >= 2;
+  if (c.ga.init === 'blocks' || c.ga.init === 'auto') c.ga.init = canon ? 'auto' : 'blocks';
+  if (c.weightsPreset !== 'custom' && c.weights.idiom !== undefined) c.weights.idiom = canon ? 0 : SOLO_IDIOM;
+  return c;
 }
 
 export function defaultClassicWaves() {
@@ -99,7 +112,7 @@ export function applyEnsemble(c, id) {
     c.voices[i] = v ? { enabled: true, ...v } : { ...c.voices[i], enabled: false };
   }
   c.circular = !!e.circular;
-  return c;
+  return adaptToVoices(c);
 }
 
 // ------------------------------------------------------------------ fitness
@@ -196,7 +209,9 @@ export function autoConfigure(c) {
   c.bars = canon ? Math.max(8, Math.ceil((2 * last + 4) / 2) * 2) : 8;
   if (c.bars > 16) c.bars = 16;
   c.weightsPreset = 'default';
-  c.weights = { ...DEFAULT_WEIGHTS };
+  c.weights = { ...DEFAULT_WEIGHTS, idiom: canon ? 0 : SOLO_IDIOM };
+  c.capRules = true;
+  if (c.ga.init === 'auto' || c.ga.init === 'blocks') c.ga.init = canon ? 'auto' : 'blocks';
   c.canonWeight = 6;
   // from noise the GA needs 2-3 times more generations to reach the same fitness
   const random = c.ga.init === 'random';

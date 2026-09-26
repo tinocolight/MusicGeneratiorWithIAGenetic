@@ -323,3 +323,32 @@ export function blockMutate(model, genes, env, rng) {
   if (next === HOLD && to * 4 < genes.length && !isNote(genes[to * 4 - 1]) && genes[to * 4 - 1] !== HOLD) genes[to * 4] = REST;
   return genes;
 }
+
+// ------------------------------------------------------------------ readable names
+
+const DUR = { 1: 'sc', 2: '♪', 3: '♪.', 4: '♩' };
+export function rhythmText(cell) {
+  const out = [];
+  let i = 0;
+  while (i < 4) {
+    const ch = cell[i];
+    let j = i + 1;
+    if (ch === 'x' || (ch === '-' && i === 0)) while (j < 4 && cell[j] === '-') j++;
+    else if (ch === '.') while (j < 4 && cell[j] === '.') j++;
+    const d = j - i;
+    if (ch === '.') out.push(`pausa ${DUR[d] ?? d}`);
+    else if (ch === '-') out.push(`(ligada) ${DUR[d] ?? d}`);
+    else out.push(DUR[d] ?? String(d));
+    i = j;
+  }
+  return out.join(' ');
+}
+
+/** "♪ ♪ · sobe 1" */
+export function describeBlock(id) {
+  const [cell, contour] = id.split('|');
+  if (id.startsWith('?')) return `${rhythmText(contour)} (outro contorno)`;
+  const steps = contour ? contour.match(/[+-]\d+/g) : null;
+  const c = steps ? ` · ${steps.map((x) => (Number(x) === 0 ? 'repete' : `${Number(x) > 0 ? 'sobe' : 'desce'} ${Math.abs(Number(x))}`)).join(', ')}` : '';
+  return `${rhythmText(cell)}${c}`;
+}
