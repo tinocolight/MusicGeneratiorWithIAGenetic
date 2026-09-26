@@ -29,6 +29,7 @@ const RUNS = [
   { ensemble: 'trio', label: 'Trio' },
 ];
 const INITS = [
+  { id: 'blocks', label: 'blocos do corpus', solo: true },
   { id: 'auto', label: 'com padrões musicais' },
   { id: 'random', label: 'aleatória, sem padrões' },
 ];
@@ -37,6 +38,7 @@ const results = [];
 const t0 = Date.now();
 for (const run of RUNS) {
   for (const init of INITS) {
+    if (init.solo && run.ensemble !== 'solo') continue;
     const at = Object.fromEntries(CHECKPOINTS.map((g) => [g, { fitness: 0, critic: 0 }]));
     for (let s = 1; s <= SEEDS; s++) {
       const cfg = applyEnsemble(defaultConfig(), run.ensemble);

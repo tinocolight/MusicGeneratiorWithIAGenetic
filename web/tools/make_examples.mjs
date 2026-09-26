@@ -13,7 +13,7 @@ const built = buildFitness(cfg);
 const ga = createGA({
   fitness: built.fit, rng: createRng(seed), length: built.fit.length, env: built.env,
   generations: cfg.ga.generations, popSize: cfg.ga.popSize, mutationRate: cfg.ga.mutation,
-  strategy: 'tournament', operators: 'musical',
+  strategy: 'tournament', operators: 'musical', initMode: cfg.ga.init,
 });
 ga.step(cfg.ga.generations);
 const examples = [{

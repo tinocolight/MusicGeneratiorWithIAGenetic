@@ -99,15 +99,27 @@
           <p class="hint" id="wavesHint"></p>
         </div>
         <div id="classicWavesSection" class="group" hidden>
+          <h3>Combinações de partida</h3>
+          <p class="hint">Valores do algoritmo original escolhidos por um estudo com música real (desenho de experiências e calibração inversa; <code>web/results/classic-study.md</code>). Mudam os pesos, as ondas, as constantes e o AG; a tonalidade, os compassos e a semente ficam.</p>
+          <div class="row" id="classicPresets"></div>
+          <div class="field"><span>Afinada para</span><select id="classicOps">
+            <option value="musical">operadores musicais (soa melhor)</option>
+            <option value="binary">operadores de bits (os do original)</option>
+          </select></div>
+          <p class="hint" id="classicPresetHint"></p>
           <h3>Ondas atratoras (como no programa original)</h3>
           <p class="hint" id="classicHint">Os campos do formulário do C# para as duas ondas senoidais W1 e W2: <code>valor médio + amplitude · sen(2π · i / período + 2π · desfasamento / 16)</code>, em semicolcheias. Valores inteiros como no original, exceto os períodos. Os pesos das regras «Onda 1» e «Onda 2» estão em «Pesos das regras». As vozes definem as distâncias da auto-harmonização e a reprodução.</p>
           <div id="classicWaveCards" class="group"></div>
+          <h3>Constantes que o original fixava no código</h3>
+          <div class="wave-grid" id="classicConsts"></div>
+          <label class="hint" for="classicFixLapses"><input type="checkbox" id="classicFixLapses"> Corrigir os lapsos do original (7 regras que não faziam o que o próprio código ou relatório descreve; ver «Sobre»)</label>
           <label class="hint" for="classicFirstRun"><input type="checkbox" id="classicFirstRun"> Simular a 1.ª execução do original (a onda 1 fica uma linha plana no gene 0)</label>
           <div class="row"><button class="btn" id="classicWavesReset" type="button">Repor os valores do original</button></div>
         </div>
 
         <details id="weightsBox"><summary>Pesos das regras</summary>
           <div class="row" id="weightPresets" style="margin-top:8px"></div>
+          <label class="hint" for="capRules" id="capRulesRow"><input type="checkbox" id="capRules"> Não maximizar: cada regra conta só até ao seu valor típico na música real (P75 de 6758 melodias)</label>
           <div class="wgrid" id="weights"></div>
         </details>
         <details id="gaBox"><summary>Algoritmo genético</summary>
@@ -134,6 +146,7 @@
             <option value="auto">Com padrões musicais</option>
             <option value="musical">Com padrões musicais, sem cânone</option>
             <option value="random">Aleatória, sem padrões</option>
+            <option value="blocks">Blocos do corpus</option>
           </select></div>
         <div class="field"><span>Semente</span><input type="number" id="seed" min="1" max="999999" step="1" value="7"></div>
         <label class="hint" for="slowRun"><input type="checkbox" id="slowRun"> Ver a evolução devagar (geração a geração no início)</label>
@@ -240,6 +253,10 @@
       </div>
     </div>
     <div class="segs" id="anSegments"></div>
+    <details class="box" id="blocksBox"><summary>Padrões do corpus: blocos de construção e associações</summary>
+      <p class="hint">Aprendidos com 6758 melodias reais (Essen, Aird's Airs, O'Neill, Ryan's Mammoth, sopranos de Bach), sem as 480 do crítico. Um bloco é um tempo: ritmo e contorno em graus da escala, transponível. O gerador pode usá-los na população inicial («Blocos do corpus»), numa mutação e na regra «Idioma do corpus» (nos pesos; a 0 por omissão, porque na aptidão baixava o crítico). Relatório completo em <code>web/results/blocks.md</code>.</p>
+      <div class="cols even" id="blocksTables"></div>
+    </details>
   </section>
 
   <!-- AVALIAR -->

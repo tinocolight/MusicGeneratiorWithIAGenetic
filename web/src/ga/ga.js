@@ -13,6 +13,7 @@ import {
   decodeByte, randomClassicGenome, uniformBitCrossover, partialShuffleBits,
   randomMusicalGenome, randomCanonGenome, randomUniformGenome, musicalMutate, beatCrossover,
 } from './operators.js';
+import { blockGenome } from './blocks.js';
 
 export function createGA(cfg) {
   const {
@@ -41,6 +42,8 @@ export function createGA(cfg) {
       ? () => randomClassicGenome(length, rng)
       : initMode === 'random'
         ? () => randomUniformGenome(env, rng)
+        : initMode === 'blocks' && env?.blocks
+          ? () => blockGenome(env.blocks, env, rng)
         : env && env.canon && initMode !== 'musical' && cfg.canonInit !== false
           ? () => randomCanonGenome(env, rng)
           : () => randomMusicalGenome(env, rng);

@@ -6,6 +6,7 @@ import { keyFromScale, MAJOR_TONICS } from '../core/theory.js';
 import { INSTRUMENTS, ENSEMBLES, instrument } from '../core/instruments.js';
 import { INTERVALS, intervalMap } from '../fitness/canon.js';
 import { createClassicFitness, CLASSIC_DEFAULTS } from '../fitness/classic.js';
+import classicPresetsData from '../data/classic-presets.js';
 import { createAttractorFitness, DEFAULT_WEIGHTS } from '../fitness/attractor.js';
 import { WAVE_PRESETS, resolvePreset } from '../fitness/presets.js';
 import { analyzePiece } from '../analysis/wavefit.js';
@@ -39,16 +40,84 @@ export function defaultConfig() {
     weightsPreset: 'default',
     weights: { ...DEFAULT_WEIGHTS },
     canonWeight: 6,
+    // reward each rule only up to its typical value in real melodies (results/blocks.md)
+    capRules: true,
     classicG1: { ...CLASSIC_DEFAULTS.g1 },
     classicG2: { ...CLASSIC_DEFAULTS.g2 },
     // the two waves of the original form (Form1): periods per measure, mean in half tones
     // (A4 = 0), amplitude and attraction basin in half tones, horizontal shift (16 = one cycle)
     classicWaves: defaultClassicWaves(),
     classicFirstRun: false,
+    // constants that the original hard-coded (Âmbito ±15 around A4, balance [7, 40] %) and the
+    // correction of its lapses (src/fitness/classic.js); starting combination (results/classic-study.md)
+    classicPreset: 'original',
+    classicRange: CLASSIC_DEFAULTS.rangeAttractor,
+    classicBalanceMin: CLASSIC_DEFAULTS.balanceMin,
+    classicBalanceMax: CLASSIC_DEFAULTS.balanceMax,
+    classicPhase1: CLASSIC_DEFAULTS.phase1Fraction,
+    classicFixLapses: true,
     // start: 'seed' (from scratch with the seed), 'newSeed' (from scratch, new seed each time),
     // 'continue' (from the previous final population); init: 'auto' | 'musical' | 'random'
-    ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7, start: 'seed', init: 'auto' },
+    ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7, start: 'seed', init: 'blocks' },
   };
+}
+
+// Measured (results/openings.md): for a single melody the corpus blocks (initial population and
+// mutation) make the melodies more typical at almost no cost to the critic; the idiom rule in the
+// fitness lowers the critic (24 seeds: 0.91 without it, 0.87 at 0.75, 0.84 at 1.5), so it stays
+// at 0 unless chosen. In a canon the blocks cost counterpoint: the canon-aware population is kept.
+/** Default initial population for the number of voices, unless the user chose another. */
+export function adaptToVoices(c) {
+  const canon = activeVoices(c).length >= 2;
+  if (c.ga.init === 'blocks' || c.ga.init === 'auto') c.ga.init = canon ? 'auto' : 'blocks';
+  return c;
+}
+
+const CLASSIC_PRESET_HINTS = {
+  song: 'Calibrada em canções populares reais (Essen). Com operadores musicais: crítico 0,90, 75 % das características no intervalo típico das canções (reais: 85 %), acaba na tónica em 71 % (reais: 73 %), âmbito ~10 meios-tons. Com operadores de bits: notas mais longas e âmbito de ~14 meios-tons em vez de 36, mas o crítico fica em 0 (os ataques fora do tempo e os saltos são invisíveis para as regras).',
+  dance: 'Calibrada em reels e hornpipes irlandeses e escoceses. Com operadores musicais: figuração rápida (2,5 notas por tempo; reais: 2,4), 72 % das características no intervalo típico das danças (reais: 79 %), acaba na tónica em 75 %.',
+  chorale: 'Calibrada em sopranos de corais de Bach. Com operadores musicais: movimento por grau conjunto (66 %; reais: 68 %), âmbito ~8 meios-tons, final 3–2–1; ainda mais notas do que um coral (1,3 por tempo; reais: 0,9), o estilo mais difícil de aproximar.',
+};
+
+// Starting combinations for the original algorithm: its own values, and three calibrated on real
+// songs, dances and chorales (tools/classic_study.mjs, results/classic-study.md).
+export const CLASSIC_PRESETS = [
+  {
+    id: 'original', label: 'Original (2020)',
+    hint: 'Os valores do programa original. Com operadores de bits: ~2,7 notas por tempo, âmbito de ~36 meios-tons, crítico 0. Com operadores musicais: crítico 0,95, mas raramente acaba na tónica (17 %) e continua denso (3 notas por tempo).',
+    g1: { ...CLASSIC_DEFAULTS.g1 }, g2: { ...CLASSIC_DEFAULTS.g2 },
+    waves: null, rangeAttractor: CLASSIC_DEFAULTS.rangeAttractor, balanceMin: CLASSIC_DEFAULTS.balanceMin,
+    balanceMax: CLASSIC_DEFAULTS.balanceMax, phase1Fraction: CLASSIC_DEFAULTS.phase1Fraction,
+    ga: { generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' },
+  },
+  ...classicPresetsData.map((p) => ({ ...p, hint: CLASSIC_PRESET_HINTS[p.id] ?? '' })),
+];
+// the GA settings of the page for each kind of operators (the original values keep their weights)
+const CLASSIC_GA = {
+  binary: { generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' },
+  musical: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical' },
+};
+
+/**
+ * Apply a starting combination to the classic settings (the seed and the piece stay). Each style
+ * has values tuned for the musical operators and for the original bit operators; the current
+ * choice of operators picks them.
+ */
+export function applyClassicPreset(c, id, operators = c.ga?.operators === 'musical' ? 'musical' : 'binary') {
+  const found = CLASSIC_PRESETS.find((x) => x.id === id) ?? CLASSIC_PRESETS[0];
+  const p = operators === 'binary' && found.binary ? { ...found.binary, hint: found.hint } : found;
+  c.classicPreset = p.id;
+  c.classicG1 = { ...CLASSIC_DEFAULTS.g1, ...p.g1 };
+  c.classicG2 = { ...CLASSIC_DEFAULTS.g2, ...p.g2 };
+  c.classicWaves = p.waves ? p.waves.map((w) => ({ ...w })) : defaultClassicWaves();
+  c.classicRange = p.rangeAttractor;
+  c.classicBalanceMin = p.balanceMin;
+  c.classicBalanceMax = p.balanceMax;
+  c.classicPhase1 = p.phase1Fraction;
+  if (p.id !== 'original') c.classicFixLapses = true; // calibrated with the lapses fixed
+  c.classicFirstRun = false;
+  c.ga = { ...c.ga, ...(p.id === 'original' ? CLASSIC_GA[operators] : { ...p.ga, operators }) };
+  return c;
 }
 
 export function defaultClassicWaves() {
@@ -97,7 +166,7 @@ export function applyEnsemble(c, id) {
     c.voices[i] = v ? { enabled: true, ...v } : { ...c.voices[i], enabled: false };
   }
   c.circular = !!e.circular;
-  return c;
+  return adaptToVoices(c);
 }
 
 // ------------------------------------------------------------------ fitness
@@ -113,6 +182,11 @@ export function buildFitness(c) {
       scale: c.scale, major: c.major, bars: c.bars, g1: c.classicG1, g2: c.classicG2,
       waves: waveSpecs,
       firstRunBug: !!c.classicFirstRun,
+      rangeAttractor: c.classicRange ?? CLASSIC_DEFAULTS.rangeAttractor,
+      balanceMin: c.classicBalanceMin ?? CLASSIC_DEFAULTS.balanceMin,
+      balanceMax: c.classicBalanceMax ?? CLASSIC_DEFAULTS.balanceMax,
+      phase1Fraction: c.classicPhase1 ?? CLASSIC_DEFAULTS.phase1Fraction,
+      fixLapses: c.classicFixLapses ?? true,
       // the original self-harmonisation rules compare with the bars where the other voices enter
       selfHarmDistances: [followers[0]?.delayBars ?? 1, followers[1]?.delayBars ?? 2],
     });
@@ -134,6 +208,8 @@ export function buildFitness(c) {
     voices: activeVoices(c),
     circular: c.circular,
     seed,
+    caps: !!c.capRules,
+    blocks: c.ga.init === 'blocks',
   });
   return {
     mode: 'field', fit, key,
@@ -193,6 +269,8 @@ export function autoConfigure(c) {
   if (c.bars > 16) c.bars = 16;
   c.weightsPreset = 'default';
   c.weights = { ...DEFAULT_WEIGHTS };
+  c.capRules = true;
+  if (c.ga.init === 'auto' || c.ga.init === 'blocks') c.ga.init = canon ? 'auto' : 'blocks';
   c.canonWeight = 6;
   // from noise the GA needs 2-3 times more generations to reach the same fitness
   const random = c.ga.init === 'random';
@@ -263,7 +341,12 @@ export function describe(c) {
   const names = ['Dó', 'Dó#', 'Ré', 'Mib', 'Mi', 'Fá', 'Fá#', 'Sol', 'Láb', 'Lá', 'Sib', 'Si'];
   const voices = activeVoices(c);
   const vtxt = voices.map((v, i) => `${instrument(v.instrument).label}${i ? ` (c.${1 + v.delayBars}${v.interval !== 'unison' ? `, ${INTERVALS[v.interval].label}` : ''})` : ''}`).join(' + ');
-  const wtxt = c.mode === 'classic' ? 'regras originais' : `${c.waves.length} onda${c.waves.length > 1 ? 's' : ''} (${c.waves.map((w) => w.type).join(', ')})`;
+  const classicName = () => {
+    const p = CLASSIC_PRESETS.find((x) => x.id === c.classicPreset);
+    const ops = c.ga?.operators === 'musical' ? 'operadores musicais' : 'operadores de bits';
+    return `regras originais (${p ? p.label : 'valores à mão'}, ${ops})`;
+  };
+  const wtxt = c.mode === 'classic' ? classicName() : `${c.waves.length} onda${c.waves.length > 1 ? 's' : ''} (${c.waves.map((w) => w.type).join(', ')})`;
   return `${names[key.tonic]} ${key.mode === 'major' ? 'maior' : 'menor'} · ${vtxt} · ${wtxt}`;
 }
 

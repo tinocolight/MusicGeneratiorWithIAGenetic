@@ -12,10 +12,33 @@
 //      `result = 2f`   (step interval, EvaluateInterestingIntervalsCore) -> `result += 2`
 //      `result = +10f` (whole-beat figure, EvaluateInterestingRitmicPatterns) -> `result += 10`
 //    `strict: true` keeps the literal (sequential) semantics, used by the parity test.
+//  * with `fixLapses: true` five slips of the original are corrected (the page does this by
+//    default; results/classic-study.md):
+//      - range: notes beyond 3x the range get -8 as written, the branch was unreachable;
+//      - pauses/prolongations: a prolongation of a prolongation gets +0.5 as written, the branch
+//        was unreachable (it got +2, like the first prolongation of a note);
+//      - balance: finite with no pauses or prolongations (the division by 0 gave -Infinity);
+//      - interesting repetitions: notes only (`!= pause || == prolongation` also compared
+//        prolongations; the authors fixed the same condition in the intervals rule);
+//      - rhythmic patterns: the bonus for a figure at the start of the bar looked one 16th late;
+//      - intervals: measured between consecutive notes (a prolongation continues the note, a rest
+//        breaks the line); on the 16th grid a prolongation made the interval "not a note", so the
+//        rule never judged the melody once notes were longer than a 16th, and the -100 marker meant
+//        to skip it fell into "> 12 semitones: -1", so every note after a prolongation lost a point;
+//      - self-harmonisation: compares with the pitch sounding one/two bars before; C# used the
+//        code of a prolongation (74) or a rest (0) there as if it were a pitch;
+//  * `cadence` (weight 0 in the original) completes the ending rule with the ways real melodies
+//    end (src/fitness/cadence.js); `balanceMin`/`balanceMax` expose the hard-coded [7, 40] %.
 
 import { REST as PAUSE, HOLD as PROL, GENE_A4, HIGHEST_NOTE_GENE, STEPS_PER_BAR } from '../core/score.js';
 import { SCALE_TABLE } from '../core/theory.js';
 import { classicSine } from '../core/waves.js';
+import { MAJOR_TONICS } from '../core/theory.js';
+import { cadenceModel, cadenceScore } from './cadence.js';
+import cadenceData from '../data/cadence-data.js';
+
+let cadence = null;
+const cadenceModelOnce = () => (cadence ||= cadenceModel(cadenceData));
 
 // Default values shown in the Windows Forms GUI (Form1.cs), i.e. what the authors used.
 export const CLASSIC_DEFAULTS = {
@@ -24,16 +47,18 @@ export const CLASSIC_DEFAULTS = {
   bars: 8,
   phase1Fraction: 0.25, // firstGroupPercent = 25
   rangeAttractor: 15,
+  balanceMin: 7,
+  balanceMax: 40,
   rangeAnnealEvaluations: 600, // maxIteration = 300 * 200 * 0.01
   g1: {
     rhythmicPatterns: 10, selfHarm1: 1, selfHarm2: 4, aba: 0.5, leitmotif: 12, wave1: 3, wave2: 2,
     range: 42, scale: 12, pauseProlongation: 4.5, reduceRepetitions: 2, intervals: 12,
-    niceRepetitions: 10, ending: 2, balance: 5,
+    niceRepetitions: 10, ending: 2, balance: 5, cadence: 0,
   },
   g2: {
     rhythmicPatterns: 7.02, selfHarm1: 2, selfHarm2: 4, aba: 0.5, leitmotif: 16, wave1: 3.1, wave2: 2.15,
     range: 42, scale: 16, pauseProlongation: 4, reduceRepetitions: 2, intervals: 14,
-    niceRepetitions: 10.05, ending: 2, balance: 15,
+    niceRepetitions: 10.05, ending: 2, balance: 15, cadence: 0,
   },
   waves: [
     { threshold: 3, periodsPerBar: 0.5, amplitude: 12, mean: GENE_A4, shift: 0 },
@@ -73,13 +98,16 @@ export function intervalsCore(i1, i2, major, harmonic, strict = false) {
   return result;
 }
 
-export function evaluateRange(seq, attractorRange, evaluationCount, annealEvaluations) {
+export function evaluateRange(seq, attractorRange, evaluationCount, annealEvaluations, fixLapses = false) {
   let r = attractorRange;
   if (evaluationCount < annealEvaluations) r += 10; // C#: +10 - 10*(it/itMax) with integer division
   let result = 0;
   for (const s of seq) {
     if (s < GENE_A4 + r && s > GENE_A4 - r && isNote(s)) result += 2;
-    else if ((s < GENE_A4 - 2 * r || s > GENE_A4 + 2 * r) && isNote(s)) {
+    else if (fixLapses && (s < GENE_A4 - 3 * r || s > GENE_A4 + 3 * r) && isNote(s)) {
+      result -= 8; // the C# branch, unreachable after the 2x test
+      if (s < 2) result -= 15;
+    } else if ((s < GENE_A4 - 2 * r || s > GENE_A4 + 2 * r) && isNote(s)) {
       result -= 2;
       if (s < 2) result -= 15;
     } else if (!isNote(s)) result += 1; // (the C# "-8" branch in between is unreachable)
@@ -102,13 +130,14 @@ export function evaluateScale(seq, scaleNr) {
   return result;
 }
 
-export function evaluatePauseAndProlongation(seq) {
+export function evaluatePauseAndProlongation(seq, fixLapses = false) {
   let result = 0;
   for (let i = 0; i < seq.length; i++) {
     const s = seq[i];
     const p = seq[i - 1];
     if (i > 2 && s === PAUSE && p !== PAUSE) result += 4;
     else if (i > 3 && s === PROL && p === PAUSE) result += 6.5;
+    else if (fixLapses && i > 2 && s === PROL && p === PROL) result += 0.5; // unreachable in C#
     else if (i > 2 && s === PROL && p !== PAUSE) result += 2;
     else result -= 1; // ("prolongation of prolongation" branch in C# is unreachable)
   }
@@ -130,11 +159,11 @@ export function evaluateExcessiveRepetitions(seq) {
   return result;
 }
 
-export function evaluateInterestingRepetitions(seq) {
+export function evaluateInterestingRepetitions(seq, fixLapses = false) {
   let result = 0;
   for (let i = 5; i < seq.length; i++) {
     const s = seq[i];
-    if (s === PAUSE) continue;
+    if (fixLapses ? !isNote(s) : s === PAUSE) continue; // C#: `!= pause || == prolongation`
     const [s1, s2, s3] = [seq[i - 1], seq[i - 2], seq[i - 3]];
     if (s !== s3 && s === s2 && s !== s1) result += 2;
     if (s !== s1 && s !== s2 && s === s3) result += 1;
@@ -142,7 +171,8 @@ export function evaluateInterestingRepetitions(seq) {
   return result;
 }
 
-export function evaluateIntervals(seq, major, strict) {
+export function evaluateIntervals(seq, major, strict, fixLapses = false) {
+  if (fixLapses) return evaluateIntervalsBetweenNotes(seq, major);
   let result = 0;
   for (let i = 5; i < seq.length; i++) {
     const s = seq[i];
@@ -154,6 +184,33 @@ export function evaluateIntervals(seq, major, strict) {
     result += intervalsCore(i1, i2, major, false, strict);
   }
   return result;
+}
+
+/** Intervals between consecutive notes: a prolongation continues the note, a rest breaks the line. */
+export function evaluateIntervalsBetweenNotes(seq, major) {
+  let result = 0;
+  let p1 = null; // previous note
+  let p2 = null; // the one before
+  for (let i = 0; i < seq.length; i++) {
+    const s = seq[i];
+    if (s === PROL) continue;
+    if (s === PAUSE) {
+      p1 = p2 = null;
+      continue;
+    }
+    // after a rest there is no interval to judge (C#'s -100 marker fell into "> 12 semitones: -1")
+    if (i > 4 && p1 !== null) result += intervalsCore(s - p1, p2 === null ? -100 : s - p2, major, false, false);
+    p2 = p1;
+    p1 = s;
+  }
+  return result;
+}
+
+/** The pitch sounding at position i (a prolongation continues the previous note), or null. */
+function soundingAt(seq, i) {
+  let j = i;
+  while (j > 0 && seq[j] === PROL) j--;
+  return isNote(seq[j]) ? seq[j] : null;
 }
 
 export function attractorWave(seq, threshold, wave) {
@@ -169,10 +226,11 @@ export function attractorWave(seq, threshold, wave) {
   return result;
 }
 
-export function scoreBalance(seq, minPct, maxPct) {
+export function scoreBalance(seq, minPct, maxPct, fixLapses = false) {
   let nonNotes = 0;
   for (const s of seq) if (!isNote(s)) nonNotes++;
-  const pct = (100 * nonNotes) / seq.length;
+  let pct = (100 * nonNotes) / seq.length;
+  if (fixLapses) pct = Math.max(pct, 50 / seq.length); // half a gene: finite, and still the worst
   let result = (-(pct - minPct) * (pct - maxPct) * 16) / pct; // -Infinity when pct == 0 (as in C#)
   if (result > 1) result = Math.sqrt(result) / (maxPct - minPct);
   return result;
@@ -203,7 +261,9 @@ export function scoreRhythmicRepetitions(seq, measureLen, precedence, spacing) {
   return result;
 }
 
-export function evaluateInterestingRhythmicPatterns(seq, measureLen, strict) {
+export function evaluateInterestingRhythmicPatterns(seq, measureLen, strict, fixLapses = false) {
+  // the figure spans i-3..i; "at the start of the bar" is i-3 on the downbeat (C# tested i % 16 == 4)
+  const barStart = fixLapses ? 3 : 4;
   let result = 0;
   for (let i = 0; i < seq.length; i++) {
     const s = seq[i];
@@ -213,7 +273,7 @@ export function evaluateInterestingRhythmicPatterns(seq, measureLen, strict) {
       if (s2 === PROL) {
         if (s1 === PROL || s1 !== PAUSE) {
           result += 1; // 3+1 or 2+1+1
-          if (i % measureLen === 4) result += 5;
+          if (i % measureLen === barStart) result += 5;
         }
       } else if (isNote(s2) && isNote(s1)) result += 0.5; // 1+1+1+1
     } else if (i % measureLen === 0 && s === PROL) result -= 5;
@@ -238,14 +298,16 @@ export function scoreTermination(seq) {
   return result;
 }
 
-export function scoreSelfHarmonization(seq, measureLen, distance, major) {
+export function scoreSelfHarmonization(seq, measureLen, distance, major, fixLapses = false) {
   let d = distance;
   if (distance * measureLen > seq.length || distance < 1) d = 1;
   const lag = d * measureLen;
   let result = 0;
   for (let i = lag + 1; i < seq.length; i++) {
     if (!isNote(seq[i])) continue;
-    result += intervalsCore(seq[i] - seq[i - lag], -101, major, true);
+    const other = fixLapses ? soundingAt(seq, i - lag) : seq[i - lag];
+    if (other === null) continue;
+    result += intervalsCore(seq[i] - other, -101, major, true);
   }
   return result;
 }
@@ -265,28 +327,34 @@ export function createClassicFitness(options = {}) {
   // emulate the first run of the C# program, where wave 1 is a flat line at gene 0
   if (o.firstRunBug) waves[0] = new Int32Array(length);
   const strict = !!o.strict;
+  const fix = !strict && !!o.fixLapses;
+  const tonic = o.major ? MAJOR_TONICS[o.scale] : (MAJOR_TONICS[o.scale] + 9) % 12;
+  const mode = o.major ? 'major' : 'minor';
   // the original compares each bar with the bar 1 and 2 bars before; with a canon selected in
   // the page, these distances follow the entries of the 2nd and 3rd voices (the original's own
   // way of aiming at self-harmonisation, kept from the first generation)
   const selfHarm = o.selfHarmDistances ?? [1, 2];
 
+  const needCadence = !strict && ((g1.cadence ?? 0) !== 0 || (g2.cadence ?? 0) !== 0 || o.alwaysCadence);
   function components(seq, evaluationCount) {
     return {
-      rhythmicPatterns: evaluateInterestingRhythmicPatterns(seq, m, strict),
-      selfHarm1: scoreSelfHarmonization(seq, m, selfHarm[0], o.major),
-      selfHarm2: scoreSelfHarmonization(seq, m, selfHarm[1], o.major),
+      rhythmicPatterns: evaluateInterestingRhythmicPatterns(seq, m, strict, fix),
+      selfHarm1: scoreSelfHarmonization(seq, m, selfHarm[0], o.major, fix),
+      selfHarm2: scoreSelfHarmonization(seq, m, selfHarm[1], o.major, fix),
       aba: scoreMetricRepetitionsABA(seq, m, 4),
       leitmotif: scoreRhythmicRepetitions(seq, m, 0, 1),
       wave1: attractorWave(seq, waveSpecs[0].threshold, waves[0]),
       wave2: waveSpecs[1] ? attractorWave(seq, waveSpecs[1].threshold, waves[1]) : 0,
-      range: evaluateRange(seq, o.rangeAttractor, evaluationCount, o.rangeAnnealEvaluations),
+      range: evaluateRange(seq, o.rangeAttractor, evaluationCount, o.rangeAnnealEvaluations, fix),
       scale: evaluateScale(seq, o.scale),
-      pauseProlongation: evaluatePauseAndProlongation(seq),
+      pauseProlongation: evaluatePauseAndProlongation(seq, fix),
       reduceRepetitions: evaluateExcessiveRepetitions(seq),
-      intervals: evaluateIntervals(seq, o.major, strict),
-      niceRepetitions: evaluateInterestingRepetitions(seq),
+      intervals: evaluateIntervals(seq, o.major, strict, fix),
+      niceRepetitions: evaluateInterestingRepetitions(seq, fix),
       ending: scoreTermination(seq),
-      balance: scoreBalance(seq, 7, 40),
+      balance: scoreBalance(seq, o.balanceMin, o.balanceMax, fix),
+      // not in the original (weight 0 there): computed only when weighted, it costs a little
+      cadence: needCadence ? cadenceScore(seq, cadenceModelOnce(), tonic, mode) : 0,
     };
   }
 

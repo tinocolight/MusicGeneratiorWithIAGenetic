@@ -10,6 +10,9 @@ export const ABOUT_HTML = `
 <li><strong>Vozes</strong>: em qualquer dos modelos a melodia pode ser tocada por 2 ou 3 vozes, cada uma com o seu instrumento, compasso de entrada e intervalo (uníssono, oitavas, 5.ª ou 4.ª diatónicas), para que vários músicos leiam a mesma parte como nos <em>Canons mélodieux</em> de Telemann (TWV 40:118–123). O contraponto entre todos os pares de vozes entra na aptidão e na população inicial, desde a geração 0.</li>
 </ul>
 
+<h3>Blocos de construção do corpus</h3>
+<p>6758 melodias reais (Essen, Aird's Airs, O'Neill, Ryan's Mammoth, Bach) foram cortadas em tempos: cada bloco é um ritmo e um contorno em graus da escala. Aprendeu-se que bloco se segue a qual, como se entra em cada um, e regras de associação («se A aparece, B aparece com probabilidade p»). Uma melodia só é agora escrita a partir destes blocos, com uma mutação que reescreve tempos, e cada regra conta só até ao seu valor típico na música real («não maximizar»). Resultado: melodias mais típicas (21 de 26 características, contra 17,5), inícios menos presos à tónica, e no cânone o crítico sobe de 0,84 para 0,90. Uma regra que recompensa o idiomatismo dos blocos na aptidão existe nos pesos, mas baixa o crítico, por isso está a 0: as associações servem melhor a construir do que a julgar. O painel «Padrões do corpus», no separador Analisar, mostra os blocos e as associações.</p>
+
 <h3>Partitura e LilyPond</h3>
 <p>O botão «Partitura» mostra a peça em notação tradicional, uma pauta por voz, com a fonte Gonville (feita como substituta da fonte do LilyPond) e a disposição habitual do LilyPond. «LilyPond (.ly)» descarrega o código para gravar a partitura com o próprio LilyPond. No modo clássico, as duas ondas W1 e W2 editam-se com os mesmos campos do formulário original.</p>
 
@@ -19,6 +22,10 @@ export const ABOUT_HTML = `
 <h3>Análise inversa</h3>
 <p>235 melodias reais completas, os seus retrógrados e modelos nulos foram passados pelas regras. As regras originais dão à música real a mesma pontuação que ao ruído branco (50 % dos pares); as novas separam-nas em 96 % dos pares, sobretudo pela proximidade e pelas forças melódicas. Quase nenhuma regra distingue uma melodia do seu retrógrado (52 %), e o AG leva as regras ao dobro do valor que a música real atinge. Os pesos aprendidos com estes dados estão disponíveis como predefinição («Aprendidos da música real»). Detalhes em <code>web/results/reverse.md</code>.</p>
 
+<h3>Combinações de partida do modo clássico</h3>
+<p>Um estudo do algoritmo original com 3074 melodias reais (canções de Essen, reels e hornpipes, corais de Bach) fez três coisas. Primeiro, um desenho de experiências (Plackett–Burman, 64 ensaios, 30 valores do original): nenhum valor sozinho tira o algoritmo do crítico 0. Depois, uma calibração inversa: as constantes medidas na música real e pesos que põem a música real acima das suas vizinhas. Por fim, uma otimização por entropia cruzada, confirmada com 24 sementes novas.</p>
+<p>Com os operadores de bits do original, as combinações aproximam a forma: por exemplo, o âmbito passa de 36 para 14 meios-tons e as notas por tempo de 2,7 para 0,6. O crítico, porém, continua em 0, porque as regras não veem as síncopas nem o tamanho dos saltos. Com os operadores musicais, o crítico fica em 0,90–0,92: a «Canção» acaba na tónica em 71 % das peças (canções reais: 73 %), a «Dança» tem a densidade das danças reais e o «Coral» os graus conjuntos dos corais.</p>
+
 <h3>O que se encontrou no código original</h3>
 <ul>
 <li>As regras somam <code>result +=</code> dentro de <code>Parallel.For</code> sem sincronização: o mesmo cromossoma recebe notas diferentes em cada avaliação (erro mediano de 20–45 % por regra, medido com o C# original).</li>
@@ -26,6 +33,8 @@ export const ABOUT_HTML = `
 <li>Pausas e prolongamentos recebem pontos fixos ou são neutros em várias regras, enquanto as notas só podem perder pontos; o <code>ScoreBalance</code> pede 7–40 % de figuras sem ataque, mas nas melodias reais esse valor é 58–83 %.</li>
 <li>A auto-harmonização compara genes e não as notas que soam (um prolongamento conta como a nota 74), premeia quartas e penaliza sextas, ao contrário do contraponto a duas vozes.</li>
 <li>Duas gralhas de atribuição (<code>result = 2f</code> e <code>result = +10f</code>) e um ramo inalcançável em <code>EvaluateRange</code>.</li>
+<li>Mais lapsos que o próprio código ou relatório contradizem: o «prolongamento de prolongamento» nunca é avaliado; o equilíbrio dá −∞ sem pausas; as «repetições interessantes» comparam prolongamentos (a mesma condição que os autores corrigiram nos intervalos); o bónus de figura «no início do compasso» chega uma semicolcheia tarde; os intervalos só se medem entre semicolcheias vizinhas e a marca −100 (para os saltar) custa um ponto a cada nota depois de um prolongamento. No modo clássico estão corrigidos por omissão (caixa «Corrigir os lapsos do original»).</li>
+<li>A regra de terminação só pede uma nota final longa: as fórmulas de final que o original previa ficaram por fazer. Há agora uma regra «Fórmulas de final (corpus)», aprendida com 6758 melodias reais (3–2–1, 2–2–1, 7–1…, no 1.º ou 3.º tempo, abaixo do centro da melodia).</li>
 </ul>
 
 <h3>O que os testes mostraram</h3>
