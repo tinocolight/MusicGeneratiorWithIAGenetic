@@ -341,7 +341,12 @@ export function describe(c) {
   const names = ['Dó', 'Dó#', 'Ré', 'Mib', 'Mi', 'Fá', 'Fá#', 'Sol', 'Láb', 'Lá', 'Sib', 'Si'];
   const voices = activeVoices(c);
   const vtxt = voices.map((v, i) => `${instrument(v.instrument).label}${i ? ` (c.${1 + v.delayBars}${v.interval !== 'unison' ? `, ${INTERVALS[v.interval].label}` : ''})` : ''}`).join(' + ');
-  const wtxt = c.mode === 'classic' ? 'regras originais' : `${c.waves.length} onda${c.waves.length > 1 ? 's' : ''} (${c.waves.map((w) => w.type).join(', ')})`;
+  const classicName = () => {
+    const p = CLASSIC_PRESETS.find((x) => x.id === c.classicPreset);
+    const ops = c.ga?.operators === 'musical' ? 'operadores musicais' : 'operadores de bits';
+    return `regras originais (${p ? p.label : 'valores à mão'}, ${ops})`;
+  };
+  const wtxt = c.mode === 'classic' ? classicName() : `${c.waves.length} onda${c.waves.length > 1 ? 's' : ''} (${c.waves.map((w) => w.type).join(', ')})`;
   return `${names[key.tonic]} ${key.mode === 'major' ? 'maior' : 'menor'} · ${vtxt} · ${wtxt}`;
 }
 

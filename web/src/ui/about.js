@@ -22,6 +22,10 @@ export const ABOUT_HTML = `
 <h3>Análise inversa</h3>
 <p>235 melodias reais completas, os seus retrógrados e modelos nulos foram passados pelas regras. As regras originais dão à música real a mesma pontuação que ao ruído branco (50 % dos pares); as novas separam-nas em 96 % dos pares, sobretudo pela proximidade e pelas forças melódicas. Quase nenhuma regra distingue uma melodia do seu retrógrado (52 %), e o AG leva as regras ao dobro do valor que a música real atinge. Os pesos aprendidos com estes dados estão disponíveis como predefinição («Aprendidos da música real»). Detalhes em <code>web/results/reverse.md</code>.</p>
 
+<h3>Combinações de partida do modo clássico</h3>
+<p>Um estudo do algoritmo original com 3074 melodias reais (canções de Essen, reels e hornpipes, corais de Bach) fez três coisas. Primeiro, um desenho de experiências (Plackett–Burman, 64 ensaios, 30 valores do original): nenhum valor sozinho tira o algoritmo do crítico 0. Depois, uma calibração inversa: as constantes medidas na música real e pesos que põem a música real acima das suas vizinhas. Por fim, uma otimização por entropia cruzada, confirmada com 24 sementes novas.</p>
+<p>Com os operadores de bits do original, as combinações aproximam a forma: por exemplo, o âmbito passa de 36 para 14 meios-tons e as notas por tempo de 2,7 para 0,6. O crítico, porém, continua em 0, porque as regras não veem as síncopas nem o tamanho dos saltos. Com os operadores musicais, o crítico fica em 0,90–0,92: a «Canção» acaba na tónica em 71 % das peças (canções reais: 73 %), a «Dança» tem a densidade das danças reais e o «Coral» os graus conjuntos dos corais.</p>
+
 <h3>O que se encontrou no código original</h3>
 <ul>
 <li>As regras somam <code>result +=</code> dentro de <code>Parallel.For</code> sem sincronização: o mesmo cromossoma recebe notas diferentes em cada avaliação (erro mediano de 20–45 % por regra, medido com o C# original).</li>
