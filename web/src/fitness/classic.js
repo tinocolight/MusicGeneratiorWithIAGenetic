@@ -21,6 +21,11 @@
 //      - interesting repetitions: notes only (`!= pause || == prolongation` also compared
 //        prolongations; the authors fixed the same condition in the intervals rule);
 //      - rhythmic patterns: the bonus for a figure at the start of the bar looked one 16th late;
+//      - intervals: measured between consecutive notes (a prolongation continues the note, a rest
+//        breaks the line); on the 16th grid a prolongation made the interval "not a note", so the
+//        rule never judged the melody once notes were longer than a 16th;
+//      - self-harmonisation: compares with the pitch sounding one/two bars before; C# used the
+//        code of a prolongation (74) or a rest (0) there as if it were a pitch;
 //  * `cadence` (weight 0 in the original) completes the ending rule with the ways real melodies
 //    end (src/fitness/cadence.js); `balanceMin`/`balanceMax` expose the hard-coded [7, 40] %.
 
@@ -165,7 +170,8 @@ export function evaluateInterestingRepetitions(seq, fixLapses = false) {
   return result;
 }
 
-export function evaluateIntervals(seq, major, strict) {
+export function evaluateIntervals(seq, major, strict, fixLapses = false) {
+  if (fixLapses) return evaluateIntervalsBetweenNotes(seq, major);
   let result = 0;
   for (let i = 5; i < seq.length; i++) {
     const s = seq[i];
@@ -177,6 +183,32 @@ export function evaluateIntervals(seq, major, strict) {
     result += intervalsCore(i1, i2, major, false, strict);
   }
   return result;
+}
+
+/** Intervals between consecutive notes: a prolongation continues the note, a rest breaks the line. */
+export function evaluateIntervalsBetweenNotes(seq, major) {
+  let result = 0;
+  let p1 = null; // previous note
+  let p2 = null; // the one before
+  for (let i = 0; i < seq.length; i++) {
+    const s = seq[i];
+    if (s === PROL) continue;
+    if (s === PAUSE) {
+      p1 = p2 = null;
+      continue;
+    }
+    if (i > 4) result += intervalsCore(p1 === null ? -100 : s - p1, p2 === null ? -100 : s - p2, major, false, false);
+    p2 = p1;
+    p1 = s;
+  }
+  return result;
+}
+
+/** The pitch sounding at position i (a prolongation continues the previous note), or null. */
+function soundingAt(seq, i) {
+  let j = i;
+  while (j > 0 && seq[j] === PROL) j--;
+  return isNote(seq[j]) ? seq[j] : null;
 }
 
 export function attractorWave(seq, threshold, wave) {
@@ -264,14 +296,16 @@ export function scoreTermination(seq) {
   return result;
 }
 
-export function scoreSelfHarmonization(seq, measureLen, distance, major) {
+export function scoreSelfHarmonization(seq, measureLen, distance, major, fixLapses = false) {
   let d = distance;
   if (distance * measureLen > seq.length || distance < 1) d = 1;
   const lag = d * measureLen;
   let result = 0;
   for (let i = lag + 1; i < seq.length; i++) {
     if (!isNote(seq[i])) continue;
-    result += intervalsCore(seq[i] - seq[i - lag], -101, major, true);
+    const other = fixLapses ? soundingAt(seq, i - lag) : seq[i - lag];
+    if (other === null) continue;
+    result += intervalsCore(seq[i] - other, -101, major, true);
   }
   return result;
 }
@@ -303,8 +337,8 @@ export function createClassicFitness(options = {}) {
   function components(seq, evaluationCount) {
     return {
       rhythmicPatterns: evaluateInterestingRhythmicPatterns(seq, m, strict, fix),
-      selfHarm1: scoreSelfHarmonization(seq, m, selfHarm[0], o.major),
-      selfHarm2: scoreSelfHarmonization(seq, m, selfHarm[1], o.major),
+      selfHarm1: scoreSelfHarmonization(seq, m, selfHarm[0], o.major, fix),
+      selfHarm2: scoreSelfHarmonization(seq, m, selfHarm[1], o.major, fix),
       aba: scoreMetricRepetitionsABA(seq, m, 4),
       leitmotif: scoreRhythmicRepetitions(seq, m, 0, 1),
       wave1: attractorWave(seq, waveSpecs[0].threshold, waves[0]),
@@ -313,7 +347,7 @@ export function createClassicFitness(options = {}) {
       scale: evaluateScale(seq, o.scale),
       pauseProlongation: evaluatePauseAndProlongation(seq, fix),
       reduceRepetitions: evaluateExcessiveRepetitions(seq),
-      intervals: evaluateIntervals(seq, o.major, strict),
+      intervals: evaluateIntervals(seq, o.major, strict, fix),
       niceRepetitions: evaluateInterestingRepetitions(seq, fix),
       ending: scoreTermination(seq),
       balance: scoreBalance(seq, o.balanceMin, o.balanceMax, fix),
