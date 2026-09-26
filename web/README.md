@@ -482,29 +482,35 @@ Leitura:
 ### Quanto do resultado vem da população inicial?
 
 A população inicial «musical» é feita de células rítmicas e graus da escala (e, com várias vozes, já
-em cânone). Para separar o mérito do AG do mérito desses padrões, `node tools/convergence.mjs 4 2000`
-compara-a com uma população **aleatória, sem padrões** (cada semicolcheia é pausa, prolongamento ou
+em cânone); a de «blocos» é escrita com os blocos do corpus. Para separar o mérito do AG do mérito
+desses padrões, `node tools/convergence.mjs 4 2000` compara-as com uma população **aleatória, sem padrões** (cada semicolcheia é pausa, prolongamento ou
 nota cromática ao acaso). Melhor indivíduo, média de 4 sementes, aptidão · crítico
 ([`results/convergence.md`](results/convergence.md)):
 
 | Conjunto | População inicial | Geração 0 | 100 | 600 | 2000 |
 |---|---|---|---|---|---|
-| Só a melodia | com padrões musicais | 12,0 · 0,71 | 19,3 · 0,77 | 20,3 · 0,93 | 20,5 · 0,92 |
-| Só a melodia | aleatória | −5,5 · 0,00 | 16,0 · 0,67 | 19,9 · 0,80 | 20,4 · 0,84 |
-| 2 violinos (c. 2) | com padrões musicais | 16,2 · 0,88 | 22,9 · 0,75 | 24,4 · 0,86 | 24,7 · 0,87 |
-| 2 violinos (c. 2) | aleatória | −4,2 · 0,00 | 17,6 · 0,43 | 22,9 · 0,60 | 24,4 · 0,78 |
-| Trio | com padrões musicais | 16,5 · 0,81 | 21,5 · 0,75 | 23,8 · 0,76 | 24,3 · 0,83 |
-| Trio | aleatória | −6,7 · 0,00 | 13,0 · 0,42 | 19,4 · 0,64 | 21,8 · 0,72 |
+| Só a melodia | blocos do corpus (omissão) | 13,4 · 0,85 | 16,2 · 0,85 | 16,5 · 0,88 | 16,6 · 0,90 |
+| Só a melodia | com padrões musicais | 11,5 · 0,69 | 16,1 · 0,87 | 16,5 · 0,91 | 16,5 · 0,95 |
+| Só a melodia | aleatória | −5,5 · 0,00 | 16,1 · 0,86 | 16,5 · 0,93 | 16,5 · 0,95 |
+| 2 violinos (c. 2) | com padrões musicais | 15,7 · 0,89 | 19,2 · 0,91 | 20,1 · 0,90 | 20,2 · 0,90 |
+| 2 violinos (c. 2) | aleatória | −4,2 · 0,00 | 15,4 · 0,40 | 19,6 · 0,83 | 20,2 · 0,88 |
+| Trio | com padrões musicais | 16,0 · 0,81 | 19,7 · 0,80 | 20,7 · 0,83 | 21,0 · 0,74 |
+| Trio | aleatória | −6,7 · 0,00 | 12,5 · 0,42 | 17,9 · 0,80 | 20,1 · 0,74 |
+
+(Com «não maximizar», ligado por omissão: as aptidões são mais baixas do que com as regras ao
+máximo, porque cada regra satura no seu valor típico, e não são comparáveis com as de versões
+anteriores.)
 
 - **Os padrões iniciais já fazem muito**: antes de qualquer evolução, o melhor indivíduo da geração 0
-  tem crítico 0,71–0,88. O AG acrescenta sobretudo o que as regras pedem (ondas, cadências, forma,
-  contraponto); o «soar a melodia» vem em boa parte das células rítmicas e da escala.
-- **A partir do ruído o AG também converge**: com uma ou duas vozes chega à mesma aptidão em
-  1000–2000 gerações (2–3 vezes mais), mas o crítico fica ~0,1 abaixo. Com 3 vozes não chega lá em
-  2000 gerações (21,8 contra 24,3). As regras não descrevem tudo o que torna típica uma melodia
-  real — o que a análise inversa também mostra.
+  tem crítico 0,69–0,89; com os blocos do corpus, 0,85. O AG acrescenta sobretudo o que as regras
+  pedem (ondas, cadências, forma, contraponto).
+- **A partir do ruído o AG também converge**, e com «não maximizar» mais depressa: uma melodia só
+  chega ao mesmo sítio (aptidão e crítico) em ~300 gerações; com 2 vozes em 1500–2000; com 3 vozes
+  fica um pouco abaixo em 2000 gerações (20,1 contra 21,0). Os padrões iniciais servem sobretudo para
+  chegar mais depressa a algo tocável, e com várias vozes para não gastar a diversidade a reparar o
+  contraponto.
 - Por isso a interface deixa escolher: ver a convergência honesta a partir do ruído, ou partir de
-  padrões musicais para chegar mais depressa a algo tocável.
+  padrões musicais ou dos blocos do corpus.
 
 ### As ondas existem nas melodias reais?
 
