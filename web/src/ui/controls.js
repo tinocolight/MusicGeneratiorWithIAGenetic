@@ -10,7 +10,7 @@ import { INTERVALS } from '../fitness/canon.js';
 import { FORMS } from '../fitness/attractor.js';
 import { WAVE_PRESETS } from '../fitness/presets.js';
 import { hz } from '../analysis/wavefit.js';
-import { activeVoices, playableRange, presetWaves, defaultClassicWaves, WEIGHT_PRESETS } from './config.js';
+import { activeVoices, playableRange, presetWaves, defaultClassicWaves, WEIGHT_PRESETS, CLASSIC_PRESETS, applyClassicPreset } from './config.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -44,8 +44,9 @@ export const CLASSIC_LABELS = {
   reduceRepetitions: 'Repetições excessivas',
   intervals: 'Intervalos',
   niceRepetitions: 'Repetições interessantes',
-  ending: 'Final',
+  ending: 'Final (nota longa)',
   balance: 'Equilíbrio notas/pausas',
+  cadence: 'Fórmulas de final (corpus)',
 };
 
 const BASIN_LABELS = { gaussian: 'Gaussiana', gravity: 'Gravitacional 1/(1+d²)', step: 'Degraus (C#)' };
@@ -312,10 +313,21 @@ export function createControls(getConfig, onChange) {
   function renderClassicWaves() {
     const c = cfg();
     c.classicWaves ||= defaultClassicWaves();
+    // configurations saved before these fields existed
+    c.classicRange ??= 15;
+    c.classicBalanceMin ??= 7;
+    c.classicBalanceMax ??= 40;
+    c.classicPhase1 ??= 0.25;
+    c.classicFixLapses ??= false;
+    c.classicPreset ??= 'custom';
     const box = $('classicWaveCards');
     box.innerHTML = '';
+    renderClassicPresets();
     c.classicWaves.forEach((w, i) => {
-      const changed = () => onChange('waves');
+      const changed = () => {
+        markClassicCustom();
+        onChange('waves');
+      };
       const periodHint = el('small');
       const setPeriod = () => (periodHint.textContent = `1 ciclo em ${(1 / Math.max(0.01, w.periods)).toFixed(2)} c.`);
       setPeriod();
@@ -359,6 +371,47 @@ export function createControls(getConfig, onChange) {
       box.append(el('div', { class: 'wave-card' }, [head, grid]));
     });
     $('classicFirstRun').checked = !!c.classicFirstRun;
+    $('classicFixLapses').checked = c.classicFixLapses ?? true;
+    const consts = $('classicConsts');
+    consts.innerHTML = '';
+    const constInput = (id, label, key, hint, opts) => {
+      const inp = numberInput(id, c[key], 1, (v) => {
+        c[key] = v;
+        markClassicCustom();
+        onChange('weights');
+      }, opts);
+      consts.append(el('label', { for: id }, [label, inp, el('small', { text: hint })]));
+    };
+    constInput('classicRange', 'Âmbito atrator (± meios-tons à volta do Lá4)', 'classicRange', 'original: 15 (+10 nas primeiras avaliações)', { min: '1' });
+    constInput('classicBalMin', 'Pausas + prolongamentos: mínimo (%)', 'classicBalanceMin', 'original: 7', { min: '0', max: '99' });
+    constInput('classicBalMax', 'Pausas + prolongamentos: máximo (%)', 'classicBalanceMax', 'original: 40 (real: 55–80 nas canções)', { min: '1', max: '100' });
+  }
+
+  function markClassicCustom() {
+    const c = cfg();
+    if (c.classicPreset !== 'custom') {
+      c.classicPreset = 'custom';
+      renderClassicPresets();
+    }
+  }
+
+  function renderClassicPresets() {
+    const c = cfg();
+    const row = $('classicPresets');
+    row.innerHTML = '';
+    for (const p of CLASSIC_PRESETS) {
+      const b = el('button', { class: `btn${c.classicPreset === p.id ? ' primary' : ''}`, type: 'button', text: p.label, title: p.hint });
+      b.addEventListener('click', () => {
+        applyClassicPreset(cfg(), p.id);
+        renderClassicWaves();
+        renderWeights();
+        renderGA();
+        onChange('weights');
+      });
+      row.append(b);
+    }
+    const cur = CLASSIC_PRESETS.find((p) => p.id === c.classicPreset);
+    $('classicPresetHint').textContent = cur ? cur.hint : 'Valores alterados à mão.';
   }
 
   // ---------------------------------------------------------------- weights & GA
@@ -389,6 +442,7 @@ export function createControls(getConfig, onChange) {
       inp.addEventListener('input', () => {
         obj[k] = Number(inp.value);
         if (obj === c.weights) c.weightsPreset = 'custom';
+        if (obj === c.classicG1 || obj === c.classicG2) markClassicCustom();
         onChange('weights');
       });
       box.append(el('label', { for: id, text: label }), inp);
@@ -440,7 +494,10 @@ export function createControls(getConfig, onChange) {
     $('mode').addEventListener('change', () => {
       const c = cfg();
       c.mode = $('mode').value;
-      if (c.mode === 'classic') c.ga = { ...c.ga, generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' };
+      if (c.mode === 'classic') {
+        const preset = CLASSIC_PRESETS.find((p) => p.id === c.classicPreset) ?? CLASSIC_PRESETS[0];
+        c.ga = { ...c.ga, ...preset.ga };
+      }
       else {
         const canon = activeVoices(c).length >= 2;
         const generations = c.ga.init === 'random' ? (canon ? 2000 : 1500) : canon ? 800 : 600;
@@ -500,11 +557,16 @@ export function createControls(getConfig, onChange) {
       cfg().classicFirstRun = $('classicFirstRun').checked;
       onChange('waves');
     });
+    $('classicFixLapses').addEventListener('change', () => {
+      cfg().classicFixLapses = $('classicFixLapses').checked;
+      onChange('weights');
+    });
     $('classicWavesReset').addEventListener('click', () => {
       const c = cfg();
-      c.classicWaves = defaultClassicWaves();
-      c.classicFirstRun = false;
+      applyClassicPreset(c, 'original');
       renderClassicWaves();
+      renderWeights();
+      renderGA();
       onChange('waves');
     });
     $('waveDef').addEventListener('change', () => {

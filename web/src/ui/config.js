@@ -6,6 +6,7 @@ import { keyFromScale, MAJOR_TONICS } from '../core/theory.js';
 import { INSTRUMENTS, ENSEMBLES, instrument } from '../core/instruments.js';
 import { INTERVALS, intervalMap } from '../fitness/canon.js';
 import { createClassicFitness, CLASSIC_DEFAULTS } from '../fitness/classic.js';
+import classicPresetsData from '../data/classic-presets.js';
 import { createAttractorFitness, DEFAULT_WEIGHTS } from '../fitness/attractor.js';
 import { WAVE_PRESETS, resolvePreset } from '../fitness/presets.js';
 import { analyzePiece } from '../analysis/wavefit.js';
@@ -47,6 +48,14 @@ export function defaultConfig() {
     // (A4 = 0), amplitude and attraction basin in half tones, horizontal shift (16 = one cycle)
     classicWaves: defaultClassicWaves(),
     classicFirstRun: false,
+    // constants that the original hard-coded (Âmbito ±15 around A4, balance [7, 40] %) and the
+    // correction of its lapses (src/fitness/classic.js); starting combination (results/classic-study.md)
+    classicPreset: 'original',
+    classicRange: CLASSIC_DEFAULTS.rangeAttractor,
+    classicBalanceMin: CLASSIC_DEFAULTS.balanceMin,
+    classicBalanceMax: CLASSIC_DEFAULTS.balanceMax,
+    classicPhase1: CLASSIC_DEFAULTS.phase1Fraction,
+    classicFixLapses: true,
     // start: 'seed' (from scratch with the seed), 'newSeed' (from scratch, new seed each time),
     // 'continue' (from the previous final population); init: 'auto' | 'musical' | 'random'
     ga: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical', seed: 7, start: 'seed', init: 'blocks' },
@@ -61,6 +70,43 @@ export function defaultConfig() {
 export function adaptToVoices(c) {
   const canon = activeVoices(c).length >= 2;
   if (c.ga.init === 'blocks' || c.ga.init === 'auto') c.ga.init = canon ? 'auto' : 'blocks';
+  return c;
+}
+
+const CLASSIC_PRESET_HINTS = {
+  song: 'Calibrada em canções populares reais (Essen): notas mais longas, graus conjuntos, final na tónica.',
+  dance: 'Calibrada em danças reais (reels e hornpipes irlandeses e escoceses): figuração mais rápida e âmbito maior.',
+  chorale: 'Calibrada em sopranos de corais de Bach: semínimas e mínimas, movimento por grau, cadências 3–2–1.',
+};
+
+// Starting combinations for the original algorithm: its own values, and three calibrated on real
+// songs, dances and chorales (tools/classic_study.mjs, results/classic-study.md).
+export const CLASSIC_PRESETS = [
+  {
+    id: 'original', label: 'Original (2020)',
+    hint: 'Os valores do programa original: muitas semicolcheias, saltos grandes, âmbito de várias oitavas.',
+    g1: { ...CLASSIC_DEFAULTS.g1 }, g2: { ...CLASSIC_DEFAULTS.g2 },
+    waves: null, rangeAttractor: CLASSIC_DEFAULTS.rangeAttractor, balanceMin: CLASSIC_DEFAULTS.balanceMin,
+    balanceMax: CLASSIC_DEFAULTS.balanceMax, phase1Fraction: CLASSIC_DEFAULTS.phase1Fraction,
+    ga: { generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' },
+  },
+  ...classicPresetsData.map((p) => ({ ...p, hint: CLASSIC_PRESET_HINTS[p.id] ?? '' })),
+];
+
+/** Apply a starting combination to the classic settings (the seed and the piece stay). */
+export function applyClassicPreset(c, id) {
+  const p = CLASSIC_PRESETS.find((x) => x.id === id) ?? CLASSIC_PRESETS[0];
+  c.classicPreset = p.id;
+  c.classicG1 = { ...CLASSIC_DEFAULTS.g1, ...p.g1 };
+  c.classicG2 = { ...CLASSIC_DEFAULTS.g2, ...p.g2 };
+  c.classicWaves = p.waves ? p.waves.map((w) => ({ ...w })) : defaultClassicWaves();
+  c.classicRange = p.rangeAttractor;
+  c.classicBalanceMin = p.balanceMin;
+  c.classicBalanceMax = p.balanceMax;
+  c.classicPhase1 = p.phase1Fraction;
+  if (p.id !== 'original') c.classicFixLapses = true; // calibrated with the lapses fixed
+  c.classicFirstRun = false;
+  c.ga = { ...c.ga, ...p.ga };
   return c;
 }
 
@@ -126,6 +172,11 @@ export function buildFitness(c) {
       scale: c.scale, major: c.major, bars: c.bars, g1: c.classicG1, g2: c.classicG2,
       waves: waveSpecs,
       firstRunBug: !!c.classicFirstRun,
+      rangeAttractor: c.classicRange ?? CLASSIC_DEFAULTS.rangeAttractor,
+      balanceMin: c.classicBalanceMin ?? CLASSIC_DEFAULTS.balanceMin,
+      balanceMax: c.classicBalanceMax ?? CLASSIC_DEFAULTS.balanceMax,
+      phase1Fraction: c.classicPhase1 ?? CLASSIC_DEFAULTS.phase1Fraction,
+      fixLapses: c.classicFixLapses ?? true,
       // the original self-harmonisation rules compare with the bars where the other voices enter
       selfHarmDistances: [followers[0]?.delayBars ?? 1, followers[1]?.delayBars ?? 2],
     });
