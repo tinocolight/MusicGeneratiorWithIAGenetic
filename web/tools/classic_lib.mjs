@@ -104,14 +104,22 @@ export function measure(genes, stats) {
   const ev = toEvents(genes);
   const compact = eventsToCompact(ev);
   const c = critic.evaluate(compact, { barLen: 16 });
+  // style typicality: share of the 26 descriptors inside the style's P10-P90; style distance:
+  // mean of |x - median| / spread (spread = (P90 - P10) / 2.56, a standard deviation for normal
+  // data), capped at 3, so that an extreme value always counts against (a count alone can be gamed)
   const style = {};
+  const dist = {};
   for (const [id, st] of Object.entries(stats)) {
     let inside = 0;
+    let d = 0;
     FEATURES.forEach((f, j) => {
       const x = c.features[f];
       if (x >= st[j][0] && x <= st[j][2]) inside++;
+      const spread = Math.max(1e-6, (st[j][2] - st[j][0]) / 2.56);
+      d += Number.isFinite(x) ? Math.min(3, Math.abs(x - st[j][1]) / spread) : 3;
     });
     style[id] = inside / FEATURES.length;
+    dist[id] = d / FEATURES.length;
   }
   const e = endingOfGenes(genes, TONIC);
   const notes = ev.filter((x) => x.pitch !== null).length;
@@ -119,6 +127,7 @@ export function measure(genes, stats) {
     critic: c.humanLike,
     typical: c.typicality * FEATURES.length,
     style,
+    dist,
     notesPerBeat: notes / (BARS * 4),
     step: c.features.stepMovement,
     range: c.features.pitchRange,

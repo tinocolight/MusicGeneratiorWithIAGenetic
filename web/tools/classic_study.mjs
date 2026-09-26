@@ -81,7 +81,11 @@ function average(ms) {
   const out = {};
   for (const k of NUM) out[k] = ms.reduce((a, m) => a + m[k], 0) / ms.length;
   out.style = {};
-  for (const s of Object.keys(STYLES)) out.style[s] = ms.reduce((a, m) => a + m.style[s], 0) / ms.length;
+  out.dist = {};
+  for (const s of Object.keys(STYLES)) {
+    out.style[s] = ms.reduce((a, m) => a + m.style[s], 0) / ms.length;
+    out.dist[s] = ms.reduce((a, m) => a + m.dist[s], 0) / ms.length;
+  }
   return out;
 }
 const sd = (xs) => {
@@ -92,8 +96,11 @@ async function runSeeds(pool, params, seeds, keep = 0) {
   const rs = await Promise.all(seeds.map((s) => pool.run(params, s, keep)));
   return { mean: average(rs.map((r) => r.metrics)), all: rs.map((r) => r.metrics), raw: rs };
 }
-/** Objective for a style: as real as the critic says, and as typical of the style. */
-const objective = (m, style) => 0.5 * m.critic + 0.5 * m.style[style];
+/**
+ * Objective for a style: as real as the critic says (0.4), as many descriptors as possible inside the
+ * style's P10-P90 (0.3), and close to the style's medians (0.3; distance capped at 3 spreads).
+ */
+const objective = (m, style) => 0.4 * m.critic + 0.3 * m.style[style] + 0.3 * (1 - m.dist[style] / 3);
 
 // ------------------------------------------------------------------ 1. screening DOE
 function hadamard(n) {
@@ -496,7 +503,7 @@ function writeOutputs() {
     md += '\n';
   }
   if (state.optimize) {
-    md += '## 3. Do início para o fim: otimização a partir da calibração\n\nMétodo da entropia cruzada (um desenho sequencial: em cada iteração 16 combinações à volta da média atual, 3 sementes comuns, as 5 melhores definem a nova média e a nova dispersão) sobre os 16 pesos (em escala logarítmica) e 11 constantes (âmbito atrator, intervalo de pausas, as duas ondas, mutação). Objetivo J = ½ crítico + ½ tipicidade do estilo. No fim, a combinação de partida, a média final e as 3 melhores avaliadas são confirmadas com 12 sementes novas; fica a melhor. Primeiro com os operadores de bits do original (14 iterações, a partir da calibração), depois com os operadores musicais da página (12 iterações, a partir do resultado anterior).\n\n';
+    md += '## 3. Do início para o fim: otimização a partir da calibração\n\nMétodo da entropia cruzada (um desenho sequencial: em cada iteração 16 combinações à volta da média atual, 3 sementes comuns, as 5 melhores definem a nova média e a nova dispersão) sobre os 16 pesos (em escala logarítmica) e 11 constantes (âmbito atrator, intervalo de pausas, as duas ondas, mutação). Objetivo J = 0,4 × crítico + 0,3 × tipicidade do estilo (parte das 26 características dentro do P10–P90 do estilo) + 0,3 × (1 − distância ao estilo / 3), sendo a distância a média de |x − mediana| / dispersão das 26 características, com teto 3 (sem a distância, a contagem sozinha deixava passar âmbitos de 5 oitavas). No fim, a combinação de partida, a média final e as 3 melhores avaliadas são confirmadas com 12 sementes novas; fica a melhor. Primeiro com os operadores de bits do original (14 iterações, a partir da calibração), depois com os operadores musicais da página (12 iterações, a partir do resultado anterior).\n\n';
     for (const [key, title] of [['optimize', 'Operadores de bits (o original)'], ['optimizeMusical', 'Operadores musicais']]) {
       if (!state[key]) continue;
       md += `**${title}**\n\n| Estilo | J por iteração (melhor da iteração) | De partida | Média final | Melhor avaliada | Escolhida |\n|---|---|---|---|---|---|\n`;
@@ -536,15 +543,17 @@ function writeOutputs() {
     md += '\n';
   }
   if (state.confirm) {
-    md += '## 5. Confirmação (24 sementes)\n\n| Configuração | Crítico | Típicas /26 | Canção | Dança | Coral | Notas/tempo | Graus conjuntos | Âmbito | Acaba na tónica |\n|---|---|---|---|---|---|---|---|---|---|\n';
+    md += '## 5. Confirmação (24 sementes)\n\nEstilo: parte das 26 características dentro do P10–P90 do estilo · distância ao estilo (0 = na mediana, 3 = teto).\n\n| Configuração | Crítico | Típicas /26 | Canção | Dança | Coral | Notas/tempo | Graus conjuntos | Âmbito | Acaba na tónica |\n|---|---|---|---|---|---|---|---|---|---|\n';
     for (const c of state.confirm) {
       const m = c.mean;
-      md += `| ${c.label} | ${f2(m.critic)} ± ${f2(c.sd.critic)} | ${f1(m.typical)} | ${pc(m.style.song)} | ${pc(m.style.dance)} | ${pc(m.style.chorale)} | ${f2(m.notesPerBeat)} | ${f2(m.step)} | ${f1(m.range)} | ${pc(m.endsOnTonic)} |\n`;
+      const st = (s) => `${pc(m.style[s])} · ${f2(m.dist[s])}`;
+      md += `| ${c.label} | ${f2(m.critic)} ± ${f2(c.sd.critic)} | ${f1(m.typical)} | ${st('song')} | ${st('dance')} | ${st('chorale')} | ${f2(m.notesPerBeat)} | ${f2(m.step)} | ${f1(m.range)} | ${pc(m.endsOnTonic)} |\n`;
     }
     const R = realStyles();
     for (const s of Object.keys(STYLES)) {
       const m = state.real[s];
-      md += `| *Reais: ${STYLES[s].label.toLowerCase()} (${R[s].test.length})* | *${f2(m.critic)}* | *${f1(m.typical)}* | *${pc(m.style.song)}* | *${pc(m.style.dance)}* | *${pc(m.style.chorale)}* | *${f2(m.notesPerBeat)}* | *${f2(m.step)}* | *${f1(m.range)}* | *${pc(m.endsOnTonic)}* |\n`;
+      const st = (x) => `${pc(m.style[x])} · ${f2(m.dist[x])}`;
+      md += `| *Reais: ${STYLES[s].label.toLowerCase()} (${R[s].test.length})* | *${f2(m.critic)}* | *${f1(m.typical)}* | *${st('song')}* | *${st('dance')}* | *${st('chorale')}* | *${f2(m.notesPerBeat)}* | *${f2(m.step)}* | *${f1(m.range)}* | *${pc(m.endsOnTonic)}* |\n`;
     }
     md += '\nMelodias reais: as de teste (1 em cada 5, não usadas na calibração). Estilo = parte das 26 características dentro do intervalo P10–P90 das melodias reais desse estilo.\n';
   }
