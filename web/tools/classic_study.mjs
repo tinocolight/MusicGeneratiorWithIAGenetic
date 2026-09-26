@@ -98,9 +98,27 @@ async function runSeeds(pool, params, seeds, keep = 0) {
 }
 /**
  * Objective for a style: as real as the critic says (0.4), as many descriptors as possible inside the
- * style's P10-P90 (0.3), and close to the style's medians (0.3; distance capped at 3 spreads).
+ * style's P10-P90 (0.3), and close to the style's medians (0.3; distance capped at 3 spreads),
+ * minus a penalty for leaving what the style allows: pitch range above its P90 + 3 semitones,
+ * notes per beat above 1.2 x its P90 (limits measured on the real melodies of the style).
  */
-const objective = (m, style) => 0.4 * m.critic + 0.3 * m.style[style] + 0.3 * (1 - m.dist[style] / 3);
+let LIMITS = null;
+function limitsOf() {
+  if (LIMITS) return LIMITS;
+  const R = realStyles();
+  const stats = Object.fromEntries(Object.entries(R).map(([k, v]) => [k, styleStats(v.train)]));
+  LIMITS = {};
+  for (const s of Object.keys(STYLES)) {
+    const ms = R[s].train.slice(0, 400).map((x) => measure(x.genes, stats));
+    LIMITS[s] = { range: q(ms.map((m) => m.range), 0.9) + 3, notesPerBeat: 1.2 * q(ms.map((m) => m.notesPerBeat), 0.9) };
+  }
+  return LIMITS;
+}
+const penalty = (m, style) => {
+  const L = limitsOf()[style];
+  return Math.max(0, m.range - L.range) / 12 + Math.max(0, m.notesPerBeat - L.notesPerBeat);
+};
+const objective = (m, style) => 0.4 * m.critic + 0.3 * m.style[style] + 0.3 * (1 - m.dist[style] / 3) - 0.3 * penalty(m, style);
 
 // ------------------------------------------------------------------ 1. screening DOE
 function hadamard(n) {
@@ -339,8 +357,14 @@ async function optimize(pool, { musical = false } = {}) {
   const N = 16;
   const ELITE = 5;
   for (const style of Object.keys(STYLES)) {
-    // the musical-operator search starts from the combination found for the original operators
-    const base = musical ? musicalOps(state.optimize[style].preset) : state.calibrate[style].preset;
+    // the musical-operator search starts from the combination found for the original operators;
+    // with the original operators, the styles after the song start from the song's weights with
+    // their own calibrated constants (from their own calibrated weights the search stayed in
+    // regions of 5-octave ranges)
+    const warm = !musical && style !== 'song' && state[key].song;
+    const base = musical
+      ? musicalOps(state.optimize[style].preset)
+      : warm ? { ...state.calibrate[style].preset, g1: { ...state[key].song.preset.g1 }, g2: { ...state[key].song.preset.g2 } } : state.calibrate[style].preset;
     const centre = state.calibrate[style].constants.waves[0].mean;
     const sizes = ruleSizes(base, R[style].train);
     let mu = encode(base, sizes, centre);
@@ -369,7 +393,8 @@ async function optimize(pool, { musical = false } = {}) {
     // confirm: the final mean, the calibrated start, and the three best evaluated sets, 12 new seeds
     const top = evaluated.slice().sort((a, b) => b.J - a.J).slice(0, 3);
     const candidates = [
-      { id: musical ? 'de partida' : 'calibrada', p: base },
+      { id: musical ? 'de partida' : 'calibrada', p: warm ? state.calibrate[style].preset : base },
+      ...(warm ? [{ id: 'pesos da canção', p: base }] : []),
       { id: 'média final', p: decode(mu, base, sizes, centre) },
       ...top.map((t, k) => ({ id: `melhor avaliada ${k + 1}`, p: decode(t.x, base, sizes, centre) })),
     ];
@@ -503,7 +528,7 @@ function writeOutputs() {
     md += '\n';
   }
   if (state.optimize) {
-    md += '## 3. Do início para o fim: otimização a partir da calibração\n\nMétodo da entropia cruzada (um desenho sequencial: em cada iteração 16 combinações à volta da média atual, 3 sementes comuns, as 5 melhores definem a nova média e a nova dispersão) sobre os 16 pesos (em escala logarítmica) e 11 constantes (âmbito atrator, intervalo de pausas, as duas ondas, mutação). Objetivo J = 0,4 × crítico + 0,3 × tipicidade do estilo (parte das 26 características dentro do P10–P90 do estilo) + 0,3 × (1 − distância ao estilo / 3), sendo a distância a média de |x − mediana| / dispersão das 26 características, com teto 3 (sem a distância, a contagem sozinha deixava passar âmbitos de 5 oitavas). No fim, a combinação de partida, a média final e as 3 melhores avaliadas são confirmadas com 12 sementes novas; fica a melhor. Primeiro com os operadores de bits do original (14 iterações, a partir da calibração), depois com os operadores musicais da página (12 iterações, a partir do resultado anterior).\n\n';
+    md += '## 3. Do início para o fim: otimização a partir da calibração\n\nMétodo da entropia cruzada (um desenho sequencial: em cada iteração 16 combinações à volta da média atual, 3 sementes comuns, as 5 melhores definem a nova média e a nova dispersão) sobre os 16 pesos (em escala logarítmica) e 11 constantes (âmbito atrator, intervalo de pausas, as duas ondas, mutação). Objetivo J = 0,4 × crítico + 0,3 × tipicidade do estilo (parte das 26 características dentro do P10–P90 do estilo) + 0,3 × (1 − distância ao estilo / 3), sendo a distância a média de |x − mediana| / dispersão das 26 características, com teto 3; menos 0,3 × uma penalização por sair do que o estilo admite (âmbito acima do P90 real + 3 meios-tons, por cada oitava a mais; notas por tempo acima de 1,2 × P90). Sem a distância e a penalização, a contagem sozinha deixava passar âmbitos de 5 oitavas. Com os operadores de bits, a dança e o coral partem dos pesos encontrados para a canção, com as suas próprias constantes. No fim, a combinação de partida, a média final e as 3 melhores avaliadas são confirmadas com 12 sementes novas; fica a melhor. Primeiro com os operadores de bits do original (14 iterações, a partir da calibração), depois com os operadores musicais da página (12 iterações, a partir do resultado anterior).\n\n';
     for (const [key, title] of [['optimize', 'Operadores de bits (o original)'], ['optimizeMusical', 'Operadores musicais']]) {
       if (!state[key]) continue;
       md += `**${title}**\n\n| Estilo | J por iteração (melhor da iteração) | De partida | Média final | Melhor avaliada | Escolhida |\n|---|---|---|---|---|---|\n`;
