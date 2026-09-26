@@ -131,4 +131,7 @@ Plackett–Burman de 32 ensaios × 3 sementes à volta de cada combinação esco
 - **Canção popular, bits** (J médio 0,19, margem 0,11): nenhum fator acima do ruído.
 - **Dança (reels, hornpipes), bits** (J médio 0,22, margem 0,03): nenhum fator acima do ruído.
 - **Coral, bits** (J médio 0,14, margem 0,11): nenhum fator acima do ruído.
+- **Canção popular, operadores musicais** (J médio 0,68, margem 0,07): nenhum fator acima do ruído.
+- **Dança (reels, hornpipes), operadores musicais** (J médio 0,69, margem 0,06): Peso: Escala +0,08.
+- **Coral, operadores musicais** (J médio 0,60, margem 0,06): Peso: Padrões rítmicos +0,10.
 
