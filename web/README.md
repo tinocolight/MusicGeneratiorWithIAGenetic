@@ -514,8 +514,9 @@ Leitura:
   «Canção» passa de 36 para 14 meios-tons de âmbito e de 2,7 para 0,6 notas por tempo. Os graus
   conjuntos triplicam e as melodias ficam mais típicas das canções (36 % → 50 %).
 
-  O crítico continua em 0. Os operadores de bits põem ataques fora do tempo (36–67 % das notas,
-  contra no máximo 3 % na música real) e nenhuma regra do original olha para a posição métrica. A
+  O crítico continua em 0. Com os operadores de bits, 36–67 % das notas são síncopas, ou seja,
+  começam fora do tempo e atravessam o tempo seguinte (na música real, no máximo 3 %). Nenhuma regra
+  do original olha para a posição métrica. A
   regra dos intervalos, por seu lado, premeia quartas, quintas e oitavas tanto como graus conjuntos
   e penaliza meios-tons. Os pesos mudam a importância das regras, não o que elas medem.
 - **Com os operadores musicais, os mesmos tipos de valores fazem a diferença que falta.** Os valores
@@ -526,9 +527,10 @@ Leitura:
   características típicas e acaba na tónica tantas vezes como as canções reais. A dança tem a
   densidade das danças reais. O coral tem os graus conjuntos dos corais, mas continua com mais notas
   do que um coral: é o estilo mais difícil com estas regras.
-- **As fórmulas de final ajudam só quando os operadores conseguem escrever um final.** Com os
+- **As fórmulas de final só ajudam quando os operadores conseguem escrever um final.** Com os
   operadores de bits, na triagem, a regra baixa ligeiramente a tipicidade: o AG satisfá-la à custa
-  do resto. Com os operadores musicais leva o final à tónica em 54–75 % das peças, contra 17 %.
+  do resto. Com os operadores musicais, as combinações calibradas (que lhe dão peso) acabam na
+  tónica em 54–75 % das peças, contra 17 % com os valores originais.
 - **Na página**: modo Clássico → «Combinações de partida» (*Original (2020)*, *Canção popular*,
   *Dança*, *Coral*) e «Afinada para» (operadores musicais, que soam melhor, ou os de bits do
   original). Cada estilo tem valores próprios para cada tipo de operadores. A tonalidade, os
