@@ -82,7 +82,7 @@
   {
    "ensemble": "Melodia",
    "id": "caps-blocks",
-   "label": "Não maximizar + população de blocos (sem idioma)",
+   "label": "Não maximizar + população de blocos, sem idioma (nova omissão da melodia)",
    "critic": 0.8986160938390464,
    "typical": 21.125,
    "rests": 0.064453125,
@@ -95,7 +95,7 @@
   {
    "ensemble": "Melodia",
    "id": "caps-blocks-idiom15",
-   "label": "Não maximizar + blocos + idioma 1,5 (nova omissão da melodia)",
+   "label": "Não maximizar + blocos + idioma 1,5",
    "critic": 0.8229503218698949,
    "typical": 20.375,
    "rests": 0.048828125,
@@ -186,7 +186,7 @@
   {
    "ensemble": "2 violinos em cânone",
    "id": "caps-blocks",
-   "label": "Não maximizar + população de blocos (sem idioma)",
+   "label": "Não maximizar + população de blocos, sem idioma (nova omissão da melodia)",
    "critic": 0.7677562384214153,
    "typical": 18.875,
    "rests": 0.080078125,
@@ -199,7 +199,7 @@
   {
    "ensemble": "2 violinos em cânone",
    "id": "caps-blocks-idiom15",
-   "label": "Não maximizar + blocos + idioma 1,5 (nova omissão da melodia)",
+   "label": "Não maximizar + blocos + idioma 1,5",
    "critic": 0.7000499476236091,
    "typical": 18.125,
    "rests": 0.07421875,

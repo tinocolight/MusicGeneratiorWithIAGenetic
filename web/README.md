@@ -104,7 +104,7 @@ no que interessa: tudo o resto tem valores sensatos.
    (onda 1 plana no gene 0) e um botão para repor os valores do original.
 5. **Pesos das regras** (expandir): o peso de cada regra, com predefinições (por omissão,
    **aprendidos da música real**, ênfase no contraponto, ênfase nas ondas), incluindo **Idioma do
-   corpus (blocos)**; e **Não maximizar** (ligado por omissão): cada regra conta só até ao seu valor
+   corpus (blocos)** (a 0 por omissão, ver abaixo); e **Não maximizar** (ligado por omissão): cada regra conta só até ao seu valor
    típico na música real. No modo clássico, os dois grupos do original.
 6. **Algoritmo genético** (expandir): gerações, população, mutação e operadores (musicais ou de bits
    como no GeneticSharp). A **semente** fica à vista: a mesma configuração com a mesma semente dá
@@ -352,12 +352,13 @@ Algumas conclusões:
 
 1. **População «Blocos do corpus»**: cada indivíduo é escrito bloco a bloco pelas transições; os
    blocos associados aos que já foram usados ficam mais prováveis (o produto dos *lifts*, com teto) e a
-   1.ª nota segue a distribuição real.
+   1.ª nota segue a distribuição real. É aqui que entram as regras de associação: «se este bloco já
+   está na melodia, estes outros ficam mais prováveis».
 2. **Mutação por blocos**: reescreve um ou dois tempos com blocos que encaixam no anterior e no resto
    da peça.
-3. **Regra «Idioma do corpus»**: log-probabilidade média por tempo (e coerência das associações),
-   recompensada só até à mediana das melodias reais. Recompensar o máximo daria sempre os blocos mais
-   prováveis, ou seja, o mesmo problema.
+3. **Regra «Idioma do corpus»** (nos pesos, a 0 por omissão): log-probabilidade média por tempo (e
+   coerência das associações), recompensada só até à mediana das melodias reais. Recompensar o
+   máximo daria sempre os blocos mais prováveis, ou seja, o mesmo problema.
 4. **Não maximizar**: cada regra conta só até ao seu P75 na música real. É a melhoria que a análise
    inversa sugeria («pontuar a distância ao valor típico em vez do máximo»).
 
@@ -368,19 +369,35 @@ Algumas conclusões:
 | Melodia | Anterior (padrões musicais, regras ao máximo) | 0,93 | 17,5 | 88 % / 0 % / 13 % |
 | Melodia | Não maximizar | 0,92 | 18,3 | 63 % / 0 % / 13 % |
 | Melodia | Blocos (população + mutação), regras ao máximo | 0,82 | 18,4 | 100 % / 0 % / 0 % |
-| Melodia | **Não maximizar + blocos + idioma 1,5** (nova omissão) | 0,91 | **21,0** | 38 % / 0 % / 25 % |
+| Melodia | **Não maximizar + blocos** (nova omissão) | 0,90 | **21,1** | 50 % / 0 % / 13 % |
+| Melodia | Não maximizar + blocos + idioma 1,5 | 0,82 | 20,4 | 25 % / 0 % / 63 % |
 | 2 violinos | Anterior | 0,84 | 18,1 | 38 % / 13 % / 50 % |
 | 2 violinos | **Não maximizar** (nova omissão) | **0,90** | 19,1 | 0 % / 13 % / 38 % |
-| 2 violinos | Não maximizar + blocos + idioma 1,5 | 0,74 | 19,0 | 38 % / 63 % / 0 % |
+| 2 violinos | Não maximizar + blocos + idioma 1,5 | 0,70 | 18,1 | 0 % / 75 % / 0 % |
+
+Com 8 sementes, diferenças de crítico de 0,05 ainda são ruído. Por isso as candidatas da melodia só
+foram repetidas com 24 sementes (`node tools/solo_defaults.mjs 24`,
+[`results/solo-defaults.md`](results/solo-defaults.md)):
+
+| Melodia só, com «não maximizar» | Crítico | Típicas /26 |
+|---|---|---|
+| Padrões musicais | 0,93 ± 0,05 | 18,8 ± 1,4 |
+| **Blocos do corpus** | 0,91 ± 0,05 | **20,8 ± 2,0** |
+| Blocos + idioma 0,75 | 0,87 ± 0,06 | 20,5 ± 2,1 |
+| Blocos + idioma 1,5 | 0,84 ± 0,09 | 20,5 ± 2,3 |
 
 - **Não maximizar** é uma melhoria sem custo: o crítico mantém-se na melodia e sobe no cânone (0,84 →
   0,90), as melodias ficam mais típicas e menos presas à tónica.
-- **Os blocos, sozinhos, não chegam**: a população começa variada (a 1.ª nota é a dominante em metade
-  dos indivíduos), mas as regras ao máximo puxam tudo de volta à tónica (100 %). Com «não maximizar»
-  as melodias ficam as mais típicas (21 de 26 características no intervalo real, contra 17,5) com o
-  crítico praticamente igual (0,91 contra 0,93, dentro da variação entre sementes).
-- **No cânone os blocos custam contraponto** (crítico 0,74): por omissão, com duas ou mais vozes a
-  população continua a ser a que já nasce em cânone e o idioma fica a 0.
+- **Os blocos na população e na mutação** tornam as melodias mais típicas (~21 de 26
+  características no intervalo real, contra 17,5–18,8), com o crítico praticamente igual. Sozinhos
+  não chegam: com as regras ao máximo o AG puxa tudo de volta à tónica (100 %).
+- **A regra «idioma» na aptidão não compensa**: quanto maior o peso, mais baixo o crítico, sem
+  ganho em tipicidade. Pedir ao AG que maximize a probabilidade dos blocos leva-o para os blocos
+  mais comuns, que isoladamente soam bem mas juntos dão melodias menos parecidas com as reais. As
+  associações funcionam melhor a *construir* (população e mutação) do que a *julgar*. A regra fica
+  disponível nos pesos, a 0.
+- **No cânone os blocos custam contraponto** (crítico 0,70–0,77): por omissão, com duas ou mais vozes a
+  população continua a ser a que já nasce em cânone.
 - **A dominante quase nunca fica como 1.ª nota numa melodia só**, apesar de ser a mais comum na
   música real: a onda por omissão (arco de frase) começa perto da tónica. Mudar a onda muda isto; as
   regras deixaram de o impor.
@@ -715,6 +732,7 @@ python3 tools/extract_corpus.py --full  # melodias completas, para a análise in
 python3 tools/extract_large_corpus.py # 6758 melodias para os blocos (music21, ~5 min)
 node tools/build_blocks.mjs           # blocos e associações → src/data/blocks-data.js, results/blocks.md
 node tools/openings.mjs 8             # inícios e qualidade por variante → results/openings.md
+node tools/solo_defaults.mjs 24       # omissão da melodia só, 24 sementes → results/solo-defaults.md
 node tools/make_examples.mjs          # exemplo mostrado ao abrir a página
 node tools/build_single.mjs           # dist/ondas-atratoras.html (usa esbuild via npx)
 

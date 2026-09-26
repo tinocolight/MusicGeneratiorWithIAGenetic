@@ -26,8 +26,8 @@ const VARIANTS = [
   { id: 'blocks-idiom', label: 'Blocos + regra «idioma» 3', set: (c) => ((base(c).ga.init = 'blocks'), (c.weights.idiom = 3)) },
   { id: 'blocks-idiom-caps', label: 'Blocos + idioma 3 + não maximizar', set: (c) => ((base(c).ga.init = 'blocks'), (c.weights.idiom = 3), (c.capRules = true)) },
   { id: 'caps-idiom15', label: 'Não maximizar + idioma 1,5 (população musical)', set: (c) => ((base(c).weights.idiom = 1.5), (c.capRules = true)) },
-  { id: 'caps-blocks', label: 'Não maximizar + população de blocos (sem idioma)', set: (c) => ((base(c).ga.init = 'blocks'), (c.capRules = true)) },
-  { id: 'caps-blocks-idiom15', label: 'Não maximizar + blocos + idioma 1,5 (nova omissão da melodia)', set: (c) => ((base(c).ga.init = 'blocks'), (c.weights.idiom = 1.5), (c.capRules = true)) },
+  { id: 'caps-blocks', label: 'Não maximizar + população de blocos, sem idioma (nova omissão da melodia)', set: (c) => ((base(c).ga.init = 'blocks'), (c.capRules = true)) },
+  { id: 'caps-blocks-idiom15', label: 'Não maximizar + blocos + idioma 1,5', set: (c) => ((base(c).ga.init = 'blocks'), (c.weights.idiom = 1.5), (c.capRules = true)) },
 ].filter((v) => !process.argv[3] || process.argv[3].split(',').includes(v.id));
 const ENSEMBLES = [['solo', 'Melodia'], ['telemann', '2 violinos em cânone']];
 
@@ -83,7 +83,7 @@ for (const [ens, ensLabel] of ENSEMBLES) {
 const large = JSON.parse(readFileSync(`${here}../results/blocks.json`, 'utf8'));
 const tot = Object.values(large.firstDeg).reduce((a, b) => a + b, 0);
 const pct = (x) => `${Math.round(x * 100)} %`;
-let md = `# Inícios das melodias geradas\n\nGerado por \`node tools/openings.mjs ${SEEDS}\` (${SEEDS} sementes por linha, configuração por omissão e «Auto-configurar» para o cânone). Primeiros compassos distintos = fração de sementes com um 1.º compasso (ritmo + contorno) diferente de todos os outros.\n\nReferência, ${large.melodies} melodias reais: 1.ª nota na tónica ${pct(large.firstDeg[0] / tot)}, na dominante ${pct(large.firstDeg[4] / tot)}, na mediante ${pct(large.firstDeg[2] / tot)}.\n\n`;
+let md = `# Inícios das melodias geradas\n\nGerado por \`node tools/openings.mjs ${SEEDS}\` (${SEEDS} sementes por linha, configuração por omissão e «Auto-configurar» para o cânone). Primeiros compassos distintos = fração de sementes com um 1.º compasso (ritmo + contorno) diferente de todos os outros.\n\nOmissões atuais: melodia só = «não maximizar» + população e mutação de blocos, sem idioma; cânone = «não maximizar» com a população que já nasce em cânone. Com 8 sementes as diferenças de crítico abaixo de ~0,05 não são conclusivas; a escolha da omissão da melodia foi confirmada com 24 sementes em [`solo-defaults.md`](solo-defaults.md).\n\nReferência, ${large.melodies} melodias reais: 1.ª nota na tónica ${pct(large.firstDeg[0] / tot)}, na dominante ${pct(large.firstDeg[4] / tot)}, na mediante ${pct(large.firstDeg[2] / tot)}.\n\n`;
 md += '| Conjunto | Variante | Crítico | Típicas /26 | Pausas | 1.ª nota tónica / dominante / mediante | 1.os compassos distintos | Padrão «nota longa, pausa, mesma, abaixo, mesma» |\n|---|---|---|---|---|---|---|---|\n';
 for (const r of results) md += `| ${r.ensemble} | ${r.label} | ${r.critic.toFixed(2)} | ${r.typical.toFixed(1)} | ${pct(r.rests)} | ${pct(r.tonic)} / ${pct(r.dominant)} / ${pct(r.mediant)} | ${pct(r.distinctFirstBars)} | ${pct(r.userPattern)} |\n`;
 if (!process.argv[3]) writeFileSync(`${here}../results/openings.json`, JSON.stringify({ seeds: SEEDS, results }, null, 1));

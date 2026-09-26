@@ -12,7 +12,7 @@ import { analyzePiece } from '../analysis/wavefit.js';
 import { LEARNED_WEIGHTS } from '../data/learned-weights.js';
 
 export const WEIGHT_PRESETS = {
-  default: { label: 'Por omissão', weights: () => ({ ...DEFAULT_WEIGHTS, idiom: SOLO_IDIOM }) },
+  default: { label: 'Por omissão', weights: () => ({ ...DEFAULT_WEIGHTS }) },
   learned: { label: 'Aprendidos da música real', weights: () => ({ ...DEFAULT_WEIGHTS, ...LEARNED_WEIGHTS }) },
   counterpoint: { label: 'Ênfase no contraponto', weights: () => ({ ...DEFAULT_WEIGHTS, canon: 10 }) },
   waves: { label: 'Ênfase nas ondas', weights: () => ({ ...DEFAULT_WEIGHTS, attractor: 8 }) },
@@ -37,7 +37,7 @@ export function defaultConfig() {
     waveDef: 'meanAmp',
     waves: resolvePreset('arch', 7),
     weightsPreset: 'default',
-    weights: { ...DEFAULT_WEIGHTS, idiom: SOLO_IDIOM },
+    weights: { ...DEFAULT_WEIGHTS },
     canonWeight: 6,
     // reward each rule only up to its typical value in real melodies (results/blocks.md)
     capRules: true,
@@ -53,16 +53,14 @@ export function defaultConfig() {
   };
 }
 
-// Measured (results/openings.md): for a single melody the corpus blocks (initial population,
-// mutation, idiom rule at 1.5) make the melodies more typical and their beginnings more varied;
-// in a canon they cost counterpoint, so there the canon-aware population is kept, without idiom.
-export const SOLO_IDIOM = 1.5;
-
-/** Default population and idiom weight for the number of voices, unless the user chose others. */
+// Measured (results/openings.md): for a single melody the corpus blocks (initial population and
+// mutation) make the melodies more typical at almost no cost to the critic; the idiom rule in the
+// fitness lowers the critic (24 seeds: 0.91 without it, 0.87 at 0.75, 0.84 at 1.5), so it stays
+// at 0 unless chosen. In a canon the blocks cost counterpoint: the canon-aware population is kept.
+/** Default initial population for the number of voices, unless the user chose another. */
 export function adaptToVoices(c) {
   const canon = activeVoices(c).length >= 2;
   if (c.ga.init === 'blocks' || c.ga.init === 'auto') c.ga.init = canon ? 'auto' : 'blocks';
-  if (c.weightsPreset !== 'custom' && c.weights.idiom !== undefined) c.weights.idiom = canon ? 0 : SOLO_IDIOM;
   return c;
 }
 
@@ -209,7 +207,7 @@ export function autoConfigure(c) {
   c.bars = canon ? Math.max(8, Math.ceil((2 * last + 4) / 2) * 2) : 8;
   if (c.bars > 16) c.bars = 16;
   c.weightsPreset = 'default';
-  c.weights = { ...DEFAULT_WEIGHTS, idiom: canon ? 0 : SOLO_IDIOM };
+  c.weights = { ...DEFAULT_WEIGHTS };
   c.capRules = true;
   if (c.ga.init === 'auto' || c.ga.init === 'blocks') c.ga.init = canon ? 'auto' : 'blocks';
   c.canonWeight = 6;
