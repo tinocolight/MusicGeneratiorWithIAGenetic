@@ -11,9 +11,11 @@
 //             11 constants (14 iterations x 16 candidates x 3 seeds), confirmed with 12 new seeds;
 //   local     local screening around each chosen preset (Plackett-Burman, 32 runs x 3 seeds):
 //             which values still matter once the algorithm works;
+//   optimize-musical, local-musical: the same with the musical operators of the page (beat
+//             cells, scale steps), starting from the combination found for the original operators;
 //   confirm   24 seeds: the original, the original with its lapses fixed, and each preset, with
 //             the original (binary) operators and with the musical operators.
-//   node tools/classic_study.mjs [all|screen|calibrate|optimize|local|confirm]
+//   node tools/classic_study.mjs [all|screen|calibrate|optimize|local|optimize-musical|local-musical|confirm]
 // Writes results/classic-study.json, results/classic-study.md and src/data/classic-presets.js.
 import { Worker } from 'node:worker_threads';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
@@ -276,6 +278,9 @@ const CONSTS = [
   { id: 'w2per', label: 'Onda 2: períodos por compasso', lo: 0, hi: 3.999, get: (p) => Math.max(0, W2_PERIODS.indexOf(p.waves[1].periodsPerBar)), set: (p, v) => (p.waves[1].periodsPerBar = W2_PERIODS[Math.floor(v)]) },
   { id: 'mutation', label: 'Mutação', lo: 0.05, hi: 0.5, get: (p) => p.mutation, set: (p, v) => (p.mutation = Number(v.toFixed(3))) },
 ];
+// with the musical operators the page mutates 90 % of the children; search 0.3–1 there
+const MUTATION_MUSICAL = { lo: 0.3, hi: 1 };
+const musicalOps = (p) => ({ ...p, operators: 'musical', generations: 600, popSize: 80, mutation: p.operators === 'musical' ? p.mutation : 0.9 });
 
 /** Typical size of each rule's score on real melodies: weights are searched as exp(theta) / size. */
 function ruleSizes(p, items) {
@@ -316,15 +321,19 @@ function roundWeights(p) {
   return { ...p, g1: w, g2: { ...w } };
 }
 
-async function optimize(pool) {
+async function optimize(pool, { musical = false } = {}) {
   const R = realStyles();
-  const rng = createRng(2024);
-  state.optimize = {};
-  const ITERS = Number(process.env.ITERS || 14);
+  const rng = createRng(musical ? 3031 : 2024);
+  const key = musical ? 'optimizeMusical' : 'optimize';
+  state[key] = {};
+  const mut = CONSTS.find((k) => k.id === 'mutation');
+  if (musical) Object.assign(mut, MUTATION_MUSICAL);
+  const ITERS = Number(process.env.ITERS || (musical ? 12 : 14));
   const N = 16;
   const ELITE = 5;
   for (const style of Object.keys(STYLES)) {
-    const base = state.calibrate[style].preset;
+    // the musical-operator search starts from the combination found for the original operators
+    const base = musical ? musicalOps(state.optimize[style].preset) : state.calibrate[style].preset;
     const centre = state.calibrate[style].constants.waves[0].mean;
     const sizes = ruleSizes(base, R[style].train);
     let mu = encode(base, sizes, centre);
@@ -332,7 +341,7 @@ async function optimize(pool) {
     const history = [];
     const evaluated = [];
     for (let it = 0; it < ITERS; it++) {
-      const seeds = [1, 2, 3].map((s) => 200000 + 100 * it + s);
+      const seeds = [1, 2, 3].map((s) => (musical ? 500000 : 200000) + 100 * it + s);
       const xs = [mu.slice()];
       while (xs.length < N) xs.push(mu.map((m, i) => m + sigma[i] * rng.gauss()));
       const scored = await Promise.all(xs.map(async (x) => {
@@ -348,27 +357,27 @@ async function optimize(pool) {
       mu = mu.map((m, i) => 0.3 * m + 0.7 * m2[i]);
       sigma = sigma.map((s, i) => Math.max(i < RULES.length ? 0.15 : 0.03, 0.3 * s + 0.7 * s2[i]));
       history.push({ it, bestJ: scored[0].J, meanJ: scored.reduce((a, s) => a + s.J, 0) / scored.length, muJ: scored.find((s) => s.x === xs[0])?.J ?? null, critic: scored[0].mean.critic, style: scored[0].mean.style[style] });
-      log(`optimize ${style} it ${it}: best J ${scored[0].J.toFixed(3)} (critic ${scored[0].mean.critic.toFixed(2)}, style ${scored[0].mean.style[style].toFixed(2)}), mean J ${history.at(-1).meanJ.toFixed(3)}`);
+      log(`${key} ${style} it ${it}: best J ${scored[0].J.toFixed(3)} (critic ${scored[0].mean.critic.toFixed(2)}, style ${scored[0].mean.style[style].toFixed(2)}), mean J ${history.at(-1).meanJ.toFixed(3)}`);
     }
     // confirm: the final mean, the calibrated start, and the three best evaluated sets, 12 new seeds
     const top = evaluated.slice().sort((a, b) => b.J - a.J).slice(0, 3);
     const candidates = [
-      { id: 'calibrada', p: base },
+      { id: musical ? 'de partida' : 'calibrada', p: base },
       { id: 'média final', p: decode(mu, base, sizes, centre) },
       ...top.map((t, k) => ({ id: `melhor avaliada ${k + 1}`, p: decode(t.x, base, sizes, centre) })),
     ];
     const confirmed = [];
     for (const c of candidates) {
       const p = roundWeights(c.p);
-      const r = await runSeeds(pool, p, Array.from({ length: 12 }, (_, s) => 300000 + s));
+      const r = await runSeeds(pool, p, Array.from({ length: 12 }, (_, s) => (musical ? 600000 : 300000) + s));
       confirmed.push({ id: c.id, mean: r.mean, J: objective(r.mean, style), sdJ: sd(r.all.map((m) => objective(m, style))), p });
-      log(`optimize ${style} confirm ${c.id}: J ${objective(r.mean, style).toFixed(3)} critic ${r.mean.critic.toFixed(2)} style ${r.mean.style[style].toFixed(2)}`);
+      log(`${key} ${style} confirm ${c.id}: J ${objective(r.mean, style).toFixed(3)} critic ${r.mean.critic.toFixed(2)} style ${r.mean.style[style].toFixed(2)}`);
     }
     const chosen = confirmed.slice().sort((a, b) => b.J - a.J)[0];
-    state.optimize[style] = { history, confirmed: confirmed.map(({ p, ...rest }) => rest), chosen: chosen.id, preset: chosen.p };
+    state[key][style] = { history, confirmed: confirmed.map(({ p, ...rest }) => rest), chosen: chosen.id, preset: chosen.p };
     save();
   }
-  log('optimisation done');
+  log(`${key} done`);
 }
 
 // ------------------------------------------------------------------ 3b. local screening
@@ -393,15 +402,16 @@ const LOCAL = [
   { id: 'dummy6', label: '(fictício)', set: () => {} },
 ];
 
-async function localScreen(pool) {
+async function localScreen(pool, { musical = false } = {}) {
   const H = hadamard(32).map((r) => r.slice(1));
-  state.local = {};
+  const key = musical ? 'localMusical' : 'local';
+  state[key] = {};
   for (const style of Object.keys(STYLES)) {
-    const base = state.optimize[style].preset;
+    const base = state[musical ? 'optimizeMusical' : 'optimize'][style].preset;
     const runs = await Promise.all(H.map(async (row, i) => {
       const p = clone(base);
       LOCAL.forEach((f, j) => f.set(p, row[j]));
-      const r = await runSeeds(pool, p, [1, 2, 3].map((s) => 400000 + 10 * i + s));
+      const r = await runSeeds(pool, p, [1, 2, 3].map((s) => (musical ? 700000 : 400000) + 10 * i + s));
       return { row, J: objective(r.mean, style), critic: r.mean.critic, style: r.mean.style[style] };
     }));
     const eff = (get) => LOCAL.map((_, j) => {
@@ -410,9 +420,9 @@ async function localScreen(pool) {
       return hi.reduce((a, b) => a + b, 0) / hi.length - lo.reduce((a, b) => a + b, 0) / lo.length;
     });
     const J = eff((r) => r.J);
-    state.local[style] = { factors: LOCAL.map((f) => f.label), J, me: lenth(J).me, critic: eff((r) => r.critic), style: eff((r) => r.style), meanJ: runs.reduce((a, r) => a + r.J, 0) / runs.length };
+    state[key][style] = { factors: LOCAL.map((f) => f.label), J, me: lenth(J).me, critic: eff((r) => r.critic), style: eff((r) => r.style), meanJ: runs.reduce((a, r) => a + r.J, 0) / runs.length };
     save();
-    log(`local screening ${style} done`);
+    log(`${key} ${style} done`);
   }
 }
 
@@ -424,7 +434,8 @@ async function confirm(pool) {
     { id: 'original-fixed', label: 'Original, com os lapsos corrigidos', p: { ...clone(ORIGINAL), fixLapses: true } },
     ...Object.keys(STYLES).map((s) => ({ id: s, label: `Combinação «${STYLES[s].label}»`, p: state.optimize[s].preset })),
     { id: 'original-musical', label: 'Original + operadores musicais', p: musical(ORIGINAL) },
-    ...Object.keys(STYLES).map((s) => ({ id: `${s}-musical`, label: `«${STYLES[s].label}» + operadores musicais`, p: musical(state.optimize[s].preset) })),
+    { id: 'original-fixed-musical', label: 'Original, lapsos corrigidos + operadores musicais', p: musical({ ...clone(ORIGINAL), fixLapses: true }) },
+    ...(state.optimizeMusical ? Object.keys(STYLES).map((s) => ({ id: `${s}-musical`, label: `Combinação «${STYLES[s].label}» afinada para os operadores musicais`, p: state.optimizeMusical[s].preset })) : []),
   ];
   const seeds = Array.from({ length: 24 }, (_, s) => 123000 + s);
   const R = realStyles();
@@ -446,7 +457,7 @@ function toUiPreset(id, p) {
   return {
     id, label: STYLES[id].label, g1: p.g1, g2: p.g2, waves,
     balanceMin: p.balanceMin, balanceMax: p.balanceMax, rangeAttractor: p.rangeAttractor, fixLapses: p.fixLapses,
-    phase1Fraction: p.phase1Fraction, ga: { generations: p.generations, popSize: p.popSize, mutation: p.mutation, operators: 'binary' },
+    phase1Fraction: p.phase1Fraction, ga: { generations: p.generations, popSize: p.popSize, mutation: p.mutation, operators: p.operators },
   };
 }
 
@@ -485,33 +496,42 @@ function writeOutputs() {
     md += '\n';
   }
   if (state.optimize) {
-    md += '## 3. Do início para o fim: otimização a partir da calibração\n\nMétodo da entropia cruzada (um desenho sequencial: em cada iteração 16 combinações à volta da média atual, 3 sementes comuns, as 5 melhores definem a nova média e a nova dispersão), 14 iterações, sobre os 16 pesos (em escala logarítmica) e 11 constantes (âmbito atrator, intervalo de pausas, as duas ondas, mutação). Objetivo J = ½ crítico + ½ tipicidade do estilo. No fim, a combinação calibrada, a média final e as 3 melhores avaliadas são confirmadas com 12 sementes novas; fica a melhor.\n\n';
-    md += '| Estilo | J por iteração (melhor da iteração) | Calibrada | Média final | Melhor avaliada | Escolhida |\n|---|---|---|---|---|---|\n';
-    for (const s of Object.keys(STYLES)) {
-      const O = state.optimize[s];
-      const J = (id) => {
-        const c = O.confirmed.find((x) => x.id === id);
-        return c ? `${f2(c.J)} ± ${f2(c.sdJ)} (crítico ${f2(c.mean.critic)})` : '—';
-      };
-      md += `| ${STYLES[s].label} | ${O.history.map((h) => f2(h.bestJ)).join(' ')} | ${J('calibrada')} | ${J('média final')} | ${J('melhor avaliada 1')} | ${O.chosen} |\n`;
+    md += '## 3. Do início para o fim: otimização a partir da calibração\n\nMétodo da entropia cruzada (um desenho sequencial: em cada iteração 16 combinações à volta da média atual, 3 sementes comuns, as 5 melhores definem a nova média e a nova dispersão) sobre os 16 pesos (em escala logarítmica) e 11 constantes (âmbito atrator, intervalo de pausas, as duas ondas, mutação). Objetivo J = ½ crítico + ½ tipicidade do estilo. No fim, a combinação de partida, a média final e as 3 melhores avaliadas são confirmadas com 12 sementes novas; fica a melhor. Primeiro com os operadores de bits do original (14 iterações, a partir da calibração), depois com os operadores musicais da página (12 iterações, a partir do resultado anterior).\n\n';
+    for (const [key, title] of [['optimize', 'Operadores de bits (o original)'], ['optimizeMusical', 'Operadores musicais']]) {
+      if (!state[key]) continue;
+      md += `**${title}**\n\n| Estilo | J por iteração (melhor da iteração) | De partida | Média final | Melhor avaliada | Escolhida |\n|---|---|---|---|---|---|\n`;
+      for (const s of Object.keys(STYLES)) {
+        const O = state[key][s];
+        const J = (id) => {
+          const c = O.confirmed.find((x) => x.id === id);
+          return c ? `${f2(c.J)} ± ${f2(c.sdJ)} (crítico ${f2(c.mean.critic)}, estilo ${pc(c.mean.style[s])})` : '—';
+        };
+        md += `| ${STYLES[s].label} | ${O.history.map((h) => f2(h.bestJ)).join(' ')} | ${J(key === 'optimize' ? 'calibrada' : 'de partida')} | ${J('média final')} | ${J('melhor avaliada 1')} | ${O.chosen} |\n`;
+      }
+      md += '\n';
     }
-    md += '\n';
-    md += `| Regra | Original (grupo 2) | ${Object.keys(STYLES).map((s) => STYLES[s].label).join(' | ')} |\n|---|---|${Object.keys(STYLES).map(() => '---').join('|')}|\n`;
-    for (const r of RULES) md += `| ${RULE_LABELS[r]} | ${ORIGINAL.g2[r] ?? 0} | ${Object.keys(STYLES).map((s) => state.optimize[s].preset.g2[r]).join(' | ')} |\n`;
-    const cRow = (label, get) => `| ${label} | ${get(ORIGINAL)} | ${Object.keys(STYLES).map((s) => get(state.optimize[s].preset)).join(' | ')} |\n`;
+    const variants = [['optimize', 'bits'], ['optimizeMusical', 'mus.']].filter(([k]) => state[k]);
+    const cols = variants.flatMap(([k, tag]) => Object.keys(STYLES).map((s) => ({ label: `${STYLES[s].label} (${tag})`, p: state[k][s].preset })));
+    md += `Valores escolhidos:\n\n| | Original | ${cols.map((c) => c.label).join(' | ')} |\n|---|---|${cols.map(() => '---').join('|')}|\n`;
+    for (const r of RULES) md += `| Peso: ${RULE_LABELS[r]} | ${ORIGINAL.g2[r] ?? 0} | ${cols.map((c) => c.p.g2[r]).join(' | ')} |\n`;
+    const cRow = (label, get) => `| ${label} | ${get(ORIGINAL)} | ${cols.map((c) => get(c.p)).join(' | ')} |\n`;
     md += cRow('Âmbito atrator (±)', (p) => p.rangeAttractor);
     md += cRow('Pausas + prolongamentos (%)', (p) => `${p.balanceMin}–${p.balanceMax}`);
     md += cRow('Onda 1 (média, amplitude, períodos, bacia)', (p) => `${p.waves[0].mean - GENE_A4 >= 0 ? '+' : ''}${p.waves[0].mean - GENE_A4}, ${p.waves[0].amplitude}, ${p.waves[0].periodsPerBar}, ${p.waves[0].threshold}`);
     md += cRow('Onda 2 (média, amplitude, períodos, bacia)', (p) => `${p.waves[1].mean - GENE_A4 >= 0 ? '+' : ''}${p.waves[1].mean - GENE_A4}, ${p.waves[1].amplitude}, ${p.waves[1].periodsPerBar}, ${p.waves[1].threshold}`);
     md += cRow('Mutação', (p) => String(p.mutation).replace('.', ','));
+    md += cRow('Operadores · gerações · população', (p) => `${p.operators === 'musical' ? 'musicais' : 'bits'} · ${p.generations} · ${p.popSize}`);
     md += '\n';
   }
-  if (state.local) {
+  if (state.local || state.localMusical) {
     md += '## 4. O que ainda conta, à volta de cada combinação (triagem local)\n\nPlackett–Burman de 32 ensaios × 3 sementes à volta de cada combinação escolhida: cada peso a metade ou ao dobro, cada constante um passo abaixo ou acima, 6 fatores fictícios. Efeito em J (+ = aumentar o valor ajuda). Só os efeitos acima da margem de erro de Lenth.\n\n';
-    for (const s of Object.keys(STYLES)) {
-      const L = state.local[s];
-      const sig = L.factors.map((f, j) => [f, L.J[j]]).filter(([f, e]) => Math.abs(e) > L.me && !f.includes('fictício')).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
-      md += `- **${STYLES[s].label}** (J médio ${f2(L.meanJ)}, margem ${f2(L.me)}): ${sig.length ? sig.map(([f, e]) => `${f} ${e > 0 ? '+' : ''}${f2(e)}`).join(' · ') : 'nenhum fator acima do ruído'}.\n`;
+    for (const [key, title] of [['local', 'bits'], ['localMusical', 'operadores musicais']]) {
+      if (!state[key]) continue;
+      for (const s of Object.keys(STYLES)) {
+        const L = state[key][s];
+        const sig = L.factors.map((f, j) => [f, L.J[j]]).filter(([f, e]) => Math.abs(e) > L.me && !f.includes('fictício')).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+        md += `- **${STYLES[s].label}, ${title}** (J médio ${f2(L.meanJ)}, margem ${f2(L.me)}): ${sig.length ? sig.map(([f, e]) => `${f} ${e > 0 ? '+' : ''}${f2(e)}`).join(' · ') : 'nenhum fator acima do ruído'}.\n`;
+      }
     }
     md += '\n';
   }
@@ -531,7 +551,12 @@ function writeOutputs() {
   mkdirSync(`${here}../results`, { recursive: true });
   writeFileSync(`${here}../results/classic-study.md`, md);
   if (state.optimize) {
-    const presets = Object.keys(STYLES).map((s) => toUiPreset(s, state.optimize[s].preset));
+    // each style: the values for the musical operators (the page's default for these presets) and
+    // for the original bit operators
+    const presets = Object.keys(STYLES).map((s) => ({
+      ...toUiPreset(s, (state.optimizeMusical ?? state.optimize)[s].preset),
+      binary: toUiPreset(s, state.optimize[s].preset),
+    }));
     writeFileSync(`${here}../src/data/classic-presets.js`, `// Generated by tools/classic_study.mjs (results/classic-study.md). Do not edit.
 // Starting combinations for the original algorithm, calibrated on real songs, dances and chorales.
 export default ${JSON.stringify(presets, null, 1)};
@@ -546,6 +571,8 @@ try {
   if (phase === 'all' || phase === 'calibrate') await calibrate(pool);
   if (phase === 'all' || phase === 'optimize') await optimize(pool);
   if (phase === 'all' || phase === 'local') await localScreen(pool);
+  if (phase === 'all' || phase === 'optimize-musical') await optimize(pool, { musical: true });
+  if (phase === 'all' || phase === 'local-musical') await localScreen(pool, { musical: true });
   if (phase === 'all' || phase === 'confirm') await confirm(pool);
   writeOutputs();
 } finally {

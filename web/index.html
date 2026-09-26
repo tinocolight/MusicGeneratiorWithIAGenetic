@@ -102,6 +102,10 @@
           <h3>Combinações de partida</h3>
           <p class="hint">Valores do algoritmo original escolhidos por um estudo com música real (desenho de experiências e calibração inversa; <code>web/results/classic-study.md</code>). Mudam os pesos, as ondas, as constantes e o AG; a tonalidade, os compassos e a semente ficam.</p>
           <div class="row" id="classicPresets"></div>
+          <div class="field"><span>Afinada para</span><select id="classicOps">
+            <option value="musical">operadores musicais (soa melhor)</option>
+            <option value="binary">operadores de bits (os do original)</option>
+          </select></div>
           <p class="hint" id="classicPresetHint"></p>
           <h3>Ondas atratoras (como no programa original)</h3>
           <p class="hint" id="classicHint">Os campos do formulário do C# para as duas ondas senoidais W1 e W2: <code>valor médio + amplitude · sen(2π · i / período + 2π · desfasamento / 16)</code>, em semicolcheias. Valores inteiros como no original, exceto os períodos. Os pesos das regras «Onda 1» e «Onda 2» estão em «Pesos das regras». As vozes definem as distâncias da auto-harmonização e a reprodução.</p>

@@ -412,6 +412,17 @@ export function createControls(getConfig, onChange) {
     }
     const cur = CLASSIC_PRESETS.find((p) => p.id === c.classicPreset);
     $('classicPresetHint').textContent = cur ? cur.hint : 'Valores alterados à mão.';
+    $('classicOps').value = c.ga.operators === 'musical' ? 'musical' : 'binary';
+  }
+
+  /** Operators changed: a starting combination switches to its values for those operators. */
+  function operatorsChanged() {
+    const c = cfg();
+    if (c.mode !== 'classic' || !c.classicPreset || c.classicPreset === 'custom') return;
+    applyClassicPreset(c, c.classicPreset, c.ga.operators === 'musical' ? 'musical' : 'binary');
+    renderClassicWaves();
+    renderWeights();
+    renderGA();
   }
 
   // ---------------------------------------------------------------- weights & GA
@@ -557,6 +568,16 @@ export function createControls(getConfig, onChange) {
       cfg().classicFirstRun = $('classicFirstRun').checked;
       onChange('waves');
     });
+    $('classicOps').addEventListener('change', () => {
+      const c = cfg();
+      c.ga.operators = $('classicOps').value;
+      if (c.classicPreset === 'custom') {
+        // hand-made values: only the GA settings of the page for these operators change
+        c.ga = { ...c.ga, ...(c.ga.operators === 'musical' ? { generations: 600, popSize: 80, mutation: 0.9 } : { generations: 1500, popSize: 60, mutation: 0.1 }) };
+        renderGA();
+      } else operatorsChanged();
+      onChange('weights');
+    });
     $('classicFixLapses').addEventListener('change', () => {
       cfg().classicFixLapses = $('classicFixLapses').checked;
       onChange('weights');
@@ -587,7 +608,10 @@ export function createControls(getConfig, onChange) {
         c.ga[key] = parse($(id).value);
         // from noise the GA needs more generations to reach the same level
         if (key === 'init' && c.ga.init === 'random' && c.ga.generations < 1500) c.ga.generations = activeVoices(c).length >= 2 ? 2000 : 1500;
+        if (key === 'operators') operatorsChanged();
+        else if (c.mode === 'classic' && key === 'mutation') markClassicCustom();
         renderGA();
+        if (c.mode === 'classic') renderClassicPresets();
         onChange('ga');
       });
     }

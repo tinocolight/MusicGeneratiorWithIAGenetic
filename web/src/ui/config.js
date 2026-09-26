@@ -92,10 +92,20 @@ export const CLASSIC_PRESETS = [
   },
   ...classicPresetsData.map((p) => ({ ...p, hint: CLASSIC_PRESET_HINTS[p.id] ?? '' })),
 ];
+// the GA settings of the page for each kind of operators (the original values keep their weights)
+const CLASSIC_GA = {
+  binary: { generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' },
+  musical: { generations: 600, popSize: 80, mutation: 0.9, operators: 'musical' },
+};
 
-/** Apply a starting combination to the classic settings (the seed and the piece stay). */
-export function applyClassicPreset(c, id) {
-  const p = CLASSIC_PRESETS.find((x) => x.id === id) ?? CLASSIC_PRESETS[0];
+/**
+ * Apply a starting combination to the classic settings (the seed and the piece stay). Each style
+ * has values tuned for the musical operators and for the original bit operators; the current
+ * choice of operators picks them.
+ */
+export function applyClassicPreset(c, id, operators = c.ga?.operators === 'musical' ? 'musical' : 'binary') {
+  const found = CLASSIC_PRESETS.find((x) => x.id === id) ?? CLASSIC_PRESETS[0];
+  const p = operators === 'binary' && found.binary ? { ...found.binary, hint: found.hint } : found;
   c.classicPreset = p.id;
   c.classicG1 = { ...CLASSIC_DEFAULTS.g1, ...p.g1 };
   c.classicG2 = { ...CLASSIC_DEFAULTS.g2, ...p.g2 };
@@ -106,7 +116,7 @@ export function applyClassicPreset(c, id) {
   c.classicPhase1 = p.phase1Fraction;
   if (p.id !== 'original') c.classicFixLapses = true; // calibrated with the lapses fixed
   c.classicFirstRun = false;
-  c.ga = { ...c.ga, ...p.ga };
+  c.ga = { ...c.ga, ...(p.id === 'original' ? CLASSIC_GA[operators] : { ...p.ga, operators }) };
   return c;
 }
 
