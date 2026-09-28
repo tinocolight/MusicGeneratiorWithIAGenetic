@@ -5,7 +5,7 @@
 2/4,simples,4,x_xx,♪ sc sc,colcheia + semicolcheia + semicolcheia,ta di mi,6332,0.073,1476,0.5489,sim
 2/4,simples,5,x__x,♪. sc,colcheia pontuada + semicolcheia,ta mi,4602,0.0531,1217,0.4526,sim
 2/4,simples,6,____,(lig.) ♩,continuação (semínima),(lig.),2771,0.032,746,0.2774,sim
-2/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,2191,0.0253,1150,0.4277,não
+2/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,2191,0.0253,1150,0.4277,sim
 2/4,simples,8,__x_,(lig.) ♪ ♪,continuação (colcheia) + colcheia,(lig.) di,1884,0.0217,686,0.2551,não
 2/4,simples,9,xxx_,sc sc ♪,semicolcheia + semicolcheia + colcheia,ta ka di,1751,0.0202,637,0.2369,sim
 2/4,simples,10,x_..,♪ pausa ♪,colcheia + pausa de colcheia,ta,735,0.0085,347,0.129,não
@@ -43,7 +43,7 @@
 3/4,simples,4,__x_,(lig.) ♪ ♪,continuação (colcheia) + colcheia,(lig.) di,3305,0.0506,852,0.5627,não
 3/4,simples,5,x__x,♪. sc,colcheia pontuada + semicolcheia,ta mi,2250,0.0344,438,0.2893,sim
 3/4,simples,6,....,pausa ♩,pausa de semínima,(pausa),1332,0.0204,515,0.3402,não
-3/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,1079,0.0165,423,0.2794,não
+3/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,1079,0.0165,423,0.2794,sim
 3/4,simples,8,x_xx,♪ sc sc,colcheia + semicolcheia + semicolcheia,ta di mi,414,0.0063,183,0.1209,sim
 3/4,simples,9,xxxx,sc sc sc sc,semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ka di mi,242,0.0037,97,0.0641,sim
 3/4,simples,10,xxx_,sc sc ♪,semicolcheia + semicolcheia + colcheia,ta ka di,159,0.0024,69,0.0456,sim
@@ -71,7 +71,7 @@
 4/4,simples,4,x__x,♪. sc,colcheia pontuada + semicolcheia,ta mi,9222,0.0583,873,0.2874,sim
 4/4,simples,5,__x_,(lig.) ♪ ♪,continuação (colcheia) + colcheia,(lig.) di,6314,0.0399,1603,0.5276,não
 4/4,simples,6,....,pausa ♩,pausa de semínima,(pausa),3579,0.0226,1289,0.4243,não
-4/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,1696,0.0107,726,0.239,não
+4/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,1696,0.0107,726,0.239,sim
 4/4,simples,8,xx__,sc ♪.,semicolcheia + colcheia pontuada,ta ka,1245,0.0079,198,0.0652,sim
 4/4,simples,9,x_xx,♪ sc sc,colcheia + semicolcheia + semicolcheia,ta di mi,986,0.0062,328,0.108,sim
 4/4,simples,10,xxxx,sc sc sc sc,semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ka di mi,916,0.0058,235,0.0774,sim

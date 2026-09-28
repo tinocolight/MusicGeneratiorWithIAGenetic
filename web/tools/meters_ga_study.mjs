@@ -88,9 +88,15 @@ function tv(counts, total, ref) {
 }
 
 const rows = [];
+const VARIANTS = [
+  { init: 'musical', idiom: 0, label: 'padrões musicais' },
+  { init: 'blocks', idiom: 0, label: 'blocos do corpus' },
+  { init: 'blocks', idiom: 0.75, label: 'blocos + idioma 0,75' },
+  { init: 'blocks', idiom: 1.5, label: 'blocos + idioma 1,5' },
+];
 for (const id of METER_IDS) {
   const meter = METERS[id];
-  for (const init of ['musical', 'blocks']) {
+  for (const { init, idiom, label } of VARIANTS) {
     const res = [];
     for (let s = 1; s <= SEEDS; s++) {
       const cfg = defaultConfig();
@@ -99,6 +105,7 @@ for (const id of METER_IDS) {
       cfg.phraseBars = meter.beats >= 4 ? 2 : 4;
       cfg.ga.init = init;
       cfg.ga.seed = s;
+      cfg.weights = { ...cfg.weights, idiom };
       const b = buildFitness(cfg);
       const ga = createGA({ fitness: b.fit, rng: createRng(s), length: b.fit.length, env: b.env, generations: GENERATIONS, popSize: 80, mutationRate: 0.9, strategy: 'tournament', operators: 'musical', initMode: init });
       ga.step(Infinity);
@@ -116,8 +123,8 @@ for (const id of METER_IDS) {
     }
     const mean = (k) => res.reduce((a, r) => a + r[k], 0) / res.length;
     const sd = (k) => Math.sqrt(res.reduce((a, r) => a + (r[k] - mean(k)) ** 2, 0) / Math.max(1, res.length - 1));
-    rows.push({ id, init, critic: mean('critic'), criticSd: sd('critic'), typical: mean('typical'), tv: mean('tv'), tvSd: sd('tv'), copy: mean('copy'), copyMax: Math.max(...res.map((r) => r.copy)), top: res[0].top });
-    console.error(id, init, rows.at(-1));
+    rows.push({ id, init, label, critic: mean('critic'), criticSd: sd('critic'), typical: mean('typical'), tv: mean('tv'), tvSd: sd('tv'), copy: mean('copy'), copyMax: Math.max(...res.map((r) => r.copy)), top: res[0].top });
+    console.error(id, label, rows.at(-1));
   }
 }
 // what real melodies share with the others of the corpus (a sample)
@@ -130,11 +137,11 @@ for (const id of METER_IDS) {
 
 const f = (x, d = 2) => x.toFixed(d).replace('.', ',');
 const csv = ['compasso,populacao_inicial,critico,critico_desvio,caracteristicas_tipicas_de_26,distancia_das_figuras_reais,distancia_desvio,maior_trecho_copiado_media,maior_trecho_copiado_max,trecho_partilhado_entre_melodias_reais_media,figuras_mais_usadas_semente_1'];
-for (const r of rows) csv.push([r.id, r.init === 'blocks' ? 'blocos do corpus' : 'padrões musicais', r.critic.toFixed(4), r.criticSd.toFixed(4), r.typical.toFixed(2), r.tv.toFixed(4), r.tvSd.toFixed(4), r.copy.toFixed(2), r.copyMax, realCopy[r.id].mean.toFixed(2), `"${r.top}"`].join(','));
+for (const r of rows) csv.push([r.id, r.label, r.critic.toFixed(4), r.criticSd.toFixed(4), r.typical.toFixed(2), r.tv.toFixed(4), r.tvSd.toFixed(4), r.copy.toFixed(2), r.copyMax, realCopy[r.id].mean.toFixed(2), `"${r.top}"`].join(','));
 writeFileSync(`${here}../results/meters/ga.csv`, `﻿${csv.join('\r\n')}\r\n`);
 let md = `# Os blocos por compasso no algoritmo genético\n\nGerado por \`node tools/meters_ga_study.mjs ${SEEDS} ${GENERATIONS}\`: ${SEEDS} sementes por variante, ${GENERATIONS} gerações, população 80, uma melodia de cerca de 32 tempos (8 compassos de 4/4, 11 de 3/4, 16 de 6/8), pesos por omissão com «não maximizar». Tabela também em \`results/meters/ga.csv\`.\n\n`;
 md += '| Compasso | População inicial | Crítico | Típicas /26 | Distância às figuras reais | Maior trecho copiado (tempos): média / máx. | Entre melodias reais |\n|---|---|---|---|---|---|---|\n';
-for (const r of rows) md += `| ${r.id} | ${r.init === 'blocks' ? '**blocos do corpus**' : 'padrões musicais'} | ${f(r.critic)} ± ${f(r.criticSd)} | ${f(r.typical, 1)} | ${f(r.tv)} ± ${f(r.tvSd)} | ${f(r.copy, 1)} / ${r.copyMax} | ${f(realCopy[r.id].mean, 1)} |\n`;
+for (const r of rows) md += `| ${r.id} | ${r.label} | ${f(r.critic)} ± ${f(r.criticSd)} | ${f(r.typical, 1)} | ${f(r.tv)} ± ${f(r.tvSd)} | ${f(r.copy, 1)} / ${r.copyMax} | ${f(realCopy[r.id].mean, 1)} |\n`;
 md += `\n- **Distância às figuras reais**: metade da soma das diferenças entre a frequência de cada figura na melodia gerada e nas melodias reais do mesmo compasso (0 = o mesmo vocabulário rítmico, na mesma proporção).\n- **Maior trecho copiado**: o maior número de tempos seguidos (figura, contorno e intervalo de entrada iguais) que a melodia partilha com alguma melodia real do corpus; na última coluna, o mesmo para melodias reais comparadas com as outras (as fórmulas comuns que qualquer melodia partilha).\n- O crítico foi treinado com melodias em compassos simples; em 6/8 usa o tempo de semínima com ponto nas suas características, mas deve ler-se com cautela.\n`;
 writeFileSync(`${here}../results/meters-ga.md`, md);
 console.log(md);

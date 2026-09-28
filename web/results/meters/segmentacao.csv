@@ -1,7 +1,7 @@
-﻿compasso,bits_por_compasso_sem_segmentar_1a_ordem,bits_por_compasso_sem_segmentar_2a_ordem,bits_por_compasso_por_compasso_1a_ordem,bits_por_compasso_por_compasso_2a_ordem,bits_por_compasso_modelo_escolhido,vezes_mais_provavel_o_ritmo_real
-2/4,4.4863,4.2645,4.4862,4.2643,4.0182,1.3833
-3/4,5.9024,5.6282,4.9353,4.7547,4.2835,3.0715
-4/4,6.727,6.3568,6.6645,6.2778,5.7452,1.9749
-3/8,3.3361,3.2091,3.2051,3.1182,3.0776,1.1963
-6/8,4.9896,4.4633,3.9131,3.7581,3.5486,2.7152
-9/8,6.1109,5.8109,5.118,4.9241,4.446,3.1708
+﻿compasso,bits_por_compasso_sem_segmentar_1a_ordem,bits_por_compasso_sem_segmentar_2a_ordem,bits_por_compasso_por_compasso_1a_ordem,bits_por_compasso_por_compasso_2a_ordem,bits_por_compasso_modelo_escolhido,vezes_so_por_segmentar,vezes_segmentar_e_modelo_escolhido
+2/4,4.4863,4.2645,4.4862,4.2643,4.0182,1.0001,1.3833
+3/4,5.9024,5.6282,4.9353,4.7547,4.2835,1.8321,3.0715
+4/4,6.727,6.3568,6.6645,6.2778,5.7452,1.0562,1.9749
+3/8,3.3361,3.2091,3.2051,3.1182,3.0776,1.065,1.1963
+6/8,4.9896,4.4633,3.9131,3.7581,3.5486,1.6304,2.7152
+9/8,6.1109,5.8109,5.118,4.9241,4.446,1.849,3.1708

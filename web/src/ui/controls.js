@@ -116,9 +116,11 @@ export function createControls(getConfig, onChange) {
       el2.textContent = 'O modelo clássico reproduz o programa original, que só escreve em 4/4.';
       return;
     }
-    el2.textContent = m.compound
+    const beats = c.bars * m.beats;
+    const length = beats < 24 ? ` ${c.bars} compassos de ${m.id} são só ${beats} tempos (8 de 4/4 são 32): aumente os compassos para uma melodia mais longa.` : '';
+    el2.textContent = (m.compound
       ? `Compasso composto: cada tempo é uma semínima com ponto, dividida em três colcheias. Figuras e ligações aprendidas em melodias reais em ${m.id === '12/8' ? '6/8 (há poucas em 12/8)' : m.id} (results/meters).`
-      : `Compasso simples: cada tempo é uma semínima, dividida em duas colcheias. Figuras e ligações aprendidas em melodias reais em ${m.id}${m.id === '4/4' ? ' e 2/2' : ''} (results/meters).`;
+      : `Compasso simples: cada tempo é uma semínima, dividida em duas colcheias. Figuras e ligações aprendidas em melodias reais em ${m.id}${m.id === '4/4' ? ' e 2/2' : ''} (results/meters).`) + length;
   }
 
   function renderPiece() {
@@ -566,6 +568,7 @@ export function createControls(getConfig, onChange) {
       cfg().bars = Number($('bars').value);
       voicesHint();
       barsHint();
+      meterHint();
       onChange('piece');
     });
     $('form').addEventListener('change', () => {
