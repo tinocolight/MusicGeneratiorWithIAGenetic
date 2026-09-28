@@ -51,7 +51,8 @@ function naturalWidth(model, b) {
 
 /** Height of the title block: title, subtitle and, for the one-line canon, the legend. */
 export function titleHeight(model) {
-  return 64 + (model.legend?.length ? model.legend.length * LEGEND_LINE + 26 : 0);
+  // room for the tempo mark above the first staff, under a subtitle that can span the width
+  return 64 + (model.subtitle ? 16 : 0) + (model.legend?.length ? model.legend.length * LEGEND_LINE + 26 : 0);
 }
 
 /** Line breaking for a width: the fewest lines that fit, then bars spread evenly over them. */
@@ -119,7 +120,7 @@ function drawTitle(ctx, model, W, top, { ink, muted }) {
   }
   if (model.legend?.length) {
     ctx.setFillStyle(ink);
-    let y = top + 70;
+    let y = top + (model.subtitle ? 74 : 62);
     for (const line of model.legend) {
       if (line.mark) {
         drawMarkBox(ctx, 14, y - 12, line.mark, ink);
