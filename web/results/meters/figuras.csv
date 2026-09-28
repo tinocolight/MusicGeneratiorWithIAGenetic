@@ -1,0 +1,263 @@
+﻿compasso,familia,posicao_no_ranking,figura_codigo,figura,figura_por_extenso,silabas_takadimi,tempos,fracao_dos_tempos,melodias,fracao_das_melodias,nas_listas_de_manual
+2/4,simples,1,x_x_,♪ ♪,colcheia + colcheia,ta di,34351,0.3963,2599,0.9665,sim
+2/4,simples,2,x___,♩,semínima,ta,19933,0.2299,2304,0.8568,sim
+2/4,simples,3,xxxx,sc sc sc sc,semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ka di mi,9754,0.1125,1057,0.3931,sim
+2/4,simples,4,x_xx,♪ sc sc,colcheia + semicolcheia + semicolcheia,ta di mi,6332,0.073,1476,0.5489,sim
+2/4,simples,5,x__x,♪. sc,colcheia pontuada + semicolcheia,ta mi,4602,0.0531,1217,0.4526,sim
+2/4,simples,6,____,(lig.) ♩,continuação (semínima),(lig.),2771,0.032,746,0.2774,sim
+2/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,2191,0.0253,1150,0.4277,não
+2/4,simples,8,__x_,(lig.) ♪ ♪,continuação (colcheia) + colcheia,(lig.) di,1884,0.0217,686,0.2551,não
+2/4,simples,9,xxx_,sc sc ♪,semicolcheia + semicolcheia + colcheia,ta ka di,1751,0.0202,637,0.2369,sim
+2/4,simples,10,x_..,♪ pausa ♪,colcheia + pausa de colcheia,ta,735,0.0085,347,0.129,não
+2/4,simples,11,....,pausa ♩,pausa de semínima,(pausa),654,0.0075,334,0.1242,não
+2/4,simples,12,..xx,pausa ♪ sc sc,pausa de colcheia + semicolcheia + semicolcheia,(pausa) di mi,524,0.006,381,0.1417,não
+2/4,simples,13,__xx,(lig.) ♪ sc sc,continuação (colcheia) + semicolcheia + semicolcheia,(lig.) di mi,386,0.0045,205,0.0762,não
+2/4,simples,14,__..,(lig.) ♪ pausa ♪,continuação (colcheia) + pausa de colcheia,(lig.),133,0.0015,76,0.0283,não
+2/4,simples,15,xx_x,sc ♪ sc,semicolcheia + colcheia + semicolcheia,ta ka mi,133,0.0015,66,0.0245,sim
+2/4,simples,16,xx__,sc ♪.,semicolcheia + colcheia pontuada,ta ka,123,0.0014,43,0.016,sim
+2/4,simples,17,x_.x,♪ pausa sc sc,colcheia + pausa de semicolcheia + semicolcheia,ta mi,109,0.0013,65,0.0242,não
+2/4,simples,18,_xx_,(lig.) sc sc ♪,continuação (semicolcheia) + semicolcheia + colcheia,(lig.) ka di,66,0.0008,27,0.01,não
+2/4,simples,19,xx.x,sc sc pausa sc sc,semicolcheia + semicolcheia + pausa de semicolcheia + semicolcheia,ta ka mi,51,0.0006,11,0.0041,não
+2/4,simples,20,_xxx,(lig.) sc sc sc sc,continuação (semicolcheia) + semicolcheia + semicolcheia + semicolcheia,(lig.) ka di mi,47,0.0005,19,0.0071,não
+2/4,simples,21,_x_x,(lig.) sc ♪ sc,continuação (semicolcheia) + colcheia + semicolcheia,(lig.) ka mi,35,0.0004,9,0.0033,não
+2/4,simples,22,.xxx,pausa sc sc sc sc,pausa de semicolcheia + semicolcheia + semicolcheia + semicolcheia,(pausa) ka di mi,19,0.0002,11,0.0041,não
+2/4,simples,23,...x,pausa ♪. sc,pausa de colcheia pontuada + semicolcheia,(pausa) mi,18,0.0002,13,0.0048,não
+2/4,simples,24,x.xx,sc pausa sc sc sc,semicolcheia + pausa de semicolcheia + semicolcheia + semicolcheia,ta di mi,17,0.0002,6,0.0022,não
+2/4,simples,25,xxx.,sc sc sc pausa sc,semicolcheia + semicolcheia + semicolcheia + pausa de semicolcheia,ta ka di,14,0.0002,8,0.003,não
+2/4,simples,26,x.x.,sc pausa sc sc pausa sc,semicolcheia + pausa de semicolcheia + semicolcheia + pausa de semicolcheia,ta di,13,0.0001,4,0.0015,não
+2/4,simples,27,xx..,sc sc pausa ♪,semicolcheia + semicolcheia + pausa de colcheia,ta ka,8,0.0001,4,0.0015,não
+2/4,simples,28,x.x_,sc pausa sc ♪,semicolcheia + pausa de semicolcheia + colcheia,ta di,7,0.0001,5,0.0019,não
+2/4,simples,29,___x,(lig.) ♪. sc,continuação (colcheia pontuada) + semicolcheia,(lig.) mi,5,0.0001,4,0.0015,não
+2/4,simples,30,x...,sc pausa ♪.,semicolcheia + pausa de colcheia pontuada,ta,5,0.0001,4,0.0015,não
+2/4,simples,31,_x__,(lig.) sc ♪.,continuação (semicolcheia) + colcheia pontuada,(lig.) ka,4,0,3,0.0011,não
+2/4,simples,32,.xx_,pausa sc sc ♪,pausa de semicolcheia + semicolcheia + colcheia,(pausa) ka di,3,0,2,0.0007,não
+2/4,simples,33,__.x,(lig.) ♪ pausa sc sc,continuação (colcheia) + pausa de semicolcheia + semicolcheia,(lig.) mi,3,0,3,0.0011,não
+2/4,simples,34,_.x_,(lig.) sc pausa sc ♪,continuação (semicolcheia) + pausa de semicolcheia + colcheia,(lig.) di,2,0,1,0.0004,não
+2/4,simples,35,x_x.,♪ sc pausa sc,colcheia + semicolcheia + pausa de semicolcheia,ta di,2,0,2,0.0007,não
+2/4,simples,36,xx_.,sc ♪ pausa sc,semicolcheia + colcheia + pausa de semicolcheia,ta ka,1,0,1,0.0004,não
+2/4,simples,37,.x__,pausa sc ♪.,pausa de semicolcheia + colcheia pontuada,(pausa) ka,1,0,1,0.0004,não
+2/4,simples,38,x__.,♪. pausa sc,colcheia pontuada + pausa de semicolcheia,ta,1,0,1,0.0004,não
+3/4,simples,1,x___,♩,semínima,ta,35939,0.5503,1509,0.9967,sim
+3/4,simples,2,x_x_,♪ ♪,colcheia + colcheia,ta di,13777,0.2109,1333,0.8804,sim
+3/4,simples,3,____,(lig.) ♩,continuação (semínima),(lig.),6409,0.0981,964,0.6367,sim
+3/4,simples,4,__x_,(lig.) ♪ ♪,continuação (colcheia) + colcheia,(lig.) di,3305,0.0506,852,0.5627,não
+3/4,simples,5,x__x,♪. sc,colcheia pontuada + semicolcheia,ta mi,2250,0.0344,438,0.2893,sim
+3/4,simples,6,....,pausa ♩,pausa de semínima,(pausa),1332,0.0204,515,0.3402,não
+3/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,1079,0.0165,423,0.2794,não
+3/4,simples,8,x_xx,♪ sc sc,colcheia + semicolcheia + semicolcheia,ta di mi,414,0.0063,183,0.1209,sim
+3/4,simples,9,xxxx,sc sc sc sc,semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ka di mi,242,0.0037,97,0.0641,sim
+3/4,simples,10,xxx_,sc sc ♪,semicolcheia + semicolcheia + colcheia,ta ka di,159,0.0024,69,0.0456,sim
+3/4,simples,11,__xx,(lig.) ♪ sc sc,continuação (colcheia) + semicolcheia + semicolcheia,(lig.) di mi,105,0.0016,58,0.0383,não
+3/4,simples,12,x_..,♪ pausa ♪,colcheia + pausa de colcheia,ta,82,0.0013,40,0.0264,não
+3/4,simples,13,__..,(lig.) ♪ pausa ♪,continuação (colcheia) + pausa de colcheia,(lig.),54,0.0008,31,0.0205,não
+3/4,simples,14,..xx,pausa ♪ sc sc,pausa de colcheia + semicolcheia + semicolcheia,(pausa) di mi,52,0.0008,33,0.0218,não
+3/4,simples,15,xx__,sc ♪.,semicolcheia + colcheia pontuada,ta ka,47,0.0007,13,0.0086,sim
+3/4,simples,16,_xx_,(lig.) sc sc ♪,continuação (semicolcheia) + semicolcheia + colcheia,(lig.) ka di,14,0.0002,7,0.0046,não
+3/4,simples,17,x_.x,♪ pausa sc sc,colcheia + pausa de semicolcheia + semicolcheia,ta mi,13,0.0002,8,0.0053,não
+3/4,simples,18,___x,(lig.) ♪. sc,continuação (colcheia pontuada) + semicolcheia,(lig.) mi,13,0.0002,10,0.0066,não
+3/4,simples,19,xx..,sc sc pausa ♪,semicolcheia + semicolcheia + pausa de colcheia,ta ka,6,0.0001,1,0.0007,não
+3/4,simples,20,_xxx,(lig.) sc sc sc sc,continuação (semicolcheia) + semicolcheia + semicolcheia + semicolcheia,(lig.) ka di mi,5,0.0001,4,0.0026,não
+3/4,simples,21,_x_x,(lig.) sc ♪ sc,continuação (semicolcheia) + colcheia + semicolcheia,(lig.) ka mi,4,0.0001,2,0.0013,não
+3/4,simples,22,xx_.,sc ♪ pausa sc,semicolcheia + colcheia + pausa de semicolcheia,ta ka,3,0,1,0.0007,não
+3/4,simples,23,...x,pausa ♪. sc,pausa de colcheia pontuada + semicolcheia,(pausa) mi,3,0,2,0.0013,não
+3/4,simples,24,xx_x,sc ♪ sc,semicolcheia + colcheia + semicolcheia,ta ka mi,2,0,2,0.0013,sim
+3/4,simples,25,_x__,(lig.) sc ♪.,continuação (semicolcheia) + colcheia pontuada,(lig.) ka,1,0,1,0.0007,não
+3/4,simples,26,_.x_,(lig.) sc pausa sc ♪,continuação (semicolcheia) + pausa de semicolcheia + colcheia,(lig.) di,1,0,1,0.0007,não
+3/4,simples,27,.x__,pausa sc ♪.,pausa de semicolcheia + colcheia pontuada,(pausa) ka,1,0,1,0.0007,não
+3/4,simples,28,___.,(lig.) ♪. pausa sc,continuação (colcheia pontuada) + pausa de semicolcheia,(lig.),1,0,1,0.0007,não
+4/4,simples,1,x___,♩,semínima,ta,75291,0.4761,2952,0.9717,sim
+4/4,simples,2,x_x_,♪ ♪,colcheia + colcheia,ta di,45940,0.2905,2720,0.8953,sim
+4/4,simples,3,____,(lig.) ♩,continuação (semínima),(lig.),10893,0.0689,1850,0.609,sim
+4/4,simples,4,x__x,♪. sc,colcheia pontuada + semicolcheia,ta mi,9222,0.0583,873,0.2874,sim
+4/4,simples,5,__x_,(lig.) ♪ ♪,continuação (colcheia) + colcheia,(lig.) di,6314,0.0399,1603,0.5276,não
+4/4,simples,6,....,pausa ♩,pausa de semínima,(pausa),3579,0.0226,1289,0.4243,não
+4/4,simples,7,..x_,pausa ♪ ♪,pausa de colcheia + colcheia,(pausa) di,1696,0.0107,726,0.239,não
+4/4,simples,8,xx__,sc ♪.,semicolcheia + colcheia pontuada,ta ka,1245,0.0079,198,0.0652,sim
+4/4,simples,9,x_xx,♪ sc sc,colcheia + semicolcheia + semicolcheia,ta di mi,986,0.0062,328,0.108,sim
+4/4,simples,10,xxxx,sc sc sc sc,semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ka di mi,916,0.0058,235,0.0774,sim
+4/4,simples,11,xxx_,sc sc ♪,semicolcheia + semicolcheia + colcheia,ta ka di,860,0.0054,249,0.082,sim
+4/4,simples,12,_xx_,(lig.) sc sc ♪,continuação (semicolcheia) + semicolcheia + colcheia,(lig.) ka di,349,0.0022,49,0.0161,não
+4/4,simples,13,__xx,(lig.) ♪ sc sc,continuação (colcheia) + semicolcheia + semicolcheia,(lig.) di mi,273,0.0017,126,0.0415,não
+4/4,simples,14,x_..,♪ pausa ♪,colcheia + pausa de colcheia,ta,173,0.0011,70,0.023,não
+4/4,simples,15,xx..,sc sc pausa ♪,semicolcheia + semicolcheia + pausa de colcheia,ta ka,73,0.0005,2,0.0007,não
+4/4,simples,16,..xx,pausa ♪ sc sc,pausa de colcheia + semicolcheia + semicolcheia,(pausa) di mi,71,0.0004,60,0.0197,não
+4/4,simples,17,_xxx,(lig.) sc sc sc sc,continuação (semicolcheia) + semicolcheia + semicolcheia + semicolcheia,(lig.) ka di mi,66,0.0004,21,0.0069,não
+4/4,simples,18,__..,(lig.) ♪ pausa ♪,continuação (colcheia) + pausa de colcheia,(lig.),65,0.0004,34,0.0112,não
+4/4,simples,19,_x_x,(lig.) sc ♪ sc,continuação (semicolcheia) + colcheia + semicolcheia,(lig.) ka mi,32,0.0002,9,0.003,não
+4/4,simples,20,...x,pausa ♪. sc,pausa de colcheia pontuada + semicolcheia,(pausa) mi,27,0.0002,9,0.003,não
+4/4,simples,21,___x,(lig.) ♪. sc,continuação (colcheia pontuada) + semicolcheia,(lig.) mi,21,0.0001,11,0.0036,não
+4/4,simples,22,xx_x,sc ♪ sc,semicolcheia + colcheia + semicolcheia,ta ka mi,18,0.0001,12,0.0039,sim
+4/4,simples,23,x_.x,♪ pausa sc sc,colcheia + pausa de semicolcheia + semicolcheia,ta mi,14,0.0001,6,0.002,não
+4/4,simples,24,_x__,(lig.) sc ♪.,continuação (semicolcheia) + colcheia pontuada,(lig.) ka,10,0.0001,4,0.0013,não
+4/4,simples,25,.xxx,pausa sc sc sc sc,pausa de semicolcheia + semicolcheia + semicolcheia + semicolcheia,(pausa) ka di mi,1,0,1,0.0003,não
+4/4,simples,26,_x..,(lig.) sc sc pausa ♪,continuação (semicolcheia) + semicolcheia + pausa de colcheia,(lig.) ka,1,0,1,0.0003,não
+4/4,simples,27,___.,(lig.) ♪. pausa sc,continuação (colcheia pontuada) + pausa de semicolcheia,(lig.),1,0,1,0.0003,não
+4/4,simples,28,.x_x,pausa sc ♪ sc,pausa de semicolcheia + colcheia + semicolcheia,(pausa) ka mi,1,0,1,0.0003,não
+3/8,composto,1,x_x_x_,♪ ♪ ♪,colcheia + colcheia + colcheia,ta ki da,1962,0.3459,307,0.9219,sim
+3/8,composto,2,x___x_,♩ ♪,semínima + colcheia,ta da,1086,0.1915,216,0.6486,sim
+3/8,composto,3,x__xx_,♪. sc ♪,colcheia pontuada + semicolcheia + colcheia,ta di da,537,0.0947,137,0.4114,sim
+3/8,composto,4,x_____,♩.,semínima pontuada,ta,277,0.0488,102,0.3063,sim
+3/8,composto,5,x_x_xx,♪ ♪ sc sc,colcheia + colcheia + semicolcheia + semicolcheia,ta ki da ma,201,0.0354,104,0.3123,sim
+3/8,composto,6,x___xx,♩ sc sc,semínima + semicolcheia + semicolcheia,ta da ma,200,0.0353,93,0.2793,não
+3/8,composto,7,....x_,pausa ♩ ♪,pausa de semínima + colcheia,(pausa) da,190,0.0335,166,0.4985,não
+3/8,composto,8,x___..,♩ pausa ♪,semínima + pausa de colcheia,ta,158,0.0279,92,0.2763,não
+3/8,composto,9,x_xxxx,♪ sc sc sc sc,colcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ki di da ma,141,0.0249,55,0.1652,não
+3/8,composto,10,xxx_x_,sc sc ♪ ♪,semicolcheia + semicolcheia + colcheia + colcheia,ta va ki da,134,0.0236,59,0.1772,sim
+3/8,composto,11,x_xxx_,♪ sc sc ♪,colcheia + semicolcheia + semicolcheia + colcheia,ta ki di da,108,0.019,44,0.1321,sim
+3/8,composto,12,x__xxx,♪. sc sc sc,colcheia pontuada + semicolcheia + semicolcheia + semicolcheia,ta di da ma,103,0.0182,53,0.1592,não
+3/8,composto,13,x_x__x,♪ ♪. sc,colcheia + colcheia pontuada + semicolcheia,ta ki ma,73,0.0129,24,0.0721,não
+3/8,composto,14,xxxxxx,sc sc sc sc sc sc,semicolcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta va ki di da ma,67,0.0118,32,0.0961,sim
+3/8,composto,15,xxxxx_,sc sc sc sc ♪,semicolcheia + semicolcheia + semicolcheia + semicolcheia + colcheia,ta va ki di da,50,0.0088,26,0.0781,não
+3/8,composto,16,x_x___,♪ ♩,colcheia + semínima,ta ki,48,0.0085,24,0.0721,sim
+3/8,composto,17,x_..x_,♪ pausa ♪ ♪,colcheia + pausa de colcheia + colcheia,ta da,46,0.0081,22,0.0661,não
+3/8,composto,18,x_x_..,♪ ♪ pausa ♪,colcheia + colcheia + pausa de colcheia,ta ki,45,0.0079,25,0.0751,não
+3/8,composto,19,....xx,pausa ♩ sc sc,pausa de semínima + semicolcheia + semicolcheia,(pausa) da ma,40,0.0071,39,0.1171,não
+3/8,composto,20,xxx___,sc sc ♩,semicolcheia + semicolcheia + semínima,ta va ki,29,0.0051,13,0.039,não
+3/8,composto,21,xxx_xx,sc sc ♪ sc sc,semicolcheia + semicolcheia + colcheia + semicolcheia + semicolcheia,ta va ki da ma,29,0.0051,16,0.048,não
+3/8,composto,22,xxx__x,sc sc ♪. sc,semicolcheia + semicolcheia + colcheia pontuada + semicolcheia,ta va ki ma,20,0.0035,7,0.021,não
+3/8,composto,23,x_..xx,♪ pausa ♪ sc sc,colcheia + pausa de colcheia + semicolcheia + semicolcheia,ta da ma,18,0.0032,10,0.03,não
+3/8,composto,24,xxx_..,sc sc ♪ pausa ♪,semicolcheia + semicolcheia + colcheia + pausa de colcheia,ta va ki,18,0.0032,9,0.027,não
+3/8,composto,25,x_x_.x,♪ ♪ pausa sc sc,colcheia + colcheia + pausa de semicolcheia + semicolcheia,ta ki ma,15,0.0026,8,0.024,não
+3/8,composto,26,______,(lig.) ♩.,continuação (semínima pontuada),(lig.),11,0.0019,4,0.012,sim
+3/8,composto,27,____x_,(lig.) ♩ ♪,continuação (semínima) + colcheia,(lig.) da,8,0.0014,5,0.015,não
+3/8,composto,28,__..x_,(lig.) ♪ pausa ♪ ♪,continuação (colcheia) + pausa de colcheia + colcheia,(lig.) da,6,0.0011,6,0.018,não
+3/8,composto,29,.xxxx_,pausa sc sc sc sc ♪,pausa de semicolcheia + semicolcheia + semicolcheia + semicolcheia + colcheia,(pausa) va ki di da,6,0.0011,1,0.003,não
+3/8,composto,30,xxx_.x,sc sc ♪ pausa sc sc,semicolcheia + semicolcheia + colcheia + pausa de semicolcheia + semicolcheia,ta va ki ma,5,0.0009,2,0.006,não
+3/8,composto,31,x___.x,♩ pausa sc sc,semínima + pausa de semicolcheia + semicolcheia,ta ma,5,0.0009,3,0.009,não
+3/8,composto,32,__x_x_,(lig.) ♪ ♪ ♪,continuação (colcheia) + colcheia + colcheia,(lig.) ki da,4,0.0007,4,0.012,não
+3/8,composto,33,x_.xxx,♪ pausa sc sc sc sc,colcheia + pausa de semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta di da ma,3,0.0005,3,0.009,não
+3/8,composto,34,x_....,♪ pausa ♩,colcheia + pausa de semínima,ta,3,0.0005,2,0.006,não
+3/8,composto,35,____..,(lig.) ♩ pausa ♪,continuação (semínima) + pausa de colcheia,(lig.),2,0.0004,1,0.003,não
+3/8,composto,36,xx....,sc sc pausa ♩,semicolcheia + semicolcheia + pausa de semínima,ta va,2,0.0004,1,0.003,não
+3/8,composto,37,xx__..,sc ♪. pausa ♪,semicolcheia + colcheia pontuada + pausa de colcheia,ta va,2,0.0004,1,0.003,não
+3/8,composto,38,..x_x_,pausa ♪ ♪ ♪,pausa de colcheia + colcheia + colcheia,(pausa) ki da,2,0.0004,2,0.006,sim
+3/8,composto,39,__....,(lig.) ♪ pausa ♩,continuação (colcheia) + pausa de semínima,(lig.),2,0.0004,2,0.006,não
+3/8,composto,40,____xx,(lig.) ♩ sc sc,continuação (semínima) + semicolcheia + semicolcheia,(lig.) da ma,2,0.0004,2,0.006,não
+3/8,composto,41,x__x_x,♪. ♪ sc,colcheia pontuada + colcheia + semicolcheia,ta di ma,2,0.0004,2,0.006,não
+3/8,composto,42,x_.xx_,♪ pausa sc sc ♪,colcheia + pausa de semicolcheia + semicolcheia + colcheia,ta di da,2,0.0004,1,0.003,não
+3/8,composto,43,.....x,pausa ♩~sc sc,pausa de semínima ligada a semicolcheia + semicolcheia,(pausa) ma,2,0.0004,2,0.006,não
+3/8,composto,44,.xx_x_,pausa sc sc ♪ ♪,pausa de semicolcheia + semicolcheia + colcheia + colcheia,(pausa) va ki da,1,0.0002,1,0.003,não
+3/8,composto,45,xxx_x.,sc sc ♪ sc pausa sc,semicolcheia + semicolcheia + colcheia + semicolcheia + pausa de semicolcheia,ta va ki da,1,0.0002,1,0.003,não
+3/8,composto,46,xxx.xx,sc sc sc pausa sc sc sc,semicolcheia + semicolcheia + semicolcheia + pausa de semicolcheia + semicolcheia + semicolcheia,ta va ki da ma,1,0.0002,1,0.003,não
+3/8,composto,47,x____x,♩~sc sc,semínima ligada a semicolcheia + semicolcheia,ta ma,1,0.0002,1,0.003,não
+3/8,composto,48,x_...x,♪ pausa ♪. sc,colcheia + pausa de colcheia pontuada + semicolcheia,ta ma,1,0.0002,1,0.003,não
+3/8,composto,49,xxxx__,sc sc sc ♪.,semicolcheia + semicolcheia + semicolcheia + colcheia pontuada,ta va ki di,1,0.0002,1,0.003,não
+3/8,composto,50,x.x_xx,sc pausa sc ♪ sc sc,semicolcheia + pausa de semicolcheia + colcheia + semicolcheia + semicolcheia,ta ki da ma,1,0.0002,1,0.003,não
+3/8,composto,51,xxx.x_,sc sc sc pausa sc ♪,semicolcheia + semicolcheia + semicolcheia + pausa de semicolcheia + colcheia,ta va ki da,1,0.0002,1,0.003,não
+6/8,composto,1,x_x_x_,♪ ♪ ♪,colcheia + colcheia + colcheia,ta ki da,28218,0.4979,1808,0.9461,sim
+6/8,composto,2,x___x_,♩ ♪,semínima + colcheia,ta da,14985,0.2644,1788,0.9356,sim
+6/8,composto,3,x_____,♩.,semínima pontuada,ta,4303,0.0759,1113,0.5824,sim
+6/8,composto,4,x__xx_,♪. sc ♪,colcheia pontuada + semicolcheia + colcheia,ta di da,2343,0.0413,564,0.2951,sim
+6/8,composto,5,....x_,pausa ♩ ♪,pausa de semínima + colcheia,(pausa) da,1873,0.0331,1235,0.6463,não
+6/8,composto,6,x___xx,♩ sc sc,semínima + semicolcheia + semicolcheia,ta da ma,953,0.0168,489,0.2559,não
+6/8,composto,7,x___..,♩ pausa ♪,semínima + pausa de colcheia,ta,483,0.0085,268,0.1402,não
+6/8,composto,8,....xx,pausa ♩ sc sc,pausa de semínima + semicolcheia + semicolcheia,(pausa) da ma,455,0.008,397,0.2077,não
+6/8,composto,9,xxx_x_,sc sc ♪ ♪,semicolcheia + semicolcheia + colcheia + colcheia,ta va ki da,397,0.007,165,0.0863,sim
+6/8,composto,10,__x_x_,(lig.) ♪ ♪ ♪,continuação (colcheia) + colcheia + colcheia,(lig.) ki da,252,0.0044,81,0.0424,não
+6/8,composto,11,____x_,(lig.) ♩ ♪,continuação (semínima) + colcheia,(lig.) da,222,0.0039,127,0.0665,não
+6/8,composto,12,x_x_xx,♪ ♪ sc sc,colcheia + colcheia + semicolcheia + semicolcheia,ta ki da ma,222,0.0039,129,0.0675,sim
+6/8,composto,13,x_x___,♪ ♩,colcheia + semínima,ta ki,215,0.0038,84,0.044,sim
+6/8,composto,14,x__xxx,♪. sc sc sc,colcheia pontuada + semicolcheia + semicolcheia + semicolcheia,ta di da ma,201,0.0035,98,0.0513,não
+6/8,composto,15,x_..x_,♪ pausa ♪ ♪,colcheia + pausa de colcheia + colcheia,ta da,200,0.0035,95,0.0497,não
+6/8,composto,16,__..x_,(lig.) ♪ pausa ♪ ♪,continuação (colcheia) + pausa de colcheia + colcheia,(lig.) da,176,0.0031,100,0.0523,não
+6/8,composto,17,xx__x_,sc ♪. ♪,semicolcheia + colcheia pontuada + colcheia,ta va da,145,0.0026,62,0.0324,não
+6/8,composto,18,x_x_..,♪ ♪ pausa ♪,colcheia + colcheia + pausa de colcheia,ta ki,143,0.0025,76,0.0398,não
+6/8,composto,19,x_xxxx,♪ sc sc sc sc,colcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ki di da ma,116,0.002,46,0.0241,não
+6/8,composto,20,x_xxx_,♪ sc sc ♪,colcheia + semicolcheia + semicolcheia + colcheia,ta ki di da,96,0.0017,44,0.023,sim
+6/8,composto,21,......,pausa ♩.,pausa de semínima pontuada,(pausa),72,0.0013,44,0.023,não
+6/8,composto,22,______,(lig.) ♩.,continuação (semínima pontuada),(lig.),54,0.001,25,0.0131,sim
+6/8,composto,23,xxxxxx,sc sc sc sc sc sc,semicolcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta va ki di da ma,49,0.0009,23,0.012,sim
+6/8,composto,24,_xx_x_,(lig.) sc sc ♪ ♪,continuação (semicolcheia) + semicolcheia + colcheia + colcheia,(lig.) va ki da,47,0.0008,22,0.0115,não
+6/8,composto,25,____xx,(lig.) ♩ sc sc,continuação (semínima) + semicolcheia + semicolcheia,(lig.) da ma,36,0.0006,25,0.0131,não
+6/8,composto,26,..x_x_,pausa ♪ ♪ ♪,pausa de colcheia + colcheia + colcheia,(pausa) ki da,29,0.0005,15,0.0078,sim
+6/8,composto,27,xxxxx_,sc sc sc sc ♪,semicolcheia + semicolcheia + semicolcheia + semicolcheia + colcheia,ta va ki di da,28,0.0005,17,0.0089,não
+6/8,composto,28,__xxx_,(lig.) ♪ sc sc ♪,continuação (colcheia) + semicolcheia + semicolcheia + colcheia,(lig.) ki di da,28,0.0005,15,0.0078,não
+6/8,composto,29,_x_x_x,(lig.) sc ♪ ♪ sc,continuação (semicolcheia) + colcheia + colcheia + semicolcheia,(lig.) va di ma,28,0.0005,3,0.0016,não
+6/8,composto,30,x_x__x,♪ ♪. sc,colcheia + colcheia pontuada + semicolcheia,ta ki ma,26,0.0005,19,0.0099,não
+6/8,composto,31,xxx___,sc sc ♩,semicolcheia + semicolcheia + semínima,ta va ki,25,0.0004,15,0.0078,não
+6/8,composto,32,xxx_xx,sc sc ♪ sc sc,semicolcheia + semicolcheia + colcheia + semicolcheia + semicolcheia,ta va ki da ma,20,0.0004,10,0.0052,não
+6/8,composto,33,__..xx,(lig.) ♪ pausa ♪ sc sc,continuação (colcheia) + pausa de colcheia + semicolcheia + semicolcheia,(lig.) da ma,15,0.0003,14,0.0073,não
+6/8,composto,34,__x___,(lig.) ♪ ♩,continuação (colcheia) + semínima,(lig.) ki,14,0.0002,12,0.0063,não
+6/8,composto,35,____..,(lig.) ♩ pausa ♪,continuação (semínima) + pausa de colcheia,(lig.),14,0.0002,11,0.0058,não
+6/8,composto,36,x_..xx,♪ pausa ♪ sc sc,colcheia + pausa de colcheia + semicolcheia + semicolcheia,ta da ma,13,0.0002,11,0.0058,não
+6/8,composto,37,__x_xx,(lig.) ♪ ♪ sc sc,continuação (colcheia) + colcheia + semicolcheia + semicolcheia,(lig.) ki da ma,12,0.0002,8,0.0042,não
+6/8,composto,38,__....,(lig.) ♪ pausa ♩,continuação (colcheia) + pausa de semínima,(lig.),12,0.0002,9,0.0047,não
+6/8,composto,39,xxx_..,sc sc ♪ pausa ♪,semicolcheia + semicolcheia + colcheia + pausa de colcheia,ta va ki,11,0.0002,6,0.0031,não
+6/8,composto,40,..x___,pausa ♪ ♩,pausa de colcheia + semínima,(pausa) ki,9,0.0002,8,0.0042,não
+6/8,composto,41,xx..x_,sc sc pausa ♪ ♪,semicolcheia + semicolcheia + pausa de colcheia + colcheia,ta va da,9,0.0002,3,0.0016,não
+6/8,composto,42,_x_x__,(lig.) sc ♪ ♪.,continuação (semicolcheia) + colcheia + colcheia pontuada,(lig.) va di,9,0.0002,1,0.0005,não
+6/8,composto,43,x_xx__,♪ sc ♪.,colcheia + semicolcheia + colcheia pontuada,ta ki di,8,0.0001,6,0.0031,não
+6/8,composto,44,x_....,♪ pausa ♩,colcheia + pausa de semínima,ta,8,0.0001,7,0.0037,não
+6/8,composto,45,xx__..,sc ♪. pausa ♪,semicolcheia + colcheia pontuada + pausa de colcheia,ta va,7,0.0001,2,0.001,não
+6/8,composto,46,xxx__x,sc sc ♪. sc,semicolcheia + semicolcheia + colcheia pontuada + semicolcheia,ta va ki ma,6,0.0001,4,0.0021,não
+6/8,composto,47,x___.x,♩ pausa sc sc,semínima + pausa de semicolcheia + semicolcheia,ta ma,6,0.0001,2,0.001,não
+6/8,composto,48,__xx_x,(lig.) ♪ sc ♪ sc,continuação (colcheia) + semicolcheia + colcheia + semicolcheia,(lig.) ki di ma,6,0.0001,2,0.001,não
+6/8,composto,49,xx__xx,sc ♪. sc sc,semicolcheia + colcheia pontuada + semicolcheia + semicolcheia,ta va da ma,6,0.0001,3,0.0016,não
+6/8,composto,50,_____x,(lig.) ♩~sc sc,continuação (semínima ligada a semicolcheia) + semicolcheia,(lig.) ma,5,0.0001,3,0.0016,não
+6/8,composto,51,__xxxx,(lig.) ♪ sc sc sc sc,continuação (colcheia) + semicolcheia + semicolcheia + semicolcheia + semicolcheia,(lig.) ki di da ma,4,0.0001,4,0.0021,não
+6/8,composto,52,x__x_x,♪. ♪ sc,colcheia pontuada + colcheia + semicolcheia,ta di ma,4,0.0001,4,0.0021,não
+6/8,composto,53,___x_x,(lig.) ♪. ♪ sc,continuação (colcheia pontuada) + colcheia + semicolcheia,(lig.) di ma,4,0.0001,2,0.001,não
+6/8,composto,54,_xx_xx,(lig.) sc sc ♪ sc sc,continuação (semicolcheia) + semicolcheia + colcheia + semicolcheia + semicolcheia,(lig.) va ki da ma,3,0.0001,3,0.0016,não
+6/8,composto,55,x_x_.x,♪ ♪ pausa sc sc,colcheia + colcheia + pausa de semicolcheia + semicolcheia,ta ki ma,3,0.0001,2,0.001,não
+6/8,composto,56,xx_xx_,sc ♪ sc ♪,semicolcheia + colcheia + semicolcheia + colcheia,ta va di da,3,0.0001,1,0.0005,não
+6/8,composto,57,___xxx,(lig.) ♪. sc sc sc,continuação (colcheia pontuada) + semicolcheia + semicolcheia + semicolcheia,(lig.) di da ma,3,0.0001,3,0.0016,não
+6/8,composto,58,...xx_,pausa ♪. sc ♪,pausa de colcheia pontuada + semicolcheia + colcheia,(pausa) di da,3,0.0001,3,0.0016,não
+6/8,composto,59,xx..xx,sc sc pausa ♪ sc sc,semicolcheia + semicolcheia + pausa de colcheia + semicolcheia + semicolcheia,ta va da ma,3,0.0001,2,0.001,não
+6/8,composto,60,xxxx__,sc sc sc ♪.,semicolcheia + semicolcheia + semicolcheia + colcheia pontuada,ta va ki di,3,0.0001,2,0.001,não
+6/8,composto,61,__xx__,(lig.) ♪ sc ♪.,continuação (colcheia) + semicolcheia + colcheia pontuada,(lig.) ki di,2,0,2,0.001,não
+6/8,composto,62,_xxxxx,(lig.) sc sc sc sc sc sc,continuação (semicolcheia) + semicolcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia,(lig.) va ki di da ma,2,0,2,0.001,não
+6/8,composto,63,xx___x,sc ♩ sc,semicolcheia + semínima + semicolcheia,ta va ma,2,0,1,0.0005,não
+6/8,composto,64,..x__x,pausa ♪ ♪. sc,pausa de colcheia + colcheia pontuada + semicolcheia,(pausa) ki ma,2,0,2,0.001,não
+6/8,composto,65,___xx_,(lig.) ♪. sc ♪,continuação (colcheia pontuada) + semicolcheia + colcheia,(lig.) di da,2,0,2,0.001,não
+6/8,composto,66,x_.xx_,♪ pausa sc sc ♪,colcheia + pausa de semicolcheia + semicolcheia + colcheia,ta di da,2,0,1,0.0005,não
+6/8,composto,67,_x___x,(lig.) sc ♩ sc,continuação (semicolcheia) + semínima + semicolcheia,(lig.) va ma,2,0,1,0.0005,não
+6/8,composto,68,_xxx_x,(lig.) sc sc sc ♪ sc,continuação (semicolcheia) + semicolcheia + semicolcheia + colcheia + semicolcheia,(lig.) va ki di ma,2,0,1,0.0005,não
+6/8,composto,69,_xxxx_,(lig.) sc sc sc sc ♪,continuação (semicolcheia) + semicolcheia + semicolcheia + semicolcheia + colcheia,(lig.) va ki di da,1,0,1,0.0005,não
+6/8,composto,70,x__x__,♪. ♪.,colcheia pontuada + colcheia pontuada,ta di,1,0,1,0.0005,sim
+6/8,composto,71,xx___.,sc ♩ pausa sc,semicolcheia + semínima + pausa de semicolcheia,ta va,1,0,1,0.0005,não
+6/8,composto,72,.x_x_x,pausa sc ♪ ♪ sc,pausa de semicolcheia + colcheia + colcheia + semicolcheia,(pausa) va di ma,1,0,1,0.0005,não
+6/8,composto,73,_..xxx,(lig.) sc pausa ♪ sc sc sc,continuação (semicolcheia) + pausa de colcheia + semicolcheia + semicolcheia + semicolcheia,(lig.) di da ma,1,0,1,0.0005,não
+6/8,composto,74,___..x,(lig.) ♪. pausa ♪ sc,continuação (colcheia pontuada) + pausa de colcheia + semicolcheia,(lig.) ma,1,0,1,0.0005,não
+6/8,composto,75,__x__x,(lig.) ♪ ♪. sc,continuação (colcheia) + colcheia pontuada + semicolcheia,(lig.) ki ma,1,0,1,0.0005,não
+6/8,composto,76,xx....,sc sc pausa ♩,semicolcheia + semicolcheia + pausa de semínima,ta va,1,0,1,0.0005,não
+6/8,composto,77,..x_xx,pausa ♪ ♪ sc sc,pausa de colcheia + colcheia + semicolcheia + semicolcheia,(pausa) ki da ma,1,0,1,0.0005,não
+6/8,composto,78,___x__,(lig.) ♪. ♪.,continuação (colcheia pontuada) + colcheia pontuada,(lig.) di,1,0,1,0.0005,não
+9/8,composto,1,x_x_x_,♪ ♪ ♪,colcheia + colcheia + colcheia,ta ki da,2841,0.5682,140,0.979,sim
+9/8,composto,2,x___x_,♩ ♪,semínima + colcheia,ta da,1580,0.316,136,0.951,sim
+9/8,composto,3,x_____,♩.,semínima pontuada,ta,135,0.027,46,0.3217,sim
+9/8,composto,4,xxx_x_,sc sc ♪ ♪,semicolcheia + semicolcheia + colcheia + colcheia,ta va ki da,89,0.0178,18,0.1259,sim
+9/8,composto,5,x__xx_,♪. sc ♪,colcheia pontuada + semicolcheia + colcheia,ta di da,84,0.0168,17,0.1189,sim
+9/8,composto,6,....x_,pausa ♩ ♪,pausa de semínima + colcheia,(pausa) da,56,0.0112,52,0.3636,não
+9/8,composto,7,__x_x_,(lig.) ♪ ♪ ♪,continuação (colcheia) + colcheia + colcheia,(lig.) ki da,44,0.0088,11,0.0769,não
+9/8,composto,8,x_..x_,♪ pausa ♪ ♪,colcheia + pausa de colcheia + colcheia,ta da,35,0.007,8,0.0559,não
+9/8,composto,9,x___xx,♩ sc sc,semínima + semicolcheia + semicolcheia,ta da ma,28,0.0056,15,0.1049,não
+9/8,composto,10,x_x_xx,♪ ♪ sc sc,colcheia + colcheia + semicolcheia + semicolcheia,ta ki da ma,17,0.0034,8,0.0559,sim
+9/8,composto,11,____x_,(lig.) ♩ ♪,continuação (semínima) + colcheia,(lig.) da,12,0.0024,4,0.028,não
+9/8,composto,12,..x_x_,pausa ♪ ♪ ♪,pausa de colcheia + colcheia + colcheia,(pausa) ki da,12,0.0024,2,0.014,sim
+9/8,composto,13,x_x___,♪ ♩,colcheia + semínima,ta ki,11,0.0022,3,0.021,sim
+9/8,composto,14,xx__x_,sc ♪. ♪,semicolcheia + colcheia pontuada + colcheia,ta va da,11,0.0022,5,0.035,não
+9/8,composto,15,x___..,♩ pausa ♪,semínima + pausa de colcheia,ta,10,0.002,4,0.028,não
+9/8,composto,16,....xx,pausa ♩ sc sc,pausa de semínima + semicolcheia + semicolcheia,(pausa) da ma,6,0.0012,6,0.042,não
+9/8,composto,17,_xx_x_,(lig.) sc sc ♪ ♪,continuação (semicolcheia) + semicolcheia + colcheia + colcheia,(lig.) va ki da,6,0.0012,1,0.007,não
+9/8,composto,18,x_x__x,♪ ♪. sc,colcheia + colcheia pontuada + semicolcheia,ta ki ma,5,0.001,3,0.021,não
+9/8,composto,19,x__xxx,♪. sc sc sc,colcheia pontuada + semicolcheia + semicolcheia + semicolcheia,ta di da ma,4,0.0008,2,0.014,não
+9/8,composto,20,xxx__x,sc sc ♪. sc,semicolcheia + semicolcheia + colcheia pontuada + semicolcheia,ta va ki ma,4,0.0008,2,0.014,não
+9/8,composto,21,__xxx_,(lig.) ♪ sc sc ♪,continuação (colcheia) + semicolcheia + semicolcheia + colcheia,(lig.) ki di da,2,0.0004,2,0.014,não
+9/8,composto,22,x_xxxx,♪ sc sc sc sc,colcheia + semicolcheia + semicolcheia + semicolcheia + semicolcheia,ta ki di da ma,2,0.0004,1,0.007,não
+9/8,composto,23,xxxxx_,sc sc sc sc ♪,semicolcheia + semicolcheia + semicolcheia + semicolcheia + colcheia,ta va ki di da,2,0.0004,2,0.014,não
+9/8,composto,24,_xxxx_,(lig.) sc sc sc sc ♪,continuação (semicolcheia) + semicolcheia + semicolcheia + semicolcheia + colcheia,(lig.) va ki di da,1,0.0002,1,0.007,não
+9/8,composto,25,xxx_xx,sc sc ♪ sc sc,semicolcheia + semicolcheia + colcheia + semicolcheia + semicolcheia,ta va ki da ma,1,0.0002,1,0.007,não
+9/8,composto,26,____xx,(lig.) ♩ sc sc,continuação (semínima) + semicolcheia + semicolcheia,(lig.) da ma,1,0.0002,1,0.007,não
+9/8,composto,27,x_xxx_,♪ sc sc ♪,colcheia + semicolcheia + semicolcheia + colcheia,ta ki di da,1,0.0002,1,0.007,sim
+12/8,composto,1,x_x_x_,♪ ♪ ♪,colcheia + colcheia + colcheia,ta ki da,99,0.3779,6,0.8571,sim
+12/8,composto,2,x___x_,♩ ♪,semínima + colcheia,ta da,91,0.3473,7,1,sim
+12/8,composto,3,......,pausa ♩.,pausa de semínima pontuada,(pausa),21,0.0802,1,0.1429,não
+12/8,composto,4,x_____,♩.,semínima pontuada,ta,17,0.0649,5,0.7143,sim
+12/8,composto,5,x__xx_,♪. sc ♪,colcheia pontuada + semicolcheia + colcheia,ta di da,14,0.0534,2,0.2857,sim
+12/8,composto,6,___xx_,(lig.) ♪. sc ♪,continuação (colcheia pontuada) + semicolcheia + colcheia,(lig.) di da,8,0.0305,1,0.1429,não
+12/8,composto,7,x_x___,♪ ♩,colcheia + semínima,ta ki,4,0.0153,1,0.1429,sim
+12/8,composto,8,x___xx,♩ sc sc,semínima + semicolcheia + semicolcheia,ta da ma,2,0.0076,2,0.2857,não
+12/8,composto,9,x___..,♩ pausa ♪,semínima + pausa de colcheia,ta,2,0.0076,1,0.1429,não
+12/8,composto,10,..x___,pausa ♪ ♩,pausa de colcheia + semínima,(pausa) ki,2,0.0076,1,0.1429,não
+12/8,composto,11,....x_,pausa ♩ ♪,pausa de semínima + colcheia,(pausa) da,1,0.0038,1,0.1429,não
+12/8,composto,12,______,(lig.) ♩.,continuação (semínima pontuada),(lig.),1,0.0038,1,0.1429,sim

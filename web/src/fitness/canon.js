@@ -24,9 +24,13 @@
 // With three voices, complete triads on strong beats are rewarded, and every voice is
 // checked against the range of its instrument.
 
+import { meterOf, metricWeight } from '../core/meter.js';
+
 const IMPERFECT = new Set([3, 4, 8, 9]);
 
-export function metricWeightFor(step, barLen) {
+/** Metric weight of a step; with `meter` (3/4 and 6/8 have the same bar length) that meter's. */
+export function metricWeightFor(step, barLen, meter = null) {
+  if (meter) return metricWeight(step, meter);
   const p = step % barLen;
   if (p === 0) return 1;
   if (barLen === 12) return p === 6 ? 0.8 : p % 2 === 0 ? 0.4 : 0.2; // 6/8
@@ -88,9 +92,9 @@ export function intervalMap(name, key) {
  * Counterpoint between two voices that play the same line.
  * @param line {pitch: (number|null)[], onset: boolean[]} of the melody (n steps)
  * @param a, b {delay (steps), map (pitch => pitch)}
- * @param opts {circular (round), barLen, end (absolute step where the analysis stops)}
+ * @param opts {circular (round), barLen, meter, end (absolute step where the analysis stops)}
  */
-export function analyzePair(line, a, b, { circular = false, barLen = 16, end = null } = {}) {
+export function analyzePair(line, a, b, { circular = false, barLen = 16, meter = null, end = null } = {}) {
   const n = line.pitch.length;
   const mapA = a.map || ((p) => p);
   const mapB = b.map || ((p) => p);
@@ -133,7 +137,7 @@ export function analyzePair(line, a, b, { circular = false, barLen = 16, end = n
     both++;
     const iv = x.p - y.p;
     const q = intervalQuality(iv);
-    const w = metricWeightFor(t, barLen);
+    const w = metricWeightFor(t, barLen, meter);
     let value = q.value;
     if (q.kind === 'unison') unisons++;
 
@@ -180,7 +184,7 @@ export function analyzePair(line, a, b, { circular = false, barLen = 16, end = n
   // activity: share of beats in which at least one of the two voices starts a note
   let beats = 0;
   let activeBeats = 0;
-  const beat = barLen === 12 || barLen === 6 ? 6 : 4;
+  const beat = meter ? meterOf(meter).beat : barLen === 12 || barLen === 6 ? 6 : 4;
   for (let s = start; s + beat <= stop; s += beat) {
     beats++;
     for (let k = s; k < s + beat; k++) {
@@ -221,8 +225,8 @@ export function analyzePair(line, a, b, { circular = false, barLen = 16, end = n
 }
 
 /** Two voices, the second `delay` steps later and `transpose` semitones away (leader = voice 1). */
-export function analyzeCanon(line, { delay, transpose = 0, circular = false, barLen = 16, end = null }) {
-  return analyzePair(line, { delay: 0 }, { delay, map: (p) => p + transpose }, { circular, barLen, end });
+export function analyzeCanon(line, { delay, transpose = 0, circular = false, barLen = 16, meter = null, end = null }) {
+  return analyzePair(line, { delay: 0 }, { delay, map: (p) => p + transpose }, { circular, barLen, meter, end });
 }
 
 // ------------------------------------------------------------------ whole ensemble
@@ -241,11 +245,11 @@ function isTriad(pcs) {
  * @returns {score, pairs, strongConsonance, parallels, parallelsPerBar, unisonRatio, contraryRatio,
  *           triadRatio, outOfRange}
  */
-export function analyzeEnsemble(line, voices, { circular = false, barLen = 16, end = null } = {}) {
+export function analyzeEnsemble(line, voices, { circular = false, barLen = 16, meter = null, end = null } = {}) {
   const pairs = [];
   for (let i = 0; i < voices.length; i++) {
     for (let j = i + 1; j < voices.length; j++) {
-      pairs.push({ i, j, ...analyzePair(line, voices[i], voices[j], { circular, barLen, end }) });
+      pairs.push({ i, j, ...analyzePair(line, voices[i], voices[j], { circular, barLen, meter, end }) });
     }
   }
   const n = line.pitch.length;
@@ -273,8 +277,9 @@ export function analyzeEnsemble(line, voices, { circular = false, barLen = 16, e
     let triads = 0;
     const lastDelay = Math.max(...voices.map((v) => v.delay));
     const stop = Math.min(end ?? Infinity, circular ? n : n);
-    for (let t = circular ? 0 : lastDelay; t < stop; t += 4) {
-      if (metricWeightFor(t, barLen) < 0.7) continue;
+    const beatLen = meter ? meterOf(meter).beat : 4;
+    for (let t = circular ? 0 : lastDelay; t < stop; t += beatLen) {
+      if (metricWeightFor(t, barLen, meter) < 0.7) continue;
       const ps = [];
       for (const v of voices) {
         let s = t - v.delay;

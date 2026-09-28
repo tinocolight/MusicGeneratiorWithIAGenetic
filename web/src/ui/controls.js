@@ -10,6 +10,7 @@ import { INTERVALS } from '../fitness/canon.js';
 import { FORMS } from '../fitness/attractor.js';
 import { WAVE_PRESETS } from '../fitness/presets.js';
 import { hz } from '../analysis/wavefit.js';
+import { METER_IDS, METER_LABELS, METERS, phraseBarsFor } from '../core/meter.js';
 import { activeVoices, playableRange, presetWaves, defaultClassicWaves, WEIGHT_PRESETS, CLASSIC_PRESETS, applyClassicPreset } from './config.js';
 
 const $ = (id) => document.getElementById(id);
@@ -106,11 +107,29 @@ export function createControls(getConfig, onChange) {
     if (bars > 16) el2.textContent = `Com ${bars} compassos cada geração demora cerca de ${Math.round(bars / 8)}× mais do que com 8 (${bars === 64 ? '1 a 2 minutos' : 'meio minuto a um minuto'} com os valores por omissão). A partitura divide-se em linhas e em páginas; no piano roll os compassos ficam estreitos.`;
   }
 
+  /** What the meter changes: the beat, and the figures learned from real melodies in that meter. */
+  function meterHint() {
+    const c = cfg();
+    const m = METERS[c.meter ?? '4/4'];
+    const el2 = $('meterHint');
+    if (c.mode === 'classic') {
+      el2.textContent = 'O modelo clássico reproduz o programa original, que só escreve em 4/4.';
+      return;
+    }
+    el2.textContent = m.compound
+      ? `Compasso composto: cada tempo é uma semínima com ponto, dividida em três colcheias. Figuras e ligações aprendidas em melodias reais em ${m.id === '12/8' ? '6/8 (há poucas em 12/8)' : m.id} (results/meters).`
+      : `Compasso simples: cada tempo é uma semínima, dividida em duas colcheias. Figuras e ligações aprendidas em melodias reais em ${m.id}${m.id === '4/4' ? ' e 2/2' : ''} (results/meters).`;
+  }
+
   function renderPiece() {
     const c = cfg();
     $('mode').value = c.mode;
     options($('scale'), SCALE_LABELS.map((l, i) => [i, l]), c.scale);
     $('major').value = c.major ? '1' : '0';
+    const classic0 = c.mode === 'classic';
+    options($('meter'), METER_IDS.map((id) => [id, METER_LABELS[id]]), classic0 ? '4/4' : c.meter ?? '4/4');
+    $('meter').disabled = classic0;
+    meterHint();
     $('bars').value = String(c.bars);
     barsHint();
     options($('form'), Object.keys(FORMS).map((k) => [k, k === 'none' ? 'Livre' : k.replace(/'/g, '′')]), c.form);
@@ -532,6 +551,15 @@ export function createControls(getConfig, onChange) {
     });
     $('major').addEventListener('change', () => {
       cfg().major = $('major').value === '1';
+      onChange('piece');
+    });
+    $('meter').addEventListener('change', () => {
+      const c = cfg();
+      c.meter = $('meter').value;
+      // phrases of about eight beats: 2 bars of 4/4, 4 of 3/4 or 6/8, 8 of 3/8
+      c.phraseBars = phraseBarsFor(c.meter);
+      $('phraseBars').value = String(c.phraseBars);
+      meterHint();
       onChange('piece');
     });
     $('bars').addEventListener('change', () => {

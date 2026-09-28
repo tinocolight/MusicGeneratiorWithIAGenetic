@@ -63,8 +63,8 @@ for (const [ens, ensLabel] of ENSEMBLES) {
       for (const [p, d] of eventsToCompact(ev)) if (t < 128) (first.push([p, Math.min(d, 128 - t)]), (t += d));
       const crit = critic.evaluate(first, { barLen: 16 });
       const line = genesToLine(genes);
-      const beats = lineToBeats(line.pitch, line.onset, { barLen: 16, key: b.key });
-      const fb = beats.slice(0, 4).map((x) => x.id).join(' ');
+      const beats = lineToBeats(line.pitch, line.onset, { meter: '4/4', key: b.key });
+      const fb = beats.slice(0, 4).map((x) => `${x.cell}|${x.contour}`).join(' ');
       const n0 = ev.find((e) => e.pitch !== null);
       rows.push({ critic: crit.humanLike, typical: crit.typicality * criticData.features.length, firstDeg: mod(dposOf(n0.pitch, b.key), 7), firstBar: fb, user: userPattern(ev), rests: crit.features.restRatio });
     }

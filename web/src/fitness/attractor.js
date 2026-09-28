@@ -30,7 +30,8 @@
 //             (see canon.js). It is part of the fitness from the first generation, and the
 //             initial population is already built voice-aware (operators.js).
 
-import { toEvents, STEPS_PER_BAR } from '../core/score.js';
+import { toEvents } from '../core/score.js';
+import { meterOf, phraseBarsFor, plainDurations } from '../core/meter.js';
 import { makeKey, melodicAttraction, pearson } from '../core/theory.js';
 import { makeWave, archWave } from '../core/waves.js';
 import { soundingLine, smooth, clamp } from '../core/analysis.js';
@@ -38,11 +39,12 @@ import { analyzeEnsemble, intervalMap } from './canon.js';
 import { createBlockModel } from '../ga/blocks.js';
 import blocksData from '../data/blocks-data.js';
 
-let blockModel = null;
-/** The building-block model learned from real melodies (shared, built on first use). */
-export const getBlockModel = () => (blockModel ||= createBlockModel(blocksData));
-/** Typical (P75) value of each rule in real melodies: with `caps`, rules are rewarded up to it only. */
-export const RULE_CAPS = blocksData.caps;
+let blockModels = null;
+/** The building-block model of a meter learned from real melodies (shared, built on first use). */
+export const getBlockModel = (meter = '4/4') => (blocksData.meters ? (blockModels ||= createBlockModel(blocksData)).forMeter(meter) : null);
+/** Typical (P75) value of each rule in real melodies of a meter: with `caps`, rules are rewarded up to it only. */
+export const ruleCapsFor = (meter = '4/4') => blocksData.caps?.[meterOf(meter).id] ?? blocksData.caps?.['4/4'] ?? {};
+export const RULE_CAPS = ruleCapsFor('4/4');
 import { instrument } from '../core/instruments.js';
 import { createRng } from '../core/rng.js';
 
@@ -75,11 +77,12 @@ export const DEFAULT_WEIGHTS = {
 
 export const FIELD_DEFAULTS = {
   bars: 8,
+  meter: '4/4',
   tonic: 7, // G major, the original default scale
   mode: 'major',
   lowMidi: null, // default: range of the leading instrument
   highMidi: null,
-  phraseBars: 2,
+  phraseBars: null, // default: about eight beats (core/meter.js)
   form: "AA'BA'",
   restTarget: [0, 0.08],
   basinShape: 'gaussian',
@@ -101,7 +104,11 @@ export function createAttractorFitness(options = {}) {
   if (options.canon && !options.voices && (options.weights?.canon ?? 0) > 0) {
     voiceSpecs = [{ instrument: 'violin' }, { instrument: 'violin', delayBars: options.canon.delayBars ?? 1, transposeSemitones: options.canon.transpose ?? 0 }];
   }
-  const bpb = STEPS_PER_BAR;
+  const meter = meterOf(o.meter);
+  const bpb = meter.barLen;
+  const beat = meter.beat;
+  const phraseBars = o.phraseBars ?? phraseBarsFor(meter);
+  const plain = new Set(plainDurations(meter));
   const length = o.bars * bpb;
   const key = makeKey(o.tonic, o.mode);
   const waveRng = createRng(o.seed ?? 1);
@@ -120,16 +127,18 @@ export function createAttractorFitness(options = {}) {
   // with several voices the counterpoint weighs in unless the caller set its weight explicitly
   if (ensemble.length >= 2 && options.weights?.canon === undefined) weights.canon = 6;
   const canonOn = ensemble.length >= 2 && (weights.canon ?? 0) !== 0;
-  const phraseLen = o.phraseBars * bpb;
-  const nPhrases = Math.max(1, Math.round(o.bars / o.phraseBars));
+  const phraseLen = phraseBars * bpb;
+  const nPhrases = Math.max(1, Math.round(o.bars / phraseBars));
   const form = FORMS[o.form] ?? null;
   const formUnit = form ? length / form.length : 0;
 
   // target tension: an arch per phrase, scaled by a global arch that peaks at ~62% of the piece
-  const phraseArch = archWave(length, bpb, { phraseBars: o.phraseBars, amplitude: 1, mean: 0.5, peakAt: 0.62, descent: 0.3 });
+  const phraseArch = archWave(length, bpb, { phraseBars, amplitude: 1, mean: 0.5, peakAt: 0.62, descent: 0.3 });
   const globalArch = archWave(length, bpb, { phraseBars: o.bars, amplitude: 1, mean: 0.5, peakAt: 0.62, descent: 0.2 });
   const tensionTarget = phraseArch.map((v, i) => 0.6 * v + 0.4 * globalArch[i]);
 
+  const blocks = o.blocks || weights.idiom ? getBlockModel(meter) : null;
+  const caps = ruleCapsFor(meter);
   const minProf = Math.min(...key.profile.filter((_, pc) => key.diatonic[pc]));
   const maxProf = Math.max(...key.profile);
 
@@ -198,7 +207,7 @@ export function createAttractorFitness(options = {}) {
       const b = events[i];
       if (b.pitch === null) continue;
       if (a.pitch !== null) pairs.push([a, b]);
-      else if (a.dur < 4 && i >= 2 && events[i - 2].pitch !== null) pairs.push([events[i - 2], b]);
+      else if (a.dur < beat && i >= 2 && events[i - 2].pitch !== null) pairs.push([events[i - 2], b]);
     }
     const ivs = pairs.map(([a, b]) => b.pitch - a.pitch);
 
@@ -243,8 +252,8 @@ export function createAttractorFitness(options = {}) {
       const pos = nt.start % bpb;
       const pc = ((nt.pitch % 12) + 12) % 12;
       const stab = key.anchoring[pc] >= 3 ? 1 : key.diatonic[pc] ? -0.2 : -1;
-      if (pos % 4 === 0) {
-        const w = pos === 0 ? 2 : pos === 8 ? 1.5 : 1;
+      if (pos % beat === 0) {
+        const w = pos === 0 ? 2 : meter.beats === 4 && pos === bpb / 2 ? 1.5 : 1;
         acc += w * stab;
         wsum += w;
       }
@@ -271,8 +280,8 @@ export function createAttractorFitness(options = {}) {
       let s = 0;
       // the last note must reach the phrase end (possibly followed by a short breath rest)
       const reach = last.start + last.dur;
-      s += last.dur >= 8 ? 1 : last.dur >= 4 ? 0.6 : -0.5;
-      s += reach >= end - 4 ? 0.3 : -0.5;
+      s += last.dur >= 2 * beat ? 1 : last.dur >= beat ? 0.6 : -0.5;
+      s += reach >= end - beat ? 0.3 : -0.5;
       if (isFinal) s += pc === key.tonic ? 1.2 : key.anchoring[pc] >= 3 ? 0.2 : -1;
       else if (isHalf) s += key.anchoring[pc] === 4 || pc === (key.tonic + 7) % 12 ? 1 : key.anchoring[pc] >= 3 ? 0.6 : -0.6;
       else s += key.anchoring[pc] >= 3 ? 0.8 : -0.6;
@@ -288,13 +297,22 @@ export function createAttractorFitness(options = {}) {
 
     // rhythm ------------------------------------------------------------------
     acc = 0;
-    const allowed = new Set([1, 2, 3, 4, 6, 8, 12, 16]);
     for (let i = 0; i < notes.length; i++) {
       const nt = notes[i];
-      const pos = nt.start % 16;
-      const align = nt.dur >= 4 ? (nt.dur === 6 || nt.dur === 12 ? 4 : 4) : nt.dur >= 2 ? 2 : 1;
-      let s = pos % align === 0 ? 1 : pos % 2 === 0 ? 0 : -1;
-      if (!allowed.has(nt.dur)) s -= 0.7;
+      const pos = nt.start % bpb;
+      let s;
+      if (meter.compound) {
+        // a beat of three eighths: values of a beat or more start on the beat, a quarter starts
+        // on the first or second eighth (quarter-eighth, eighth-quarter), a dotted eighth on the
+        // first or the middle of the beat (the duplet), shorter values on the eighths
+        const off = pos % beat;
+        const ok = nt.dur >= beat ? off === 0 : nt.dur === 4 ? off === 0 || off === 2 : nt.dur === 3 ? off === 0 || off === 3 : nt.dur === 2 ? off % 2 === 0 : true;
+        s = ok ? 1 : pos % 2 === 0 ? 0 : -1;
+      } else {
+        const align = nt.dur >= 4 ? 4 : nt.dur >= 2 ? 2 : 1;
+        s = pos % align === 0 ? 1 : pos % 2 === 0 ? 0 : -1;
+      }
+      if (!plain.has(nt.dur)) s -= 0.7;
       if (nt.dur === 1) {
         // 16ths come in groups: a lone 16th between longer values sounds like an error
         const prevShort = i > 0 && notes[i - 1].dur <= 2 && notes[i - 1].start + notes[i - 1].dur === nt.start;
@@ -374,14 +392,14 @@ export function createAttractorFitness(options = {}) {
     parts.variety = clamp(v, -1.5, 1.5);
 
     // canon -----------------------------------------------------------------------
-    if (canonOn) parts.canon = analyzeEnsemble(line, ensemble, { circular: !!o.circular, barLen: bpb }).score;
+    if (canonOn) parts.canon = analyzeEnsemble(line, ensemble, { circular: !!o.circular, barLen: bpb, meter }).score;
     else parts.canon = 0;
 
     // idiom: how typical the blocks (beats) are of real melodies, up to the corpus median ------
-    parts.idiom = weights.idiom ? getBlockModel().idiomPart(genes, key) : 0;
+    parts.idiom = weights.idiom && blocks ? blocks.idiomPart(genes, key) : 0;
 
-    // "do not maximise": each rule counts up to its typical value in real music
-    if (o.caps) for (const [k, cap] of Object.entries(RULE_CAPS)) if (parts[k] > cap) parts[k] = cap;
+    // "do not maximise": each rule counts up to its typical value in real music of this meter
+    if (o.caps) for (const [k, cap] of Object.entries(caps)) if (parts[k] > cap) parts[k] = cap;
 
     return { parts, events, notes };
   }
@@ -389,6 +407,7 @@ export function createAttractorFitness(options = {}) {
   return {
     name: 'attractor',
     length,
+    meter,
     key,
     waves,
     basins,
@@ -397,9 +416,9 @@ export function createAttractorFitness(options = {}) {
     ensemble,
     canonOn,
     env: {
-      key, waves, basins, basinFns, basin: Math.min(...basins), lowMidi, highMidi, length, stepsPerBar: bpb,
+      key, waves, basins, basinFns, basin: Math.min(...basins), lowMidi, highMidi, length, stepsPerBar: bpb, meter, beat,
       canon: canonOn ? { voices: ensemble, circular: !!o.circular } : null,
-      blocks: o.blocks || weights.idiom ? getBlockModel() : null,
+      blocks: o.blocks || weights.idiom ? blocks : null,
     },
     components: (genes) => components(genes).parts,
     evaluate(genes) {

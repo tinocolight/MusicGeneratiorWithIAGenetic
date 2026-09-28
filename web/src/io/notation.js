@@ -12,10 +12,17 @@ const norm = (a) => (a > 6 ? a - 12 : a < -6 ? a + 12 : a);
 const MAJOR_TONIC = { 0: 'C', 1: 'Db', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'Ab', 9: 'A', 10: 'Bb', 11: 'B' };
 const MINOR_TONIC = { 0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'Bb', 11: 'B' };
 
+import { METERS } from '../core/meter.js';
+
 // ------------------------------------------------------------------ meter
 
-/** Meter of a bar of `barLen` 16ths: time signature, beat length and beaming unit. */
-export function meterOf(barLen) {
+/**
+ * Meter of a bar of `barLen` 16ths: time signature, beat length and beaming unit. With `id`
+ * ('3/4', '6/8'...) that meter: a bar of 12 sixteenths is 6/8 unless it is said to be 3/4.
+ */
+export function meterOf(barLen, id = null) {
+  const known = id && METERS[id];
+  if (known) return { num: known.num, den: known.den, beat: known.beat, compound: known.compound, barLen: known.barLen };
   switch (barLen) {
     case 6: return { num: 3, den: 8, beat: 6, compound: true, barLen };
     case 8: return { num: 2, den: 4, beat: 4, compound: false, barLen };
@@ -183,8 +190,8 @@ export function toBars(events, nBars, m) {
  * Score model of a piece: one staff per voice.
  * @param voices [{events (absolute starts, sounding pitches), instrument, name}]
  */
-export function scoreModel({ voices, total, barLen, key, title = '', subtitle = '', bpm = 84 }) {
-  const m = meterOf(barLen);
+export function scoreModel({ voices, total, barLen, meter = null, key, title = '', subtitle = '', bpm = 84 }) {
+  const m = meterOf(barLen, meter);
   const spelling = spellingFor(key);
   const nBars = Math.max(1, Math.ceil(total / barLen));
   return {
@@ -209,9 +216,9 @@ export function scoreModel({ voices, total, barLen, key, title = '', subtitle = 
  * @param lead {events, instrument, name}
  * @param entries [{step, name, intervalLabel}] one per voice, the first at step 0
  */
-export function canonLineModel({ lead, entries, length, barLen, key, title = '', subtitle = '', bpm = 84, circular = false }) {
+export function canonLineModel({ lead, entries, length, barLen, meter = null, key, title = '', subtitle = '', bpm = 84, circular = false }) {
   // no instrument name on the staff: every voice reads it (the legend says who comes in where)
-  const model = scoreModel({ voices: [{ ...lead, name: '' }], total: length, barLen, key, title, subtitle, bpm });
+  const model = scoreModel({ voices: [{ ...lead, name: '' }], total: length, barLen, meter, key, title, subtitle, bpm });
   const m = model.meter;
   const where = (step) => {
     const bar = 1 + Math.floor(step / m.barLen);
@@ -256,7 +263,8 @@ export function tempoMark(m, bpm) {
 
 export function toLilyPond(model) {
   const m = model.meter;
-  const barDur = LILY_DURATION[m.barLen] ?? `${m.num}*${m.den}`;
+  // a whole bar as one duration: 1 (4/4), 2. (3/4, 6/8), or eighths times n (8*9 in 9/8)
+  const barDur = LILY_DURATION[m.barLen] ?? `${m.den}*${m.num}`;
   const tempo = tempoMark(m, model.bpm);
   const lines = [];
   lines.push('\\version "2.24.0"', '');

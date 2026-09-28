@@ -81,10 +81,12 @@
           </select></div>
         <div class="field"><span>Tonalidade</span><select id="scale"></select></div>
         <div class="field"><span>Modo tonal</span><select id="major"><option value="1">Maior</option><option value="0">Menor</option></select></div>
-        <div class="field"><span>Compassos (4/4)</span><select id="bars"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option><option>32</option><option>64</option></select></div>
+        <div class="field"><span>Compasso</span><select id="meter"></select></div>
+        <p class="hint" id="meterHint"></p>
+        <div class="field"><span>Compassos</span><select id="bars"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option><option>32</option><option>64</option></select></div>
         <p class="hint" id="barsHint" hidden></p>
         <div class="field" id="formRow"><span>Forma musical</span><select id="form"></select></div>
-        <div class="field" id="phraseRow"><span>Frase (compassos)</span><select id="phraseBars"><option>1</option><option selected>2</option><option>4</option></select></div>
+        <div class="field" id="phraseRow"><span>Frase (compassos)</span><select id="phraseBars"><option>1</option><option selected>2</option><option>4</option><option>8</option></select></div>
 
         <h3>Vozes e cânone</h3>
         <div class="field"><span>Conjunto</span><select id="ensemble"></select></div>
@@ -259,8 +261,8 @@
       </div>
     </div>
     <div class="segs" id="anSegments"></div>
-    <details class="box" id="blocksBox"><summary>Padrões do corpus: blocos de construção e associações</summary>
-      <p class="hint">Aprendidos com 6758 melodias reais (Essen, Aird's Airs, O'Neill, Ryan's Mammoth, sopranos de Bach), sem as 480 do crítico. Um bloco é um tempo: ritmo e contorno em graus da escala, transponível. O gerador pode usá-los na população inicial («Blocos do corpus»), numa mutação e na regra «Idioma do corpus» (nos pesos; a 0 por omissão, porque na aptidão baixava o crítico). Relatório completo em <code>web/results/blocks.md</code>.</p>
+    <details class="box" id="blocksBox"><summary>Padrões do corpus: figuras e ligações por compasso</summary>
+      <p class="hint">Aprendidos com 9644 melodias reais (Essen, Aird's Airs, O'Neill, Ryan's Mammoth, sopranos de Bach), separadas por compasso, sem as 480 do crítico. Um bloco é um tempo — uma semínima nos compassos simples, uma semínima com ponto (três colcheias) nos compostos: a figura rítmica, o contorno em graus da escala e o intervalo de entrada. O gerador usa-os na população inicial («Blocos do corpus»), numa mutação e na regra «Idioma do corpus» (nos pesos; a 0 por omissão). Mostra o compasso escolhido em Compor.</p>
       <div class="cols even" id="blocksTables"></div>
     </details>
   </section>

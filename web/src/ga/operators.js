@@ -16,6 +16,7 @@ import { REST, HOLD, isNote, geneToMidi, midiToGene, clampGene } from '../core/s
 import { soundingLine } from '../core/analysis.js';
 import { metricWeightFor, intervalQuality } from '../fitness/canon.js';
 import { blockMutate } from './blocks.js';
+import { meterOf, finalOnsetIn } from '../core/meter.js';
 
 // ---------------------------------------------------------------- binary (classic)
 
@@ -70,10 +71,16 @@ export function partialShuffleBits(genes, rng) {
 // ---------------------------------------------------------------- musical
 
 // One-beat rhythm cells (x = onset, - = hold, . = rest) used to build rhythmically
-// plausible initial individuals ("random bounded" initialisation).
+// plausible initial individuals ("random bounded" initialisation): a quarter-note beat in the
+// simple meters, a beat of three eighths in the compound ones (their most common figures in
+// real 6/8, results/meters/figuras.csv).
 const BEAT_CELLS = [
   ['x---', 5], ['x-x-', 6], ['xxxx', 1.5], ['x-xx', 2], ['xx-x', 1], ['x--x', 1.5],
   ['----', 3], ['.-x-', 1], ['x-.-', 1], ['x.x.', 0.3],
+];
+const COMPOUND_CELLS = [
+  ['x-x-x-', 6], ['x---x-', 5], ['x-----', 2.5], ['------', 1.5], ['x--xx-', 1], ['x-xxx-', 0.8],
+  ['xxx-x-', 0.6], ['x-x---', 0.8], ['x-x-xx', 0.5], ['x---..', 0.5], ['..x-x-', 0.3],
 ];
 
 /** Nearest diatonic pitch to a (fractional) MIDI value. */
@@ -153,7 +160,7 @@ function candidateWeight(env, sounding, s, c, prev, next, onlyPast) {
       if (u < 0 || u >= n || u === s || (onlyPast && u > s)) continue;
       const q = sounding[u];
       if (q === null || q === undefined) continue;
-      w *= consonanceFactor(pi - vj.map(q), metricWeightFor(T, env.stepsPerBar));
+      w *= consonanceFactor(pi - vj.map(q), metricWeightFor(T, env.stepsPerBar, env.meter));
     }
   }
   return w;
@@ -211,11 +218,13 @@ export function randomUniformGenome(env, rng) {
 
 export function randomMusicalGenome(env, rng) {
   const { length, stepsPerBar } = env;
+  const meter = meterOf(env.meter ?? stepsPerBar);
+  const cells = meter.compound ? COMPOUND_CELLS : BEAT_CELLS;
   const genes = [];
-  const weights = BEAT_CELLS.map((c) => c[1]);
+  const weights = cells.map((c) => c[1]);
   let last = null;
   while (genes.length < length) {
-    const cell = BEAT_CELLS[rng.weighted(weights)][0];
+    const cell = cells[rng.weighted(weights)][0];
     for (const ch of cell) {
       const i = genes.length;
       if (ch === 'x' || (ch === '-' && i === 0)) {
@@ -227,8 +236,8 @@ export function randomMusicalGenome(env, rng) {
     }
   }
   genes.length = length;
-  // end with a long note: last bar's final half is held
-  const lastOnset = length - stepsPerBar / 2;
+  // end with a long note: the second half of the last bar in 4/4 and 12/8, the whole bar otherwise
+  const lastOnset = length - stepsPerBar + finalOnsetIn(meter);
   if (!isNote(genes[lastOnset])) setPitch(genes, lastOnset, samplePitch(env, lastOnset, rng));
   for (let i = lastOnset + 1; i < length; i++) genes[i] = HOLD;
   return genes;
@@ -294,7 +303,7 @@ export const MUSICAL_OPS = {
   },
   /** GenJam-style sequence: copy a bar (or half bar) elsewhere, transposed diatonically */
   sequence(g, env, rng) {
-    const unit = rng.chance(0.7) ? env.stepsPerBar : env.stepsPerBar / 2;
+    const unit = motifUnit(env, rng.chance(0.7));
     const n = g.length / unit;
     const from = rng.int(0, n - 1);
     let to = rng.int(0, n - 2);
@@ -304,7 +313,7 @@ export const MUSICAL_OPS = {
   },
   /** GenJam-style inversion / retrograde of a half-bar (pitches only, rhythm kept) */
   invert(g, env, rng) {
-    const unit = env.stepsPerBar / 2;
+    const unit = motifUnit(env, false);
     const s = rng.int(0, g.length / unit - 1) * unit;
     const idx = noteIdx(g).filter((i) => i >= s && i < s + unit);
     if (idx.length < 2) return;
@@ -315,6 +324,17 @@ export const MUSICAL_OPS = {
     idx.forEach((i, k) => setPitch(g, i, out[k]));
   },
 };
+
+/**
+ * A motif: a bar, or half a bar when the bar has an even number of beats (4/4, 2/4, 6/8, 12/8);
+ * in 3/8, where a bar is a single beat, two bars.
+ */
+function motifUnit(env, wholeBar) {
+  const m = meterOf(env.meter ?? env.stepsPerBar);
+  let unit = wholeBar || m.beats % 2 ? m.barLen : m.barLen / 2;
+  if (m.beats === 1 && env.length >= 4 * m.barLen) unit = 2 * m.barLen;
+  return unit;
+}
 
 function prevNote(g, i) {
   for (let k = i - 1; k >= 0; k--) if (g[k] !== HOLD) return g[k];

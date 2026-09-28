@@ -83,8 +83,8 @@ export function createGA(cfg) {
           const [a, b] = uniformBitCrossover(parents[i].genes, parents[i + 1].genes, rng);
           offspring.push(a, b);
         } else {
-          offspring.push(beatCrossover(parents[i].genes, parents[i + 1].genes, rng));
-          offspring.push(beatCrossover(parents[i + 1].genes, parents[i].genes, rng));
+          offspring.push(beatCrossover(parents[i].genes, parents[i + 1].genes, rng, env?.beat ?? 4));
+          offspring.push(beatCrossover(parents[i + 1].genes, parents[i].genes, rng, env?.beat ?? 4));
         }
       }
     }
@@ -111,7 +111,7 @@ export function createGA(cfg) {
       let genes;
       if (rng.float() < crossoverRate) {
         const b = pickTournament();
-        genes = operators === 'binary' ? uniformBitCrossover(a.genes, b.genes, rng)[0] : beatCrossover(a.genes, b.genes, rng);
+        genes = operators === 'binary' ? uniformBitCrossover(a.genes, b.genes, rng)[0] : beatCrossover(a.genes, b.genes, rng, env?.beat ?? 4);
       } else genes = a.genes.slice();
       if (rng.float() < mutationRate) genes = mutateGenes(genes);
       next.push(make(genes));
