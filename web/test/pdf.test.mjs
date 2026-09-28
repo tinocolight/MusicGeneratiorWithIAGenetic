@@ -10,7 +10,7 @@ globalThis.window = globalThis;
 globalThis.document ??= { createElementNS: () => ({ setAttribute() {}, appendChild() {}, style: {} }), createElement: () => ({ getContext: () => null, style: {} }) };
 globalThis.navigator ??= { userAgent: 'node' };
 createRequire(import.meta.url)('../vendor/vexflow-gonville.js');
-const { scorePdf } = await import('../src/ui/score.js');
+const { scorePdf, paginate } = await import('../src/ui/score.js');
 
 const G = { tonic: 7, mode: 'major', diatonic: [1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1].map(Boolean) };
 // 8 bars in G: quarters and eighths
@@ -111,4 +111,35 @@ test('long pieces go on several pages', () => {
   const { bytes, pages } = scorePdf(model);
   assert.ok(pages >= 2, `${pages} pages`);
   assert.match(text(bytes), new RegExp(`\\(1 / ${pages}\\) Tj`));
+});
+
+test('the staff size is chosen so that the music fills whole pages', () => {
+  const trio = (reps) => {
+    const long = [];
+    for (let r = 0; r < reps; r++) long.push(...shift(melody, r * length));
+    const voices = [['violin', 'Violino 1', 0], ['violin', 'Violino 2', 0], ['cello', 'Violoncelo', -12]].map(([instrument, name, s], k) => ({ events: shift(long, 16 * k, s), instrument, name }));
+    return scoreModel({ voices, total: reps * length + 32, barLen: 16, key: G, title: 'Trio', bpm: 84 });
+  };
+  const filled = (model, s) => paginate(model, s).pages.reduce((a, p) => a + p.fill, 0);
+  // a little over one page at the usual size: a smaller staff puts it on one page
+  const short = trio(3);
+  assert.equal(paginate(short, 0.6).pages.length, 2);
+  assert.ok(filled(short, 0.6) < 1.3);
+  const a = scorePdf(short);
+  assert.equal(a.pages, 1);
+  assert.ok(a.scale < 0.6 && a.scale >= 0.45, `scale ${a.scale}`);
+  // a page and a half: a larger staff fills the two pages
+  const long = trio(4);
+  assert.equal(paginate(long, 0.6).pages.length, 2);
+  assert.ok(filled(long, 0.6) > 1.3 && filled(long, 0.6) < 1.6);
+  const b = scorePdf(long);
+  assert.equal(b.pages, 2);
+  assert.ok(b.scale > 0.6 && b.scale <= 0.75, `scale ${b.scale}`);
+  assert.ok(filled(long, b.scale) > filled(long, 0.6));
+  // the lines are shared evenly between the pages
+  const fills = paginate(long, b.scale).pages.map((p) => p.fill);
+  assert.ok(Math.min(...fills) > 0.7, fills.join(' '));
+  // one page with room to spare stays at the usual size
+  const one = scorePdf(trio(1));
+  assert.deepEqual([one.pages, one.scale], [1, 0.6]);
 });

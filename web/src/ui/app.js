@@ -554,10 +554,14 @@ async function downloadPdf() {
   try {
     await loadVexFlow();
     const layout = scoreLayoutOf(p);
-    const { bytes, pages } = scorePdf(scoreModelFor(p, layout));
+    const { bytes, pages, scale } = scorePdf(scoreModelFor(p, layout));
     const what = layout === 'line' ? 'numa só linha, com as entradas das vozes' : 'com uma pauta por voz';
-    await saveFile(`ondas-atratoras-${Date.now()}.pdf`, bytes, 'application/pdf', `Guardado: ZIP com a partitura em PDF (${pages} página${pages > 1 ? 's' : ''}, ${what}).`);
-    if ($('midiNote').textContent === 'A preparar o PDF…') $('midiNote').textContent = `PDF: ${pages} página${pages > 1 ? 's' : ''}, ${what}.`;
+    // the staff size is fitted to whole pages (score.js): say so when it differs from the usual
+    const size = Math.round((scale / 0.6) * 100);
+    const fit = size < 100 ? `, pauta a ${size} % para caber em menos uma página` : size > 100 ? `, pauta a ${size} % para encher as páginas` : '';
+    const info = `${pages} página${pages > 1 ? 's' : ''}, ${what}${fit}`;
+    await saveFile(`ondas-atratoras-${Date.now()}.pdf`, bytes, 'application/pdf', `Guardado: ZIP com a partitura em PDF (${info}).`);
+    if ($('midiNote').textContent === 'A preparar o PDF…') $('midiNote').textContent = `PDF: ${info}.`;
   } catch (e) {
     $('midiNote').textContent = `Não foi possível criar o PDF (${e.message}).`;
   }

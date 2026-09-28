@@ -317,34 +317,97 @@ export function renderScore(container, model, { width, ink = '#111', muted = '#6
   return { notes, height };
 }
 
-// A4 pages: the score at 0.6 pt per px (a staff space of 6 pt, a little larger than LilyPond's
-// default 20-pt staff), 15 mm margins, page numbers at the foot.
+// A4 pages, 15 mm margins, page numbers at the foot. The score is drawn at 0.6 pt per px (a staff
+// space of 6 pt, a little larger than LilyPond's default 20-pt staff) unless another size fills the
+// pages better: when the last page would carry only a few lines, the staff shrinks (down to
+// 0.45, an 18-pt staff) so that the piece fits one page fewer; when it would be left half empty,
+// the staff grows (up to 0.75, a 30-pt staff) until the music fills the pages. Of the two, the
+// one closer to the usual size wins, so a quarter of a second page is folded into one page and
+// a page and a half becomes two full pages. Then the lines are shared evenly among the pages and
+// spread down each page (LilyPond's page breaking and ragged-bottom = ##f do the same).
 const PDF_SCALE = 0.6;
+const PDF_MIN = 0.45;
+const PDF_MAX = 0.75;
+const PDF_STEP = 0.005;
 const MARGIN_X = 42;
 const MARGIN_TOP = 44;
 const MARGIN_BOTTOM = 38;
 
-/** The score as a PDF (Uint8Array), on as many A4 pages as needed. */
-export function scorePdf(model, { VF = window.Vex.Flow, footer = 'Ondas Atratoras · algoritmo genético' } = {}) {
-  const doc = createPdf({ title: model.title });
-  const s = PDF_SCALE;
+/** Line and page breaking of the score on A4 at `s` pt per px. */
+export function paginate(model, s) {
   const width = (A4.width - 2 * MARGIN_X) / s;
   const usable = (A4.height - MARGIN_TOP - MARGIN_BOTTOM) / s;
   const lay = layoutScore(model, width);
-  // systems per page (the first page also carries the title block)
-  const pages = [];
-  let cur = [];
-  let used = lay.titleH;
-  lay.systems.forEach((_, si) => {
-    if (cur.length && used + lay.sysFoot > usable) {
-      pages.push(cur);
-      cur = [];
-      used = 0;
+  const k = lay.systems.length;
+  // height of systems a..b-1 on one page (the first page also carries the title block)
+  const heightOf = (a, b) => (a === 0 ? lay.titleH : 0) + (b - a - 1) * lay.sysH + lay.sysFoot;
+  const fits = (a, b) => b - a === 1 || heightOf(a, b) <= usable;
+  // the fewest pages, filling each in turn
+  let count = 0;
+  for (let a = 0; a < k; count++) {
+    let b = a + 1;
+    while (b < k && fits(a, b + 1)) b++;
+    a = b;
+  }
+  // the same number of pages with the lines shared evenly: least squared room left on the pages
+  const cost = Array.from({ length: count + 1 }, () => new Array(k + 1).fill(Infinity));
+  const from = Array.from({ length: count + 1 }, () => new Array(k + 1).fill(-1));
+  cost[0][0] = 0;
+  for (let p = 1; p <= count; p++) {
+    for (let b = 1; b <= k; b++) {
+      for (let a = b - 1; a >= 0 && fits(a, b); a--) {
+        if (cost[p - 1][a] === Infinity) continue;
+        const c = cost[p - 1][a] + ((usable - heightOf(a, b)) / usable) ** 2;
+        if (c < cost[p][b]) {
+          cost[p][b] = c;
+          from[p][b] = a;
+        }
+      }
     }
-    cur.push({ si, top: used });
-    used += lay.sysH;
+  }
+  const pages = [];
+  for (let p = count, b = k; p > 0; p--) {
+    const a = from[p][b];
+    pages.unshift({ first: a, end: b, fill: heightOf(a, b) / usable });
+    b = a;
+  }
+  return { lay, usable, pages };
+}
+
+/** Staff size (pt per px) for the PDF: see above. */
+export function pdfScale(model) {
+  const pagesAt = (s) => paginate(model, s).pages.length;
+  const n = pagesAt(PDF_SCALE);
+  if (n === 1) return PDF_SCALE;
+  let up = PDF_SCALE;
+  for (let s = PDF_SCALE + PDF_STEP; s <= PDF_MAX + 1e-9; s += PDF_STEP) {
+    if (pagesAt(s) > n) break;
+    up = s;
+  }
+  let down = null;
+  for (let s = PDF_SCALE - PDF_STEP; s >= PDF_MIN - 1e-9; s -= PDF_STEP) {
+    if (pagesAt(s) < n) {
+      down = s;
+      break;
+    }
+  }
+  const r = (x) => Math.round(x * 1000) / 1000;
+  return down !== null && Math.log(PDF_SCALE / down) < Math.log(up / PDF_SCALE) ? r(down) : r(up);
+}
+
+/** The score as a PDF (Uint8Array), on A4 pages. */
+export function scorePdf(model, { VF = window.Vex.Flow, footer = 'Ondas Atratoras · algoritmo genético', scale } = {}) {
+  const doc = createPdf({ title: model.title });
+  const s = scale ?? pdfScale(model);
+  const { lay, usable, pages } = paginate(model, s);
+  const several = pages.length > 1;
+  // spread the lines down the page when it is mostly full, or to fill every page of a longer piece
+  const tops = pages.map(({ first, end, fill }) => {
+    const lines = end - first;
+    const start = first === 0 ? lay.titleH : 0;
+    const extra = lines > 1 && (several || fill > 0.8) ? Math.min(((1 - fill) * usable) / (lines - 1), lay.sysH * 0.5) : 0;
+    return Array.from({ length: lines }, (_, i) => start + i * (lay.sysH + extra));
   });
-  if (cur.length) pages.push(cur);
 
   const colors = { ink: '#000', muted: '#444' };
   const ctxs = pages.map((pg, pi) => {
@@ -354,19 +417,19 @@ export function scorePdf(model, { VF = window.Vex.Flow, footer = 'Ondas Atratora
     return ctx;
   });
   const where = {};
-  pages.forEach((pg, pi) => pg.forEach(({ si, top }) => (where[si] = { ctx: ctxs[pi], top })));
+  pages.forEach(({ first }, pi) => tops[pi].forEach((top, i) => (where[first + i] = { ctx: ctxs[pi], top })));
   drawSystems(VF, model, lay, lay.systems.map((_, i) => i), (si) => where[si], colors);
 
-  // page numbers and the footer
+  // page numbers and the footer, the same size whatever the staff size
   ctxs.forEach((ctx, pi) => {
     ctx.save();
     ctx.setFillStyle('#555');
-    ctx.setFont('Georgia, serif', 9, 'normal', 'italic');
-    const foot = pages.length > 1 ? `${pi + 1} / ${pages.length}` : '';
+    ctx.setFont('Georgia, serif', (9 * PDF_SCALE) / s, 'normal', 'italic');
+    const foot = several ? `${pi + 1} / ${pages.length}` : '';
     const y = (A4.height - MARGIN_TOP - 22) / s;
     if (foot) ctx.fillText(foot, (lay.W - ctx.measureText(foot).width) / 2, y);
     if (pi === 0 && footer) ctx.fillText(footer, lay.W - ctx.measureText(footer).width, y);
     ctx.restore();
   });
-  return { bytes: doc.toBytes(), pages: pages.length };
+  return { bytes: doc.toBytes(), pages: pages.length, scale: s };
 }

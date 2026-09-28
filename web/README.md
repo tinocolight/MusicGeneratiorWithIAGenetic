@@ -54,7 +54,14 @@ atual enquanto ainda não foram usadas para gerar. Por baixo:
   código que a partitura da página (`src/io/pdf.js`: um pequeno escritor de PDF e um contexto de
   desenho para o VexFlow). As figuras e os símbolos saem como curvas; o texto usa as fontes-padrão
   do PDF (Times, Helvetica), por isso nada é embebido. Tem as páginas que forem precisas, com
-  ligaduras divididas entre páginas e números de página.
+  ligaduras divididas entre páginas e números de página. O tamanho da pauta ajusta-se para que a
+  música encha páginas inteiras. Se, no tamanho habitual (pauta de 24 pt), a última página
+  levasse só um quarto de página, a pauta encolhe (até 18 pt) e tudo cabe numa página a menos.
+  Se levasse meia página, a pauta cresce (até 30 pt) até a música ocupar as páginas todas. Das
+  duas, escolhe-se a que fica mais perto do tamanho habitual, e uma peça de uma só página com
+  espaço de sobra fica como está. Depois, as linhas repartem-se por igual entre as páginas e
+  espaçam-se até ao fundo de cada uma, como faz o LilyPond. A mensagem junto ao botão diz quando
+  a pauta foi reduzida ou ampliada.
 - **LilyPond (.ly)**: descarrega esse ficheiro, para gravar a partitura com o próprio LilyPond
   (`lilypond peca.ly` produz o PDF e um MIDI). A ortografia segue a tonalidade (sensível elevada
   no modo menor, bequadros antes de sustenidos ou bemóis), as figuras são divididas nos tempos e nas
@@ -877,7 +884,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 68 testes
+npm test                              # 69 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
