@@ -84,8 +84,11 @@ no que interessa: tudo o resto tem valores sensatos.
    período = n.º de vozes × entrada para um cânone), a forma (livre em cânone), o número de
    compassos (espaço para a última entrada), pesos e algoritmo. **Surpreende-me** sorteia
    tonalidade, conjunto, ondas e forma dentro de valores sensatos. **Repor** volta ao início.
-2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, compassos, forma
-   musical (A A′ B A′, A B A′ C, …) e duração da frase.
+2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, compassos (4 a 16,
+   32 ou 64), forma musical (A A′ B A′, A B A′ C, …) e duração da frase. Cada geração custa
+   proporcionalmente ao comprimento: com 64 compassos, uma corrida completa demora 1 a 2 minutos
+   (a página avisa). A partitura e o PDF dividem-se em linhas e páginas; o piano roll numera os
+   compassos de 2 em 2 ou de 4 em 4 quando ficam estreitos.
 3. **Vozes e cânone**: um **conjunto** pré-definido (2 violinos à Telemann, 2 flautas, trio de
    cordas, ronda a 3 vozes, cânone à 5.ª com oboé e fagote) ou cada voz à mão: **instrumento** (18,
    de cordas a vozes, cada um com o seu registo), **compasso de entrada** (c. 2 a c. 9) e
@@ -874,7 +877,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 66 testes
+npm test                              # 68 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
