@@ -17,7 +17,7 @@ import { analyzePiece, waveToSpec, hz } from '../analysis/wavefit.js';
 import { loadCritic } from '../eval/critic.js';
 import { FEATURE_LABELS } from '../eval/metrics.js';
 import { writeMidi, readMidi } from '../io/midi.js';
-import { scoreModel, toLilyPond } from '../io/notation.js';
+import { scoreModel, canonLineModel, toLilyPond } from '../io/notation.js';
 import { estimateKey } from '../core/theory.js';
 import { makeZip } from '../io/zip.js';
 import { REFERENCE_CANONS, referenceEvents, compactToLine } from '../data/references.js';
@@ -27,7 +27,7 @@ import { EXAMPLES } from '../data/examples.js';
 import { drawRoll } from './pianoroll.js';
 import { lineChart, spectrumChart, eliteMap } from './charts.js';
 import { createPlayer } from './audio.js';
-import { loadVexFlow, renderScore } from './score.js';
+import { loadVexFlow, renderScore, scorePdf } from './score.js';
 import { ABOUT_HTML } from './about.js';
 import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves,
@@ -149,6 +149,17 @@ function initControls() {
   $('viewRoll').addEventListener('click', () => setView('roll'));
   $('viewScore').addEventListener('click', () => setView('score'));
   $('lilyBtn').addEventListener('click', downloadLily);
+  $('pdfBtn').addEventListener('click', downloadPdf);
+  $('scoreLayout').addEventListener('change', () => {
+    try {
+      localStorage.setItem('ondas-score-layout', $('scoreLayout').value);
+    } catch (e) {
+      /* storage unavailable */
+    }
+    state.scoreFor = null;
+    render();
+    if ($('lilyBox').open) fillLily();
+  });
   $('lilyBox').addEventListener('toggle', () => $('lilyBox').open && fillLily());
   $('copyLily').addEventListener('click', async () => {
     fillLily();
@@ -415,30 +426,62 @@ function setView(view) {
   render();
 }
 
-/** Score model of what is on the stage: the voices as they sound, one staff each. */
-function scoreModelFor(p) {
-  const { voices, total } = soundingVoices(p);
+/** Names of the voices for the score: the instrument, numbered when two voices share it. */
+function voiceNames(voices) {
   const count = {};
   voices.forEach((v) => (count[v.instrument] = (count[v.instrument] || 0) + 1));
   const seen = {};
-  const named = voices.map((v) => {
+  return voices.map((v) => {
     const label = instrument(v.instrument).label;
     seen[v.instrument] = (seen[v.instrument] || 0) + 1;
-    return { events: v.events, instrument: v.instrument, name: count[v.instrument] > 1 ? `${label} ${seen[v.instrument]}` : label };
+    return count[v.instrument] > 1 ? `${label} ${seen[v.instrument]}` : label;
   });
+}
+
+/** 'staves' (one staff per voice) or 'line' (the canon on one line with entry marks). */
+const scoreLayoutOf = (p) => ($('scoreLayout').value === 'line' && p.voices?.length > 1 ? 'line' : 'staves');
+
+/**
+ * Score model of what is on the stage: the voices as they sound, one staff each, or the canon on
+ * one line with a numbered mark where each voice comes in.
+ */
+function scoreModelFor(p, layout = scoreLayoutOf(p)) {
   let key = p.key;
   if (!key || !key.mode) {
     const notes = p.events.filter((e) => e.pitch !== null);
     key = notes.length ? estimateKey(notes.map((e) => e.pitch), notes.map((e) => e.dur)) : { tonic: 0, mode: 'major' };
   }
+  const title = p.title.replace(/ · geração \d+ \(a evoluir…\)$/, '').replace(/ \(a evoluir…\)$/, '');
+  const subtitle = p.config ? describe(p.config) : '';
+  const bpm = Number($('bpm').value);
+  if (layout === 'line') {
+    const names = voiceNames(p.voices);
+    return canonLineModel({
+      lead: { events: p.events.filter((e) => e.pitch !== null), instrument: p.voices[0].instrument, name: names[0] },
+      entries: p.voices.map((v, i) => ({
+        step: v.delay,
+        name: names[i],
+        intervalLabel: i && v.interval && v.interval !== 'unison' ? INTERVALS[v.interval]?.label.replace(/ \(diatónica\)$/, ' (na escala)') : '',
+      })),
+      length: p.length,
+      barLen: p.barLen,
+      key,
+      title,
+      subtitle,
+      bpm,
+      circular: !!p.circular,
+    });
+  }
+  const { voices, total } = soundingVoices(p);
+  const names = voiceNames(voices);
   return scoreModel({
-    voices: named,
+    voices: voices.map((v, i) => ({ events: v.events, instrument: v.instrument, name: names[i] })),
     total,
     barLen: p.barLen,
     key,
-    title: p.title.replace(/ · geração \d+ \(a evoluir…\)$/, '').replace(/ \(a evoluir…\)$/, ''),
-    subtitle: p.config ? describe(p.config) : '',
-    bpm: Number($('bpm').value),
+    title,
+    subtitle,
+    bpm,
   });
 }
 
@@ -449,7 +492,7 @@ function renderScoreView() {
   const width = box.clientWidth || 800;
   const cs = getComputedStyle(document.documentElement);
   const theme = cs.getPropertyValue('--paper').trim();
-  const sig = { p, all: $('canonPlay').checked, width, theme, bpm: $('bpm').value };
+  const sig = { p, all: $('canonPlay').checked, width, theme, bpm: $('bpm').value, layout: $('scoreLayout').value };
   const same = state.scoreFor && Object.keys(sig).every((k) => state.scoreFor[k] === sig[k]);
   if (same) {
     highlightScore(state.playhead);
@@ -502,6 +545,22 @@ function highlightScore(step) {
 function fillLily() {
   const p = stagePiece();
   if (p) $('lilyText').value = toLilyPond(scoreModelFor(p));
+}
+
+async function downloadPdf() {
+  const p = stagePiece();
+  if (!p) return;
+  $('midiNote').textContent = 'A preparar o PDF…';
+  try {
+    await loadVexFlow();
+    const layout = scoreLayoutOf(p);
+    const { bytes, pages } = scorePdf(scoreModelFor(p, layout));
+    const what = layout === 'line' ? 'numa só linha, com as entradas das vozes' : 'com uma pauta por voz';
+    await saveFile(`ondas-atratoras-${Date.now()}.pdf`, bytes, 'application/pdf', `Guardado: ZIP com a partitura em PDF (${pages} página${pages > 1 ? 's' : ''}, ${what}).`);
+    if ($('midiNote').textContent === 'A preparar o PDF…') $('midiNote').textContent = `PDF: ${pages} página${pages > 1 ? 's' : ''}, ${what}.`;
+  } catch (e) {
+    $('midiNote').textContent = `Não foi possível criar o PDF (${e.message}).`;
+  }
 }
 
 async function downloadLily() {
@@ -1312,6 +1371,7 @@ function start() {
   initControls();
   try {
     if (localStorage.getItem('ondas-view') === 'score') state.view = 'score';
+    if (localStorage.getItem('ondas-score-layout') === 'line') $('scoreLayout').value = 'line';
   } catch (e) {
     /* storage unavailable */
   }

@@ -202,6 +202,42 @@ export function scoreModel({ voices, total, barLen, key, title = '', subtitle = 
   };
 }
 
+/**
+ * The canon on one line, as rounds are printed: the melody once, a numbered mark where each voice
+ * comes in (when the first voice reaches mark k, voice k starts from the beginning), a legend
+ * with each voice's instrument, entry and interval, and repeat signs for a round.
+ * @param lead {events, instrument, name}
+ * @param entries [{step, name, intervalLabel}] one per voice, the first at step 0
+ */
+export function canonLineModel({ lead, entries, length, barLen, key, title = '', subtitle = '', bpm = 84, circular = false }) {
+  // no instrument name on the staff: every voice reads it (the legend says who comes in where)
+  const model = scoreModel({ voices: [{ ...lead, name: '' }], total: length, barLen, key, title, subtitle, bpm });
+  const m = model.meter;
+  const where = (step) => {
+    const bar = 1 + Math.floor(step / m.barLen);
+    const off = step % m.barLen;
+    return off === 0 ? `no c. ${bar}` : `no c. ${bar} (${1 + Math.floor(off / (m.barLen / m.num))}.º tempo)`;
+  };
+  const n = entries.length;
+  model.entries = entries.map((e, i) => ({ step: e.step, number: i + 1, short: e.name }));
+  model.repeat = !!circular && n > 1;
+  const lastEnd = length + Math.max(...entries.map((e) => e.step));
+  const endBar = Math.ceil(lastEnd / m.barLen);
+  model.legend = [
+    { text: `${model.repeat ? 'Ronda' : 'Cânone'} a ${n} vozes numa só linha: cada voz começa do início quando a 1.ª voz chega ao seu número.` },
+    ...entries.map((e, i) => ({
+      mark: i + 1,
+      text: i === 0 ? `${e.name} — a melodia, desde o início` : `${e.name} — entra quando a 1.ª voz está ${where(e.step)}${e.intervalLabel ? `, ${e.intervalLabel}` : ''}`,
+    })),
+    {
+      text: model.repeat
+        ? 'Nos sinais de repetição cada voz volta ao início; para acabar, as vozes param uma a uma no fim da linha.'
+        : `Cada voz toca a linha até ao fim; a peça acaba quando a última voz termina (${endBar} compassos ao todo).`,
+    },
+  ];
+  return model;
+}
+
 // ------------------------------------------------------------------ LilyPond
 
 const LILY_MIDI = {
@@ -228,6 +264,12 @@ export function toLilyPond(model) {
   if (model.title) lines.push(`  title = ${lilyString(model.title)}`);
   if (model.subtitle) lines.push(`  subtitle = ${lilyString(model.subtitle)}`);
   lines.push('  composer = "Ondas Atratoras (algoritmo genético)"', '  tagline = ##f', '}', '');
+  if (model.legend?.length) {
+    // the voices of the one-line canon, under the title
+    lines.push('\\markup \\column {');
+    for (const l of model.legend) lines.push(`  \\line { ${l.mark ? `\\box ${lilyString(l.mark)} ` : ''}${lilyString(l.text)} }`);
+    lines.push('}', '');
+  }
   lines.push(`global = { \\key ${model.keyNames.lily} \\time ${m.num}/${m.den} \\tempo ${LILY_DURATION[tempo.unit]} = ${tempo.value} }`, '');
   const names = [];
   model.staves.forEach((st, i) => {
@@ -240,18 +282,33 @@ export function toLilyPond(model) {
       if (restRun) bars.push(`R${barDur}${restRun > 1 ? `*${restRun}` : ''}`);
       restRun = 0;
     };
-    for (const bar of st.bars) {
-      if (bar.length === 1 && bar[0].full) {
+    const marks = i === 0 ? model.entries ?? [] : [];
+    st.bars.forEach((bar, b) => {
+      const here = marks.filter((e) => Math.floor(e.step / m.barLen) === b);
+      if (bar.length === 1 && bar[0].full && !here.length) {
         restRun++;
-        continue;
+        return;
       }
       flushRests();
-      bars.push(bar.map((it) => (it.rest ? `r${LILY_DURATION[it.dur]}` : `${lilyPitch(spell(it.pitch, model.spelling))}${LILY_DURATION[it.dur]}${it.tie ? '~' : ''}`)).join(' '));
-    }
+      const done = new Set();
+      const tokens = [];
+      for (const it of bar) {
+        for (const e of here) {
+          if (!done.has(e) && e.step - b * m.barLen <= it.start + (it.full ? m.barLen : it.dur) - 1) {
+            tokens.push(`\\mark \\markup \\box ${lilyString(e.number)}`);
+            done.add(e);
+          }
+        }
+        if (it.full) tokens.push(`R${barDur}`);
+        else tokens.push(it.rest ? `r${LILY_DURATION[it.dur]}` : `${lilyPitch(spell(it.pitch, model.spelling))}${LILY_DURATION[it.dur]}${it.tie ? '~' : ''}`);
+      }
+      bars.push(tokens.join(' '));
+    });
     flushRests();
     lines.push(`${id} = {`, `  \\global \\clef ${lilyString(clef)}`);
+    if (model.repeat) lines.push('  \\bar ".|:"');
     bars.forEach((b) => lines.push(`  ${b} |`));
-    lines.push('  \\bar "|."', '}', '');
+    lines.push(model.repeat ? '  \\bar ":|."' : '  \\bar "|."', '}', '');
   });
   lines.push('\\score {');
   lines.push(model.staves.length > 1 ? '  \\new StaffGroup <<' : '  <<');
