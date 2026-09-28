@@ -176,10 +176,12 @@ SHEETS = [
         'bits_por_compasso_sem_segmentar_2a_ordem': 'O mesmo com duas figuras anteriores.',
         'bits_por_compasso_por_compasso_1a_ordem': 'Cada compasso com o seu tempo (4 ou 6 semicolcheias), 1.ª ordem.',
         'bits_por_compasso_por_compasso_2a_ordem': 'Cada compasso, duas figuras anteriores.',
-        'bits_por_compasso_modelo_escolhido': 'Cada compasso com o modelo escolhido para a app.',
-        'vezes_mais_provavel_o_ritmo_real': '2 elevado à diferença entre a leitura de antes e o modelo escolhido (fórmula): quantas vezes mais provável fica, em média, o ritmo real de um compasso.',
+        'bits_por_compasso_modelo_escolhido': 'Cada compasso com o melhor modelo do estudo.',
+        'vezes_so_por_segmentar': '2 elevado a (sem segmentar, 2.ª ordem - por compasso, 2.ª ordem) (fórmula): quantas vezes mais provável fica o ritmo real de um compasso só por separar os compassos, com o mesmo modelo.',
+        'vezes_segmentar_e_modelo_escolhido': '2 elevado a (como antes - modelo escolhido) (fórmula): o ganho de separar os compassos e usar o melhor modelo.',
     }, {
-        'vezes_mais_provavel_o_ritmo_real': '=2^({bits_por_compasso_sem_segmentar_1a_ordem}{r}-{bits_por_compasso_modelo_escolhido}{r})',
+        'vezes_so_por_segmentar': '=2^({bits_por_compasso_sem_segmentar_2a_ordem}{r}-{bits_por_compasso_por_compasso_2a_ordem}{r})',
+        'vezes_segmentar_e_modelo_escolhido': '=2^({bits_por_compasso_sem_segmentar_1a_ordem}{r}-{bits_por_compasso_modelo_escolhido}{r})',
     }, {'compasso'}, {}),
     ('modelo_da_app', 'Modelo da app', 'O que a app usa em cada compasso (src/data/blocks-data.js) e quanto prevê, em validação cruzada, com as tabelas tal como vão para o navegador.', {
         'ritmo': 'Modelo do ritmo (folha Modelos).', 'beta_ritmo': 'Suavização do ritmo.',

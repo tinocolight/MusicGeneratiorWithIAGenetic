@@ -228,6 +228,8 @@ function onConfigChange(kind, arg) {
     controls.renderWeights();
   }
   if (kind === 'voices' || kind === 'piece') controls.renderWaves();
+  // the corpus patterns shown are those of the chosen meter
+  if (kind === 'piece' && $('blocksBox').open) renderBlocksBox();
   updateStartHint();
   updatePreview();
   if ($('configBox').open) fillConfigText();

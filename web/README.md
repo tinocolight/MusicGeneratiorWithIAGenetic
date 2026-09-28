@@ -91,8 +91,11 @@ no que interessa: tudo o resto tem valores sensatos.
    período = n.º de vozes × entrada para um cânone), a forma (livre em cânone), o número de
    compassos (espaço para a última entrada), pesos e algoritmo. **Surpreende-me** sorteia
    tonalidade, conjunto, ondas e forma dentro de valores sensatos. **Repor** volta ao início.
-2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, compassos (4 a 16,
-   32 ou 64), forma musical (A A′ B A′, A B A′ C, …) e duração da frase. Cada geração custa
+2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, **compasso** (2/4,
+   3/4 e 4/4 simples; 3/8, 6/8, 9/8 e 12/8 compostos, em que cada tempo são três colcheias; o
+   modelo clássico fica em 4/4, como o original), número de compassos (4 a 16, 32 ou 64), forma
+   musical (A A′ B A′, A B A′ C, …) e duração da frase (mudar o compasso ajusta-a para cerca de oito
+   tempos: 2 compassos de 4/4, 4 de 3/4 ou 6/8, 8 de 3/8). Cada geração custa
    proporcionalmente ao comprimento: com 64 compassos, uma corrida completa demora 1 a 2 minutos
    (a página avisa). A partitura e o PDF dividem-se em linhas e páginas; o piano roll numera os
    compassos de 2 em 2 ou de 4 em 4 quando ficam estreitos.

@@ -423,7 +423,7 @@ const LITERATURE = [
   ['simples', 'x__x', 'colcheia pontuada e semicolcheia (ritmo pontuado)'],
   ['simples', 'xx__', 'semicolcheia e colcheia pontuada («scotch snap»)'],
   ['simples', 'xx_x', 'semicolcheia, colcheia, semicolcheia (síncopa dentro do tempo)'],
-  ['simples', '._x_', 'pausa de colcheia e colcheia (contratempo)'],
+  ['simples', '..x_', 'pausa de colcheia e colcheia (contratempo)'],
   ['simples', '____', 'continuação de uma nota longa (mínima, semibreve)'],
   ['composto', 'x_____', 'uma semínima pontuada no tempo'],
   ['composto', 'x_x_x_', 'três colcheias: a divisão do tempo em três'],
@@ -600,9 +600,10 @@ for (const id of cvIds) for (const [part, rows] of Object.entries(study[id])) {
 writeCsv('modelos', ['compasso', 'o_que_se_preve', 'modelo', 'contexto', 'cadeia_de_contextos', 'beta', 'bits_por_evento', 'desvio_entre_dobras', 'perplexidade', 'modelo_de_referencia', 'diferenca_para_referencia', 'eventos_avaliados', 'melhor_na_validacao', 'usado_na_app'], modelRows);
 const segRows = cvIds.map((id) => {
   const per = (r) => (r[id].bits / r[id].steps) * METERS[id].barLen;
-  return [id, f4(per(segmentation.blind1)), f4(per(segmentation.blind2)), f4(per(segmentation.aware1)), f4(per(segmentation.aware2)), f4((awareBest[id].bits / awareBest[id].steps) * METERS[id].barLen), f4(2 ** (per(segmentation.blind1) - (awareBest[id].bits / awareBest[id].steps) * METERS[id].barLen))];
+  const best = (awareBest[id].bits / awareBest[id].steps) * METERS[id].barLen;
+  return [id, f4(per(segmentation.blind1)), f4(per(segmentation.blind2)), f4(per(segmentation.aware1)), f4(per(segmentation.aware2)), f4(best), f4(2 ** (per(segmentation.blind2) - per(segmentation.aware2))), f4(2 ** (per(segmentation.blind1) - best))];
 });
-writeCsv('segmentacao', ['compasso', 'bits_por_compasso_sem_segmentar_1a_ordem', 'bits_por_compasso_sem_segmentar_2a_ordem', 'bits_por_compasso_por_compasso_1a_ordem', 'bits_por_compasso_por_compasso_2a_ordem', 'bits_por_compasso_modelo_escolhido', 'vezes_mais_provavel_o_ritmo_real'], segRows);
+writeCsv('segmentacao', ['compasso', 'bits_por_compasso_sem_segmentar_1a_ordem', 'bits_por_compasso_sem_segmentar_2a_ordem', 'bits_por_compasso_por_compasso_1a_ordem', 'bits_por_compasso_por_compasso_2a_ordem', 'bits_por_compasso_modelo_escolhido', 'vezes_so_por_segmentar', 'vezes_segmentar_e_modelo_escolhido'], segRows);
 writeCsv('modelo_da_app', ['compasso', 'ritmo', 'beta_ritmo', 'melodia_entrada', 'beta_entrada', 'melodia_contorno', 'beta_contorno', 'bits_ritmo_por_tempo', 'bits_ritmo_melhor_modelo', 'bits_ritmo_1a_ordem', 'bits_entrada', 'bits_entrada_melhor_modelo', 'bits_entrada_algoritmo_anterior', 'bits_contorno', 'bits_contorno_melhor_modelo', 'logp_P10', 'logp_P50', 'tamanho_KB'],
   cvIds.map((id) => {
     const a = appSel[id];
@@ -646,11 +647,11 @@ Gerado por \`node tools/build_meters.mjs\` a partir de \`data/corpus-meters.json
 
 Num compasso simples o tempo é uma semínima e divide-se em duas colcheias; num composto o tempo é uma semínima com ponto e divide-se em três. 3/4 e 6/8 têm o mesmo comprimento (12 semicolcheias), mas o primeiro tem três tempos de duas colcheias e o segundo dois tempos de três. O programa lia todas as melodias em tempos de semínima e juntava as de 2/4, 3/4 e 4/4 (as de 6/8 nem entravam). Lido compasso a compasso, o ritmo real fica muito mais previsível para o modelo — o que quer dizer que as figuras aprendidas são as certas para cada compasso:
 
-| Compasso | bits por compasso, lido como antes | lido por compasso (modelo escolhido) | o ritmo real fica x vezes mais provável |
-|---|---|---|---|
-${segRows.map((r) => `| ${r[0]} | ${nb(r[1], 2)} | ${nb(r[5], 2)} | ${nb(r[6], 1)} |`).join('\n')}
+| Compasso | como antes (1.ª ordem) | sem segmentar, 2.ª ordem | por compasso, 2.ª ordem | por compasso, modelo escolhido | x vezes mais provável só por segmentar | x vezes, segmentar e modelo escolhido |
+|---|---|---|---|---|---|---|
+${segRows.map((r) => `| ${r[0]} | ${nb(r[1], 2)} | ${nb(r[2], 2)} | ${nb(r[4], 2)} | ${nb(r[5], 2)} | ${nb(r[6], 2)} | ${nb(r[7], 2)} |`).join('\n')}
 
-(Bits por compasso: -log2 da probabilidade que o modelo dá ao ritmo de um compasso de uma melodia que não viu, em validação cruzada de 5 dobras por melodia. 1 bit a menos = duas vezes mais provável.)
+(Bits por compasso: -log2 da probabilidade que o modelo dá ao ritmo de um compasso de uma melodia que não viu, em validação cruzada de 5 dobras por melodia; 1 bit a menos = duas vezes mais provável.) Só por separar os compassos, com o mesmo modelo, o ritmo real de um compasso fica em média ${nb(segRows.find((r) => r[0] === '3/4')[6], 1)} vezes mais provável em 3/4 e ${nb(segRows.find((r) => r[0] === '6/8')[6], 1)} vezes em 6/8 — precisamente os dois compassos que o programa confundia (12 semicolcheias). Em 2/4 e 4/4 a separação quase não muda nada (já eram lidos em tempos de semínima); aí o ganho vem da memória mais longa (secção 5).
 
 ## 2. O corpus
 
