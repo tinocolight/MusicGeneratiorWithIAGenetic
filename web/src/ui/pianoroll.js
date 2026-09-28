@@ -97,7 +97,9 @@ export function drawRoll(canvas, scene) {
       ctx.stroke();
     }
   }
-  // beats and bars
+  // beats and bars; bar numbers every 1, 2, 4 or 8 bars, as many as fit
+  const barPx = (W * barLen) / length;
+  const labelEvery = [1, 2, 4, 8, 16].find((k) => barPx * k >= 22) ?? 16;
   for (let s = 0; s <= length; s += 4) {
     const bar = s % barLen === 0;
     if (!bar && W / (length / 4) < 8) continue;
@@ -107,7 +109,7 @@ export function drawRoll(canvas, scene) {
     ctx.moveTo(Math.round(x(s)) + 0.5, top);
     ctx.lineTo(Math.round(x(s)) + 0.5, top + H);
     ctx.stroke();
-    if (bar && s < length) {
+    if (bar && s < length && (s / barLen) % labelEvery === 0) {
       ctx.fillStyle = colors.muted;
       ctx.font = '10px "IBM Plex Mono", ui-monospace, monospace';
       ctx.textBaseline = 'alphabetic';

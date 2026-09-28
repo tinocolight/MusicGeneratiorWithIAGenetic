@@ -49,7 +49,12 @@
       <label for="bpm">Tempo <input type="range" id="bpm" min="40" max="160" value="84"><span id="bpmVal" class="status">84</span></label>
       <label for="canonPlay"><input type="checkbox" id="canonPlay" checked> Tocar com todas as vozes</label>
       <button class="btn" id="midiBtn" type="button">Descarregar MIDI</button>
-      <button class="btn" id="lilyBtn" type="button" title="Código LilyPond (.ly) da peça, com uma pauta por voz">LilyPond (.ly)</button>
+      <label for="scoreLayout" title="Na partitura, no PDF e no LilyPond: uma pauta por voz, ou o cânone numa só linha com números onde cada voz entra">Pautas <select id="scoreLayout">
+        <option value="staves">uma por voz</option>
+        <option value="line">uma linha, com as entradas</option>
+      </select></label>
+      <button class="btn" id="pdfBtn" type="button" title="Partitura em PDF (A4, vetorial), com a escolha de pautas">PDF</button>
+      <button class="btn" id="lilyBtn" type="button" title="Código LilyPond (.ly) da peça, com a escolha de pautas">LilyPond (.ly)</button>
       <span class="note-inline" id="midiNote"></span>
     </div>
   </section>
@@ -76,7 +81,8 @@
           </select></div>
         <div class="field"><span>Tonalidade</span><select id="scale"></select></div>
         <div class="field"><span>Modo tonal</span><select id="major"><option value="1">Maior</option><option value="0">Menor</option></select></div>
-        <div class="field"><span>Compassos (4/4)</span><select id="bars"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option></select></div>
+        <div class="field"><span>Compassos (4/4)</span><select id="bars"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option><option>32</option><option>64</option></select></div>
+        <p class="hint" id="barsHint" hidden></p>
         <div class="field" id="formRow"><span>Forma musical</span><select id="form"></select></div>
         <div class="field" id="phraseRow"><span>Frase (compassos)</span><select id="phraseBars"><option>1</option><option selected>2</option><option>4</option></select></div>
 

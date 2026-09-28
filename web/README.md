@@ -43,6 +43,18 @@ atual enquanto ainda não foram usadas para gerar. Por baixo:
   número do compasso no início de cada linha, colchete a juntar as vozes, andamento e barra final.
   As notas que soam acendem-se durante a reprodução. Por baixo, **Código LilyPond** mostra (e copia)
   o `.ly` da peça.
+- **Pautas**: *uma por voz* (a partitura completa, como acima) ou *uma linha, com as entradas*: o
+  cânone escrito uma só vez, como se imprimem as rondas. Um número em caixa marca o sítio onde
+  cada voz entra: quando a 1.ª voz chega ao número 2, a 2.ª voz começa do início. Cada número tem
+  o nome do instrumento, e uma legenda por baixo do título diz, para cada voz, o instrumento, onde
+  entra e o intervalo (por exemplo, «Violoncelo — entra quando a 1.ª voz está no c. 5, 8.ª
+  abaixo»). Nas rondas a linha leva sinais de repetição. A escolha vale para a partitura na página,
+  para o PDF e para o LilyPond.
+- **PDF**: a partitura em PDF A4, vetorial, com a escolha de pautas acima. É desenhada pelo mesmo
+  código que a partitura da página (`src/io/pdf.js`: um pequeno escritor de PDF e um contexto de
+  desenho para o VexFlow). As figuras e os símbolos saem como curvas; o texto usa as fontes-padrão
+  do PDF (Times, Helvetica), por isso nada é embebido. Tem as páginas que forem precisas, com
+  ligaduras divididas entre páginas e números de página.
 - **LilyPond (.ly)**: descarrega esse ficheiro, para gravar a partitura com o próprio LilyPond
   (`lilypond peca.ly` produz o PDF e um MIDI). A ortografia segue a tonalidade (sensível elevada
   no modo menor, bequadros antes de sustenidos ou bemóis), as figuras são divididas nos tempos e nas
@@ -72,8 +84,11 @@ no que interessa: tudo o resto tem valores sensatos.
    período = n.º de vozes × entrada para um cânone), a forma (livre em cânone), o número de
    compassos (espaço para a última entrada), pesos e algoritmo. **Surpreende-me** sorteia
    tonalidade, conjunto, ondas e forma dentro de valores sensatos. **Repor** volta ao início.
-2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, compassos, forma
-   musical (A A′ B A′, A B A′ C, …) e duração da frase.
+2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, compassos (4 a 16,
+   32 ou 64), forma musical (A A′ B A′, A B A′ C, …) e duração da frase. Cada geração custa
+   proporcionalmente ao comprimento: com 64 compassos, uma corrida completa demora 1 a 2 minutos
+   (a página avisa). A partitura e o PDF dividem-se em linhas e páginas; o piano roll numera os
+   compassos de 2 em 2 ou de 4 em 4 quando ficam estreitos.
 3. **Vozes e cânone**: um **conjunto** pré-definido (2 violinos à Telemann, 2 flautas, trio de
    cordas, ronda a 3 vozes, cânone à 5.ª com oboé e fagote) ou cada voz à mão: **instrumento** (18,
    de cordas a vozes, cada um com o seu registo), **compasso de entrada** (c. 2 a c. 9) e
@@ -845,7 +860,9 @@ web/
   src/analysis/wavefit.js        analisador de ondas
   src/eval/                      características, modelo de expectativa, crítico, modelos nulos
   src/io/midi.js                 escrita/leitura de MIDI
-  src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond
+  src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond,
+                                 cânone numa só linha com as entradas
+  src/io/pdf.js                  PDF vetorial (A4) e contexto de desenho para o VexFlow
   src/ui/score.js                partitura na página (VexFlow + Gonville)
   src/ga/blocks.js               blocos do corpus: modelo, escrita por blocos, mutação, regra «idioma»
   data/corpus-large.json         6758 melodias reais para os blocos e o estudo (sem as 480 do crítico)
@@ -860,7 +877,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 61 testes
+npm test                              # 68 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
@@ -872,6 +889,7 @@ node tools/build_blocks.mjs           # blocos e associações → src/data/bloc
 node tools/openings.mjs 8             # inícios e qualidade por variante → results/openings.md
 node tools/solo_defaults.mjs 24       # omissão da melodia só, 24 sementes → results/solo-defaults.md
 node tools/build_cadences.mjs         # fórmulas de final → src/data/cadence-data.js, results/cadences.md
+python3 tools/build_pdf_fonts.py      # larguras das fontes-padrão do PDF → src/data/pdf-fonts.js
 node tools/classic_study.mjs          # estudo do algoritmo original (~1 h, 4 processos) →
                                       #   results/classic-study.md, src/data/classic-presets.js
 node tools/make_examples.mjs          # exemplo mostrado ao abrir a página

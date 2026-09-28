@@ -255,6 +255,9 @@ export function autoWaves(c) {
   return [{ type: 'arch', freq: +(1 / c.phraseBars).toFixed(4), mean: Math.round(center + 1), amplitude: Math.min(4, Math.max(2, Math.round((b - a) / 4))), basin: +basin.toFixed(1), shape: 'gaussian', phase: 0 }];
 }
 
+/** Lengths offered in the page (bars of 4/4). */
+export const BAR_OPTIONS = [4, 6, 8, 10, 12, 16, 32, 64];
+
 /** Everything from general criteria: waves, form, length, weights and GA settings. */
 export function autoConfigure(c) {
   const voices = activeVoices(c);
@@ -265,8 +268,9 @@ export function autoConfigure(c) {
   c.form = canon ? 'none' : "AA'BA'";
   c.phraseBars = 2;
   const last = voices.length ? Math.max(...voices.map((v) => v.delayBars || 0)) : 0;
-  c.bars = canon ? Math.max(8, Math.ceil((2 * last + 4) / 2) * 2) : 8;
-  if (c.bars > 16) c.bars = 16;
+  // the shortest length of the menu that gives the last voice room to state the theme
+  const need = canon ? Math.max(8, 2 * last + 4) : 8;
+  c.bars = BAR_OPTIONS.find((b) => b >= need) ?? BAR_OPTIONS.at(-1);
   c.weightsPreset = 'default';
   c.weights = { ...DEFAULT_WEIGHTS };
   c.capRules = true;

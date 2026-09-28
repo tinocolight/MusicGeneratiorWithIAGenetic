@@ -98,12 +98,21 @@ export function createControls(getConfig, onChange) {
   const cfg = () => getConfig();
 
   // ---------------------------------------------------------------- piece
+  /** Long pieces: each generation costs about as much more as the piece is longer. */
+  function barsHint() {
+    const bars = cfg().bars;
+    const el2 = $('barsHint');
+    el2.hidden = bars <= 16;
+    if (bars > 16) el2.textContent = `Com ${bars} compassos cada geração demora cerca de ${Math.round(bars / 8)}× mais do que com 8 (${bars === 64 ? '1 a 2 minutos' : 'meio minuto a um minuto'} com os valores por omissão). A partitura divide-se em linhas e em páginas; no piano roll os compassos ficam estreitos.`;
+  }
+
   function renderPiece() {
     const c = cfg();
     $('mode').value = c.mode;
     options($('scale'), SCALE_LABELS.map((l, i) => [i, l]), c.scale);
     $('major').value = c.major ? '1' : '0';
     $('bars').value = String(c.bars);
+    barsHint();
     options($('form'), Object.keys(FORMS).map((k) => [k, k === 'none' ? 'Livre' : k.replace(/'/g, '′')]), c.form);
     $('phraseBars').value = String(c.phraseBars);
     const classic = c.mode === 'classic';
@@ -528,6 +537,7 @@ export function createControls(getConfig, onChange) {
     $('bars').addEventListener('change', () => {
       cfg().bars = Number($('bars').value);
       voicesHint();
+      barsHint();
       onChange('piece');
     });
     $('form').addEventListener('change', () => {
