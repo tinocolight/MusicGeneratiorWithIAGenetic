@@ -76,14 +76,14 @@ SHEETS = [
         'fracao_das_melodias': 'melodias / melodias do compasso (fórmula).',
         'nas_listas_de_manual': 'sim se a figura está na lista de figuras de manual (folhas Literatura).',
     }, {
-        'fracao_dos_tempos': '=IFERROR({tempos}{r}/SUMIFS({tempos}:{tempos},{compasso}:{compasso},{compasso}{r}),"")',
-        'fracao_das_melodias': "=IFERROR({melodias}{r}/INDEX('Resumo'!$C:$C,MATCH({compasso}{r},'Resumo'!$A:$A,0)),\"\")",
+        'fracao_dos_tempos': '=IFERROR({tempos}{r}/SUMIFS({tempos_rng},{compasso_rng},{compasso}{r}),"")',
+        'fracao_das_melodias': "=IFERROR({melodias}{r}/INDEX('Resumo'!$C$2:$C$8,MATCH({compasso}{r},'Resumo'!$A$2:$A$8,0)),\"\")",
     }, {'compasso', 'familia', 'figura_codigo', 'figura', 'figura_por_extenso', 'silabas_takadimi', 'nas_listas_de_manual'}, {}),
     ('figuras_por_tempo', 'Figuras por tempo', 'As figuras em cada tempo do compasso (1 = tempo forte).', {
         'tempo_do_compasso': 'Tempo do compasso (1 = o primeiro, forte).',
         'P_figura_dado_tempo': 'P(figura | tempo do compasso) = ocorrências / ocorrências nesse tempo (fórmula).',
     }, {
-        'P_figura_dado_tempo': '=IFERROR({ocorrencias}{r}/SUMIFS({ocorrencias}:{ocorrencias},{compasso}:{compasso},{compasso}{r},{tempo_do_compasso}:{tempo_do_compasso},{tempo_do_compasso}{r}),"")',
+        'P_figura_dado_tempo': '=IFERROR({ocorrencias}{r}/SUMIFS({ocorrencias_rng},{compasso_rng},{compasso}{r},{tempo_do_compasso_rng},{tempo_do_compasso}{r}),"")',
     }, {'compasso', 'figura_codigo', 'figura', 'silabas_takadimi'}, {}),
     ('literatura_simples', 'Literatura (simples)', 'Figuras de um tempo dos manuais de ritmo para compassos simples, e quanto aparecem no corpus (fórmulas que vão buscar os valores à folha Figuras).', {
         'descricao': 'O que é a figura.',
@@ -169,7 +169,7 @@ SHEETS = [
         'usado_na_app': 'sim = o modelo que a app usa (no ritmo, no máximo 4 figuras anteriores, para as tabelas caberem na página).',
     }, {
         'perplexidade': '=2^{bits_por_evento}{r}',
-        'diferenca_para_referencia': '=IFERROR({bits_por_evento}{r}-SUMIFS({bits_por_evento}:{bits_por_evento},{compasso}:{compasso},{compasso}{r},{o_que_se_preve}:{o_que_se_preve},{o_que_se_preve}{r},{modelo}:{modelo},{modelo_de_referencia}{r}),"")',
+        'diferenca_para_referencia': '=IFERROR({bits_por_evento}{r}-SUMIFS({bits_por_evento_rng},{compasso_rng},{compasso}{r},{o_que_se_preve_rng},{o_que_se_preve}{r},{modelo_rng},{modelo_de_referencia}{r}),"")',
     }, {'compasso', 'o_que_se_preve', 'modelo', 'contexto', 'cadeia_de_contextos', 'modelo_de_referencia', 'melhor_na_validacao', 'usado_na_app'}, {}),
     ('segmentacao', 'Segmentação', 'Vale a pena separar os compassos? Bits por compasso do ritmo real, lido como antes (todos os tempos com 4 semicolcheias, compassos do mesmo comprimento juntos) e lido compasso a compasso.', {
         'bits_por_compasso_sem_segmentar_1a_ordem': 'Como o programa lia antes: tempos de 4 semicolcheias, 3/4 e 6/8 juntos, 1.ª ordem.',
@@ -253,17 +253,28 @@ def literature_formulas(header):
             continue
         kind, meter = m.groups()
         target = 'I' if kind == 'fracao' else 'C'  # Figuras: I = fracao_dos_tempos, C = posicao_no_ranking
-        out[col] = f'=SUMIFS(Figuras!${target}:${target},Figuras!$A:$A,"{meter}",Figuras!$D:$D,{{figura_codigo}}{{r}})'
+        out[col] = f'=SUMIFS(Figuras!${target}$2:${target}${{FIG_LAST}},Figuras!$A$2:$A${{FIG_LAST}},"{meter}",Figuras!$D$2:$D${{FIG_LAST}},{{figura_codigo}}{{r}})'
     return out
+
+
+FIG_ROWS = [0]  # rows of the Figuras sheet, for the lookups of the Literatura sheets
+CORPUS_ROWS = [0]
 
 
 def add_table(wb, name, title, description, docs, formulas, text_cols):
     header, rows = read_csv(name)
     if formulas == 'literatura':
         formulas = literature_formulas(header)
+    if name == 'figuras':
+        FIG_ROWS[0] = len(rows)
+    if name == 'corpus':
+        CORPUS_ROWS[0] = len(rows)
     ws = wb.create_sheet(title)
     style_header(ws, header, docs)
     letters = {col: get_column_letter(j + 1) for j, col in enumerate(header)}
+    last = len(rows) + 1
+    letters.update({f'{col}_rng': f'${get_column_letter(j + 1)}$2:${get_column_letter(j + 1)}${last}' for j, col in enumerate(header)})
+    letters['FIG_LAST'] = FIG_ROWS[0] + 1
     widths = [len(col) for col in header]
     for i, row in enumerate(rows, start=2):
         for j, col in enumerate(header):
@@ -295,8 +306,9 @@ def add_summary(wb):
     for i, (m, fam) in enumerate(meters, start=2):
         ws.cell(row=i, column=1, value=m)
         ws.cell(row=i, column=2, value=fam)
-        ws.cell(row=i, column=3, value=f'=COUNTIFS(Corpus!$E:$E,A{i})')
-        ws.cell(row=i, column=4, value=f'=SUMIFS(Corpus!$I:$I,Corpus!$E:$E,A{i})')
+        n = CORPUS_ROWS[0] + 1
+        ws.cell(row=i, column=3, value=f'=COUNTIFS(Corpus!$E$2:$E${n},A{i})')
+        ws.cell(row=i, column=4, value=f'=SUMIFS(Corpus!$I$2:$I${n},Corpus!$E$2:$E${n},A{i})')
         ws.cell(row=i, column=5, value=f'=IFERROR(C{i}/SUM($C$2:$C${len(meters) + 1}),"")')
     last = len(meters) + 2
     ws.cell(row=last, column=1, value='total')
@@ -376,6 +388,8 @@ def main():
         info.append((title, desc, n))
     add_summary(wb)
     add_readme(wb, info)
+    # the formulas are computed by Excel / LibreOffice when the workbook is opened
+    wb.calculation.fullCalcOnLoad = True
     wb.save(OUT)
     write_readme_md(info)
     print('wrote', OUT, 'and README.md;', ', '.join(f'{t}: {n}' for t, _, n in info))
