@@ -14,9 +14,10 @@
 
 import { estimateKey } from '../core/theory.js';
 
-/** @param compact [[midi|-1, dur16], ...]  @param info {barLen, pickup} */
+/** @param compact [[midi|-1, dur16], ...]  @param info {barLen, pickup, beat (16ths: 4 simple, 6 compound)} */
 export function melodyFeatures(compact, info = {}, model = null) {
   const barLen = info.barLen ?? 16;
+  const beat = info.beat ?? 4;
   const pickup = info.pickup ?? 0;
   const events = [];
   let t = 0;
@@ -75,8 +76,8 @@ export function melodyFeatures(compact, info = {}, model = null) {
   f.rhythmicVariety = new Set(durs).size;
   let sync = 0;
   for (const e of notes) {
-    const pos = (e.start - pickup + 4 * barLen) % 4;
-    if (pos !== 0 && pos + e.dur > 4) sync++;
+    const pos = (e.start - pickup + beat * barLen) % beat;
+    if (pos !== 0 && pos + e.dur > beat) sync++;
   }
   f.syncopation = sync / n;
   f.repeatedIntervalPatterns = repeatedNgrams(ivs, 3);

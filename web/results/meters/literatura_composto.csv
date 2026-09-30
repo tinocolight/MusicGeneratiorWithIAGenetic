@@ -1,0 +1,13 @@
+﻿familia,figura_codigo,figura,descricao,silabas_takadimi,fracao_3/8,ranking_3/8,fracao_6/8,ranking_6/8,fracao_9/8,ranking_9/8,fracao_12/8,ranking_12/8
+composto,x_____,♩.,uma semínima pontuada no tempo,ta,0.0488,4,0.0759,3,0.027,3,0.0649,4
+composto,x_x_x_,♪ ♪ ♪,três colcheias: a divisão do tempo em três,ta ki da,0.3459,1,0.4979,1,0.5682,1,0.3779,1
+composto,x___x_,♩ ♪,semínima e colcheia (longa-breve),ta da,0.1915,2,0.2644,2,0.316,2,0.3473,2
+composto,x_x___,♪ ♩,colcheia e semínima (breve-longa),ta ki,0.0085,16,0.0038,13,0.0022,13,0.0153,7
+composto,x__xx_,♪. sc ♪,"colcheia pontuada, semicolcheia e colcheia (ritmo de siciliana)",ta di da,0.0947,3,0.0413,4,0.0168,5,0.0534,5
+composto,xxx_x_,sc sc ♪ ♪,duas semicolcheias e duas colcheias,ta va ki da,0.0236,10,0.007,9,0.0178,4,0,
+composto,x_xxx_,♪ sc sc ♪,"colcheia, duas semicolcheias e colcheia",ta ki di da,0.019,11,0.0017,20,0.0002,27,0,
+composto,x_x_xx,♪ ♪ sc sc,duas colcheias e duas semicolcheias,ta ki da ma,0.0354,5,0.0039,12,0.0034,10,0,
+composto,xxxxxx,sc sc sc sc sc sc,seis semicolcheias: a subdivisão em seis,ta va ki di da ma,0.0118,14,0.0009,23,0,,0,
+composto,x__x__,♪. ♪.,"duas colcheias pontuadas (duína, emprestada do compasso simples)",ta di,0,,0,70,0,,0,
+composto,..x_x_,pausa ♪ ♪ ♪,pausa de colcheia e duas colcheias,(pausa) ki da,0.0004,38,0.0005,26,0.0024,12,0,
+composto,______,(lig.) ♩.,continuação de uma nota longa,(lig.),0.0019,26,0.001,22,0,,0.0038,12

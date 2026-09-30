@@ -100,9 +100,10 @@ export function drawRoll(canvas, scene) {
   // beats and bars; bar numbers every 1, 2, 4 or 8 bars, as many as fit
   const barPx = (W * barLen) / length;
   const labelEvery = [1, 2, 4, 8, 16].find((k) => barPx * k >= 22) ?? 16;
-  for (let s = 0; s <= length; s += 4) {
+  const beat = scene.beat ?? 4;
+  for (let s = 0; s <= length; s += beat) {
     const bar = s % barLen === 0;
-    if (!bar && W / (length / 4) < 8) continue;
+    if (!bar && W / (length / beat) < 8) continue;
     ctx.strokeStyle = bar ? colors.gridStrong : colors.grid;
     ctx.lineWidth = 1;
     ctx.beginPath();

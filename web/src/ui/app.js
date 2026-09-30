@@ -9,8 +9,9 @@ import { createRng } from '../core/rng.js';
 import { instrument } from '../core/instruments.js';
 import { analyzeCanon, analyzeEnsemble, INTERVALS } from '../fitness/canon.js';
 import { createGA } from '../ga/ga.js';
-import { describeBlock } from '../ga/blocks.js';
+import { figureName, figureSyllables } from '../ga/blocks.js';
 import { getBlockModel } from '../fitness/attractor.js';
+import { METERS, meterOf, meterFromSignature } from '../core/meter.js';
 import { createMapElites, DESCRIPTORS } from '../ga/mapelites.js';
 import { chaoticVariation, divergencePoint, similarityToTheme } from '../variation/dabby.js';
 import { analyzePiece, waveToSpec, hz } from '../analysis/wavefit.js';
@@ -30,7 +31,7 @@ import { createPlayer } from './audio.js';
 import { loadVexFlow, renderScore, scorePdf } from './score.js';
 import { ABOUT_HTML } from './about.js';
 import {
-  defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves,
+  defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves, meterOfConfig,
   presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf, adaptToVoices,
 } from './config.js';
 import { createControls, FIELD_LABELS, CLASSIC_LABELS } from './controls.js';
@@ -227,6 +228,8 @@ function onConfigChange(kind, arg) {
     controls.renderWeights();
   }
   if (kind === 'voices' || kind === 'piece') controls.renderWaves();
+  // the corpus patterns shown are those of the chosen meter
+  if (kind === 'piece' && $('blocksBox').open) renderBlocksBox();
   updateStartHint();
   updatePreview();
   if ($('configBox').open) fillConfigText();
@@ -295,11 +298,13 @@ function applyConfigText() {
 
 /** A piece made of genes under a configuration: events, waves, voices of the canon. */
 function pieceFromGenes(genes, built, cfg, extra = {}) {
+  const meter = meterOfConfig(cfg);
   return {
     events: toEvents(genes),
     genes,
     length: genes.length,
-    barLen: STEPS_PER_BAR,
+    barLen: meter.barLen,
+    meter: meter.id,
     waves: built.waves,
     key: built.key,
     mode: built.mode,
@@ -381,7 +386,7 @@ function stageScene() {
     // a round: the waves repeat with the melody
     waves = waves.map((w) => ({ ...w, values: Array.from({ length: total }, (_, t) => w.values[t % w.values.length]) }));
   }
-  return { length, barLen: p.barLen, voices, waves, segments, key: p.key, playhead: state.playhead, title: p.title };
+  return { length, barLen: p.barLen, beat: meterOf(p.meter ?? p.barLen).beat, voices, waves, segments, key: p.key, playhead: state.playhead, title: p.title };
 }
 
 function render() {
@@ -465,6 +470,7 @@ function scoreModelFor(p, layout = scoreLayoutOf(p)) {
       })),
       length: p.length,
       barLen: p.barLen,
+      meter: p.meter ?? null,
       key,
       title,
       subtitle,
@@ -478,6 +484,7 @@ function scoreModelFor(p, layout = scoreLayoutOf(p)) {
     voices: voices.map((v, i) => ({ events: v.events, instrument: v.instrument, name: names[i] })),
     total,
     barLen: p.barLen,
+    meter: p.meter ?? null,
     key,
     title,
     subtitle,
@@ -600,12 +607,12 @@ function sliceSteps(compact, n) {
 function ensembleOf(p) {
   if (!p.voices || p.voices.length < 2) return null;
   if (p.ensemble) return p.ensemble;
-  p.ensemble = analyzeEnsemble(lineOf(p), p.voices, { circular: !!p.circular, barLen: p.barLen, end: p.end ?? null });
+  p.ensemble = analyzeEnsemble(lineOf(p), p.voices, { circular: !!p.circular, barLen: p.barLen, meter: p.meter ?? null, end: p.end ?? null });
   return p.ensemble;
 }
 
 function evaluationOf(p) {
-  if (!p.evaluation) p.evaluation = critic.evaluate(sliceSteps(eventsToCompact(p.events), 128), { barLen: p.barLen });
+  if (!p.evaluation) p.evaluation = critic.evaluate(sliceSteps(eventsToCompact(p.events), 128), { barLen: p.barLen, beat: meterOf(p.meter ?? p.barLen).beat });
   return p.evaluation;
 }
 
@@ -706,7 +713,7 @@ function runGA(cfg, { batch = false } = {}) {
     const seed = cfg.ga.seed || 1;
     const binary = cfg.ga.operators === 'binary';
     const last = state.lastPopulation;
-    const continuing = start === 'continue' && last && last.length === built.fit.length;
+    const continuing = start === 'continue' && last && last.length === built.fit.length && (last.meter ?? '4/4') === meterOfConfig(cfg).id;
     const ga = createGA({
       fitness: built.fit,
       rng: createRng(seed),
@@ -753,7 +760,7 @@ function runGA(cfg, { batch = false } = {}) {
       $('runStatus').textContent += stopped ? ' · parado' : ' · concluído';
       const population = ga.population.map((ind) => Uint8Array.from(ga.decode(ind.genes)));
       const exp = recordExperiment(cfg, stopped, { snapshots, population, ...origin });
-      state.lastPopulation = { genomes: population.map((g) => Array.from(g)), length: built.fit.length, from: exp.n };
+      state.lastPopulation = { genomes: population.map((g) => Array.from(g)), length: built.fit.length, meter: meterOfConfig(cfg).id, from: exp.n };
       renderSnapshots(exp);
       updateStartHint();
       resolve(exp);
@@ -829,7 +836,8 @@ function renderSnapshots(exp) {
   $('snapBox').hidden = !exp?.snapshots?.length;
   if (!exp?.snapshots?.length) return;
   exp.snapshots.forEach((sn) => {
-    if (sn.critic === undefined) sn.critic = critic.evaluate(sliceSteps(eventsToCompact(toEvents(sn.genes)), 128), { barLen: STEPS_PER_BAR }).humanLike;
+    const m = meterOfConfig(exp.config);
+    if (sn.critic === undefined) sn.critic = critic.evaluate(sliceSteps(eventsToCompact(toEvents(sn.genes)), 128), { barLen: m.barLen, beat: m.beat }).humanLike;
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'btn';
@@ -858,7 +866,7 @@ function updateStartHint() {
   if (start === 'seed') parts.push('Cada «Gerar» parte do zero. A mesma semente dá a mesma população inicial e as mesmas escolhas ao acaso, por isso definições parecidas dão resultados parecidos.');
   else if (start === 'newSeed') parts.push('Cada «Gerar» parte do zero com uma semente nova (fica registada na experiência, para a poder repetir).');
   else if (!last) parts.push('Ainda não há população anterior: a próxima geração parte do zero e as seguintes continuam dela.');
-  else if (last.length !== c.bars * STEPS_PER_BAR) parts.push(`A população da experiência ${last.from} tem outro número de compassos: a próxima geração parte do zero.`);
+  else if (last.length !== c.bars * meterOfConfig(c).barLen || (last.meter ?? '4/4') !== meterOfConfig(c).id) parts.push(`A população da experiência ${last.from} tem outro compasso ou outro número de compassos: a próxima geração parte do zero.`);
   else parts.push(`A próxima geração continua da população final da experiência ${last.from}, reavaliada com as definições atuais.`);
   if (c.ga.operators === 'binary') parts.push('Com operadores de bits a população inicial é sempre a do programa original (genes ao acaso entre 0 e 74).');
   else if (c.ga.init === 'random') parts.push('População inicial sem padrões: cada semicolcheia é, ao acaso, pausa, prolongamento ou uma nota cromática do registo. Parte do ruído (crítico ≈ 0) e precisa de 2–3 vezes mais gerações para chegar ao mesmo nível.');
@@ -888,7 +896,7 @@ function loadExperiment(n) {
   const res = built.fit.evaluate(e.genes, { generation: state.config.ga.generations, maxGenerations: state.config.ga.generations, evaluationCount: 0 });
   state.history = e.history.slice();
   state.selectedExperiment = n;
-  if (e.population) state.lastPopulation = { genomes: e.population.map((g) => Array.from(g)), length: e.genes.length, from: n };
+  if (e.population) state.lastPopulation = { genomes: e.population.map((g) => Array.from(g)), length: e.genes.length, meter: meterOfConfig(e.config).id, from: n };
   renderSnapshots(e);
   updateStartHint();
   setPiece(pieceFromGenes(e.genes, built, state.config, {
@@ -980,7 +988,7 @@ async function downloadMidi() {
     name: `${instrument(v.instrument).label} ${i + 1}`,
     program: instrument(v.instrument).program,
   }));
-  const [num, den] = TIME_SIGNATURES[p.barLen] ?? [4, 4];
+  const [num, den] = p.meter && METERS[p.meter] ? [METERS[p.meter].num, METERS[p.meter].den] : TIME_SIGNATURES[p.barLen] ?? [4, 4];
   const bytes = writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den });
   await saveFile(`ondas-atratoras-${Date.now()}.mid`, bytes, 'audio/midi', `Guardado: ZIP com o ficheiro MIDI (${tracks.length} pista${tracks.length > 1 ? 's' : ''}).`);
 }
@@ -1154,7 +1162,7 @@ function analysisSource() {
   const solo = (inst) => [{ instrument: inst, delay: 0, delayBars: 0, interval: 'unison', map: (x) => x, range: instrument(inst).range }];
   if (src === 'current') {
     const p = state.piece;
-    return { compact: eventsToCompact(p.events), barLen: p.barLen, title: p.title, key: p.key, voices: p.voices, circular: p.circular };
+    return { compact: eventsToCompact(p.events), barLen: p.barLen, meter: p.meter ?? null, title: p.title, key: p.key, voices: p.voices, circular: p.circular };
   }
   if (REFERENCE_CANONS[src]) {
     const r = REFERENCE_CANONS[src];
@@ -1162,7 +1170,8 @@ function analysisSource() {
   }
   if (src === 'corpus') {
     const m = corpus[Number($('anCorpus').value)];
-    return { compact: m.events, barLen: m.barLen, title: `${sourceName(m.source)} — ${m.title}`, key: { tonic: m.tonic, mode: m.mode }, voices: solo(state.config.voices[0].instrument) };
+    // the critic's corpus has quarter-note beats only: a bar of 12 sixteenths is 3/4
+    return { compact: m.events, barLen: m.barLen, meter: { 8: '2/4', 12: '3/4', 16: '4/4' }[m.barLen] ?? null, title: `${sourceName(m.source)} — ${m.title}`, key: { tonic: m.tonic, mode: m.mode }, voices: solo(state.config.voices[0].instrument) };
   }
   if (src === 'midi') return state.midiUpload && { ...state.midiUpload, voices: solo(state.config.voices[0].instrument) };
   return null;
@@ -1175,7 +1184,7 @@ async function onMidiFile() {
     const bytes = new Uint8Array(await f.arrayBuffer());
     const res = readMidi(bytes);
     if (!res.compact.length) throw new Error('sem notas');
-    state.midiUpload = { compact: res.compact, barLen: res.barLen, title: f.name, key: null };
+    state.midiUpload = { compact: res.compact, barLen: res.barLen, meter: meterFromSignature(res.numerator, res.denominator)?.id ?? null, title: f.name, key: null };
     $('anSource').value = 'midi';
     $('anCorpusRow').hidden = true;
     $('anStatus').textContent = `${f.name}: ${res.tracks.length} pista(s), compasso ${res.numerator}/${res.denominator}. Polifonia reduzida à nota mais aguda.`;
@@ -1201,7 +1210,7 @@ function runAnalysis() {
   state.analysis = res;
   const events = compactToEvents(src.compact);
   state.analysisPiece = {
-    events, length: res.total, barLen: src.barLen, title: `Análise · ${src.title}`, key: src.key, waves: [],
+    events, length: res.total, barLen: src.barLen, meter: src.meter ?? null, title: `Análise · ${src.title}`, key: src.key, waves: [],
     voices: src.voices, circular: !!src.circular, end: src.end, tonic: src.key?.tonic,
   };
   $('anStatus').textContent = `Análise em ${Math.round(performance.now() - t0)} ms.`;
@@ -1299,28 +1308,29 @@ function useAnalysisWaves() {
 // ------------------------------------------------------------------ corpus building blocks (analyser)
 
 function renderBlocksBox() {
-  const data = getBlockModel().data;
-  const pct = (x) => `${(x * 100).toFixed(1)} %`;
-  const total = data.blocks.reduce((a, [, c]) => a + c, 0);
-  const top = data.blocks.slice(0, 12).map(([id, c]) => `<tr><td>${describeBlock(id)}</td><td class="num">${pct(c / total)}</td></tr>`).join('');
-  const degTot = Object.values(data.firstDeg).reduce((a, b) => a + b, 0);
-  const DEG = ['1 (tónica)', '2', '3 (mediante)', '4', '5 (dominante)', '6', '7'];
-  const degs = Object.entries(data.firstDeg).sort((a, b) => b[1] - a[1]).map(([d, c]) => `<tr><td>${DEG[d]}</td><td class="num">${pct(c / degTot)}</td></tr>`).join('');
-  const rules = [];
-  for (const [a, list] of Object.entries(data.assoc)) for (const [b, lift, nab, conf] of list) if (!a.startsWith('?') && !b.startsWith('?')) rules.push([a, b, lift, nab, conf]);
-  // strong and frequent: lift weighted by how many melodies have both; one line per pair
-  const seen = new Set();
-  const pos = rules.filter((r) => r[2] >= 1 && r[3] >= 25).sort((x, y) => y[2] * Math.log(y[3]) - x[2] * Math.log(x[3])).filter((r) => {
-    const k = [r[0], r[1]].sort().join('|');
-    return !seen.has(k) && seen.add(k);
-  }).slice(0, 10);
-  const neg = rules.filter((r) => r[2] < 1).sort((x, y) => x[2] - y[2]).slice(0, 6);
-  const row = ([a, b, l, , conf]) => `<tr><td>${describeBlock(a)}</td><td>${describeBlock(b)}</td><td class="num">${l >= 1 ? `${Math.round(conf * 100)} % · ` : ''}${l.toFixed(2)}</td></tr>`;
-  $('blocksTables').innerHTML = `<div><h4>Blocos mais frequentes</h4><table class="data"><thead><tr><th>bloco (um tempo)</th><th>dos tempos</th></tr></thead><tbody>${top}</tbody></table>
-    <h4>1.ª nota das melodias reais</h4><table class="data"><thead><tr><th>grau</th><th>melodias</th></tr></thead><tbody>${degs}</tbody></table></div>
-    <div><h4>Se aparece A, B aparece com probabilidade p (lift &gt; 1)</h4><table class="data"><thead><tr><th>A</th><th>B</th><th>p · lift</th></tr></thead><tbody>${pos.map(row).join('')}</tbody></table>
-    <h4>Raramente juntos (lift &lt; 1)</h4><table class="data"><thead><tr><th>A</th><th>B</th><th>lift</th></tr></thead><tbody>${neg.map(row).join('')}</tbody></table>
-    <p class="hint">Lift = quantas vezes mais (ou menos) B aparece numa melodia que tem A do que numa melodia qualquer. Ritmo: ♩ semínima, ♪ colcheia, ♪. colcheia com ponto, sc semicolcheia. Contornos em graus da escala: «sobe 1» é um grau acima.</p></div>`;
+  const meter = meterOfConfig(state.config);
+  const M = getBlockModel(meter);
+  const pctx = (x) => `${(x * 100).toFixed(1)} %`;
+  if (!M) {
+    $('blocksTables').innerHTML = '<p class="hint">Sem dados para este compasso.</p>';
+    return;
+  }
+  const d = M.data;
+  const fig = (c) => `${figureName(c)} <span class="muted">${figureSyllables(c)}</span>`;
+  const top = M.topFigures(10).map(([c, x]) => `<tr><td>${fig(c)}</td><td class="num">${pctx(x)}</td></tr>`).join('');
+  const after = M.topFigures(4).map(([c]) => {
+    const fi = M.figIndex(c);
+    const nx = M.nextFigures(fi, 1 % d.beats, 3).map(([n, x]) => `${figureName(n)} ${pctx(x)}`).join(' · ');
+    return `<tr><td>${figureName(c)}</td><td>${nx || '—'}</td></tr>`;
+  }).join('');
+  const dirs = M.entryByDirection();
+  const DIRS = [['ss', 'subiu por salto'], ['sg', 'subiu por grau'], ['r', 'repetiu'], ['dg', 'desceu por grau'], ['ds', 'desceu por salto']];
+  const dirRows = DIRS.filter(([k]) => dirs[k]?.n).map(([k, label]) => `<tr><td>${label}</td><td class="num">${pctx(dirs[k].up / dirs[k].n)}</td><td class="num">${pctx(dirs[k].same / dirs[k].n)}</td><td class="num">${pctx(dirs[k].down / dirs[k].n)}</td></tr>`).join('');
+  const own = d.meter === meter.id ? meter.id : `${d.meter} (${meter.id} tem poucas melodias no corpus)`;
+  $('blocksTables').innerHTML = `<div><h4>Figuras de um tempo mais comuns em ${own}</h4><table class="data"><thead><tr><th>figura (sílabas Takadimi)</th><th>dos tempos</th></tr></thead><tbody>${top}</tbody></table>
+    <h4>Depois desta figura, no 2.º tempo (1 passo)</h4><table class="data"><thead><tr><th>figura</th><th>seguintes mais prováveis</th></tr></thead><tbody>${after}</tbody></table></div>
+    <div><h4>A direção da última nota e o intervalo seguinte</h4><table class="data"><thead><tr><th>se a última nota…</th><th>a seguinte sobe</th><th>repete</th><th>desce</th></tr></thead><tbody>${dirRows}</tbody></table>
+    <p class="hint">Modelo deste compasso: ritmo ${d.rhythm.model} (contexto de até ${Math.max(...d.rhythm.levels.map((l) => l.length - 1))} figuras anteriores, escolhido por validação cruzada), entrada ${d.entry.model}, contorno ${d.contour.model}; ${d.melodies} melodias reais. Figuras: ♩ semínima, ♪ colcheia, ♪. colcheia pontuada, sc semicolcheia, ♩. semínima pontuada. As tabelas completas, com todas as contagens, estão em <code>web/results/meters/analise-compassos.xlsx</code> e nos CSV ao lado; o estudo em <code>web/results/meters.md</code>.</p></div>`;
 }
 
 // ------------------------------------------------------------------ evaluation tab

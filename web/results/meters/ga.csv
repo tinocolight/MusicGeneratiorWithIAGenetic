@@ -1,0 +1,13 @@
+﻿compasso,populacao_inicial,critico,critico_desvio,caracteristicas_tipicas_de_26,distancia_das_figuras_reais,distancia_desvio,maior_trecho_copiado_media,maior_trecho_copiado_max,trecho_partilhado_entre_melodias_reais_media,figuras_mais_usadas_semente_1
+4/4,padrões musicais,0.8827,0.0780,18.63,0.3360,0.0560,4.25,5,7.43,"♩, ♪ ♪, (lig.) ♩"
+4/4,blocos do corpus,0.8776,0.0402,21.25,0.2991,0.0400,5.75,8,7.43,"♩, (lig.) ♩, ♪ ♪"
+4/4,blocos + idioma 0,75,0.8638,0.0613,21.25,0.2881,0.0431,5.88,6,7.43,"♩, ♪ ♪, (lig.) ♩"
+4/4,blocos + idioma 1,5,0.8429,0.0711,20.63,0.2961,0.0679,6.38,8,7.43,"♩, ♪ ♪, (lig.) ♩"
+3/4,padrões musicais,0.8340,0.0883,18.25,0.3399,0.0411,4.25,5,9.15,"♩, ♪ ♪, (lig.) ♩"
+3/4,blocos do corpus,0.8182,0.0448,18.88,0.2518,0.0555,5.50,7,9.15,"♩, ♪ ♪, (lig.) ♪ ♪"
+3/4,blocos + idioma 0,75,0.7262,0.1204,18.75,0.2226,0.0356,5.75,7,9.15,"♩, (lig.) ♩, ♪ ♪"
+3/4,blocos + idioma 1,5,0.7763,0.1061,19.25,0.2167,0.0483,6.13,9,9.15,"♩, (lig.) ♩, (lig.) ♪ ♪"
+6/8,padrões musicais,0.9180,0.0348,18.38,0.6601,0.0780,2.25,3,5.00,"♪ ♩, sc sc ♪ ♪, ♩."
+6/8,blocos do corpus,0.9185,0.0458,21.25,0.5252,0.0761,2.00,3,5.00,"♩., ♩ ♪, ♪ ♩"
+6/8,blocos + idioma 0,75,0.8906,0.0682,20.75,0.4551,0.1097,2.75,3,5.00,"♪ ♪ ♪, ♩ ♪, ♩."
+6/8,blocos + idioma 1,5,0.8944,0.0449,21.50,0.4114,0.1167,2.75,3,5.00,"♩., ♩ ♪, ♪ ♪ ♪"

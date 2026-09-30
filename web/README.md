@@ -91,8 +91,11 @@ no que interessa: tudo o resto tem valores sensatos.
    período = n.º de vozes × entrada para um cânone), a forma (livre em cânone), o número de
    compassos (espaço para a última entrada), pesos e algoritmo. **Surpreende-me** sorteia
    tonalidade, conjunto, ondas e forma dentro de valores sensatos. **Repor** volta ao início.
-2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, compassos (4 a 16,
-   32 ou 64), forma musical (A A′ B A′, A B A′ C, …) e duração da frase. Cada geração custa
+2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, **compasso** (2/4,
+   3/4 e 4/4 simples; 3/8, 6/8, 9/8 e 12/8 compostos, em que cada tempo são três colcheias; o
+   modelo clássico fica em 4/4, como o original), número de compassos (4 a 16, 32 ou 64), forma
+   musical (A A′ B A′, A B A′ C, …) e duração da frase (mudar o compasso ajusta-a para cerca de oito
+   tempos: 2 compassos de 4/4, 4 de 3/4 ou 6/8, 8 de 3/8). Cada geração custa
    proporcionalmente ao comprimento: com 64 compassos, uma corrida completa demora 1 a 2 minutos
    (a página avisa). A partitura e o PDF dividem-se em linhas e páginas; o piano roll numera os
    compassos de 2 em 2 ou de 4 em 4 quando ficam estreitos.
@@ -370,7 +373,53 @@ ponto médio da curva); o seno respeita o desfasamento como deslocamento no temp
 por peça; com mais do que uma, cada nota é atraída pela onda mais próxima (as bacias competem) e
 a regra premeia usar todas.
 
-### Blocos de construção do corpus
+### Compassos simples e compostos: figuras e ligações por compasso
+
+Pedido: compor noutros compassos além de 4/4 — 3/4 e os compostos como 6/8 ou 3/8, em que cada
+tempo são três colcheias —, refazer a análise das figuras e das ligações com as melodias separadas
+por compasso, expô-la em tabelas que qualquer pessoa possa auditar e melhorar, e decidir se chega uma
+relação simples («esta figura, com a última nota a subir, faz a seguinte provável») ou se vale a
+pena estendê-la em árvore, dois passos ou mais.
+
+- **Corpus**: `tools/extract_meter_corpus.py` junta 9644 melodias reais com o seu compasso (2/4
+  2689, 3/4 1514, 4/4 2555 + 483 em 2/2, 3/8 342, 6/8 1911, 9/8 143, 12/8 7), com a contagem das
+  que ficaram de fora e porquê (tercinas, mudanças de compasso).
+- **Leitura por tempos** (`src/ga/figures.js`): um tempo tem 4 semicolcheias nos compassos simples e
+  6 (três colcheias) nos compostos. Antes, 3/4 e 6/8 — o mesmo comprimento de compasso — eram lidos
+  da mesma maneira.
+- **Análise auditável** (`node tools/build_meters.mjs`, `python3 tools/export_xlsx.py`): um CSV por
+  tabela em [`results/meters/`](results/meters/) e o livro de Excel
+  [`analise-compassos.xlsx`](results/meters/analise-compassos.xlsx) — figuras por compasso e por
+  tempo, com sílabas Takadimi, comparadas com as figuras dos manuais; transições de 1 passo com e sem
+  a direção da última nota; a árvore de 2 passos com a probabilidade que uma cadeia de 1.ª ordem daria
+  ao mesmo par; entradas, contornos, associações; a comparação dos modelos. As probabilidades são
+  fórmulas (contagem / contagem do contexto) e cada coluna está explicada
+  ([`results/meters/README.md`](results/meters/README.md)).
+- **Conclusões** (validação cruzada por melodia; relatório completo em
+  [`results/meters.md`](results/meters.md)):
+  - separar os compassos torna o ritmo real de um compasso cerca de 1,8 vezes mais provável em 3/4
+    e 1,6 em 6/8 (os que se confundiam), com o mesmo modelo;
+  - a direção da última nota quase não ajuda a prever a figura seguinte, mas ajuda muito a prever o
+    intervalo seguinte (depois de um salto a melodia tende a voltar para trás; depois de um grau,
+    a continuar): entra no modelo da melodia, não no do ritmo;
+  - a árvore de dois passos prevê o ritmo melhor do que um passo em todos os compassos com muitas
+    melodias, e a memória continua a ajudar até cerca de um compasso (ou dois), desde que cada
+    contexto seja misturado com os mais curtos (modelo de ordem variável com suavização);
+  - no algoritmo genético ([`results/meters-ga.md`](results/meters-ga.md)), os blocos de cada
+    compasso dão melodias mais típicas (21 de 26 características contra 18–19) e com figuras mais
+    perto das reais, com o mesmo crítico, e sem copiar: o maior trecho igual a uma melodia real
+    (2–6 tempos) é menor do que o que as melodias reais partilham entre si (5–9).
+- **O que a app usa** (`src/ga/blocks.js`, `src/data/blocks-data.js`): por compasso, a figura dadas
+  até 4 figuras anteriores e o tempo do compasso; o intervalo de entrada dado o grau, a direção do
+  último intervalo (grau ou salto) e a figura; o contorno dada a figura e a entrada. 12/8 usa o
+  modelo de 6/8. O fitness conhece o tempo de cada compasso (cadências, alinhamento das figuras,
+  frases de cerca de oito tempos, limites «não maximizar» próprios), tal como o contraponto dos
+  cânones, os operadores, a partitura, o PDF, o LilyPond e o MIDI. O modo clássico fica em 4/4.
+
+### Blocos de construção do corpus (primeira versão, em 4/4)
+
+O que se segue é a primeira versão dos blocos, que lia tudo em tempos de semínima; os números
+(inícios, crítico, 24 sementes) foram medidos com ela. A secção anterior descreve o modelo atual.
 
 Pedido: os inícios soavam muitas vezes iguais (nota longa, pausa, a mesma nota, uma abaixo, de
 volta). Diagnóstico, em 16 sementes: 13 começavam na tónica, quase sempre repetida no 1.º tempo, e
@@ -871,8 +920,13 @@ web/
                                  cânone numa só linha com as entradas
   src/io/pdf.js                  PDF vetorial (A4) e contexto de desenho para o VexFlow
   src/ui/score.js                partitura na página (VexFlow + Gonville)
-  src/ga/blocks.js               blocos do corpus: modelo, escrita por blocos, mutação, regra «idioma»
-  data/corpus-large.json         6758 melodias reais para os blocos e o estudo (sem as 480 do crítico)
+  src/core/meter.js              compassos simples e compostos (tempo, pesos métricos, frases)
+  src/ga/figures.js              leitura por tempos: figura, contorno, entrada, direção
+  src/ga/context.js              modelo de contexto de ordem variável (suavização interpolada)
+  src/ga/blocks.js               blocos do corpus por compasso: modelo, escrita por blocos, mutação, regra «idioma»
+  data/corpus-meters.json        9644 melodias reais com o seu compasso (sem as 480 do crítico)
+  data/corpus-large.json         6758 melodias em x/4 do estudo do algoritmo original
+  results/meters/                a análise por compasso em CSV e Excel (auditável)
   src/data/classic-presets.js    combinações de partida do modo clássico (gerado pelo estudo)
   vendor/                        VexFlow 4.2.5 com a fonte Gonville (MIT, LICENSE-vexflow.txt)
   src/data/                      corpus, crítico treinado, 3 cânones de Telemann e rondas, pesos aprendidos, exemplo
@@ -884,7 +938,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 69 testes
+npm test                              # 77 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
@@ -892,7 +946,11 @@ node tools/train_critic.mjs           # treina o crítico → data/critic.json, 
 python3 tools/extract_corpus.py       # corpus a partir do music21 (pip install music21)
 python3 tools/extract_corpus.py --full  # melodias completas, para a análise inversa
 python3 tools/extract_large_corpus.py # 6758 melodias para os blocos (music21, ~5 min)
-node tools/build_blocks.mjs           # blocos e associações → src/data/blocks-data.js, results/blocks.md
+python3 tools/extract_meter_corpus.py # 9644 melodias com o compasso → data/corpus-meters.json (music21, ~10 min)
+node tools/build_meters.mjs           # análise por compasso, validação cruzada, modelo da app →
+                                      #   results/meters/*.csv, results/meters.md, src/data/blocks-data.js
+python3 tools/export_xlsx.py          # results/meters/analise-compassos.xlsx e README.md (pip install openpyxl)
+node tools/meters_ga_study.mjs 8 400  # os blocos por compasso no AG → results/meters-ga.md
 node tools/openings.mjs 8             # inícios e qualidade por variante → results/openings.md
 node tools/solo_defaults.mjs 24       # omissão da melodia só, 24 sementes → results/solo-defaults.md
 node tools/build_cadences.mjs         # fórmulas de final → src/data/cadence-data.js, results/cadences.md

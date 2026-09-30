@@ -2,6 +2,7 @@
 // experiment history, plus the optional "auto-configure" helpers.
 
 import { STEPS_PER_BAR, GENE_A4 } from '../core/score.js';
+import { meterOf, phraseBarsFor, METERS } from '../core/meter.js';
 import { keyFromScale, MAJOR_TONICS } from '../core/theory.js';
 import { INSTRUMENTS, ENSEMBLES, instrument } from '../core/instruments.js';
 import { INTERVALS, intervalMap } from '../fitness/canon.js';
@@ -25,6 +26,8 @@ export function defaultConfig() {
     scale: 1,
     major: true,
     bars: 8,
+    // time signature (core/meter.js); the classic mode keeps the 4/4 of the original program
+    meter: '4/4',
     form: "AA'BA'",
     phraseBars: 2,
     ensemble: 'solo',
@@ -143,8 +146,11 @@ export function activeVoices(c) {
   return [c.voices[0], ...c.voices.slice(1).filter((v) => v.enabled)];
 }
 
+/** The meter of a configuration: its own in the attractor mode, 4/4 in the classic mode. */
+export const meterOfConfig = (c) => meterOf(c.mode === 'classic' ? '4/4' : c.meter ?? '4/4');
+
 /** Voices ready for the analysis / player: delay in steps, pitch map, range. */
-export function voiceSpecs(c, barLen = STEPS_PER_BAR) {
+export function voiceSpecs(c, barLen = meterOfConfig(c).barLen) {
   const key = keyOf(c);
   return activeVoices(c).map((v, i) => ({
     instrument: v.instrument,
@@ -193,12 +199,13 @@ export function buildFitness(c) {
     return {
       mode: 'classic', fit, key,
       waves: fit.waves.map((values, i) => ({ values, basin: waveSpecs[i].threshold, shape: 'step' })),
-      env: { key, waves: fit.waves, basin: 3, lowMidi: 48, highMidi: 96, length: fit.length, stepsPerBar: STEPS_PER_BAR },
+      env: { key, waves: fit.waves, basin: 3, lowMidi: 48, highMidi: 96, length: fit.length, stepsPerBar: STEPS_PER_BAR, meter: METERS['4/4'], beat: 4 },
     };
   }
   const weights = { ...c.weights, canon: specs.length >= 2 ? c.canonWeight : 0 };
   const fit = createAttractorFitness({
     bars: c.bars,
+    meter: meterOfConfig(c).id,
     tonic: key.tonic,
     mode: key.mode,
     waves: c.waves,
@@ -266,10 +273,12 @@ export function autoConfigure(c) {
   c.waves = autoWaves(c);
   c.wavePreset = 'custom';
   c.form = canon ? 'none' : "AA'BA'";
-  c.phraseBars = 2;
+  const meter = meterOfConfig(c);
+  c.phraseBars = phraseBarsFor(meter);
   const last = voices.length ? Math.max(...voices.map((v) => v.delayBars || 0)) : 0;
-  // the shortest length of the menu that gives the last voice room to state the theme
-  const need = canon ? Math.max(8, 2 * last + 4) : 8;
+  // about 32 beats (8 bars of 4/4, 16 of 6/8), and room for the last voice to state the theme
+  const minBars = Math.ceil(32 / meter.beats);
+  const need = canon ? Math.max(minBars, 2 * last + 4) : minBars;
   c.bars = BAR_OPTIONS.find((b) => b >= need) ?? BAR_OPTIONS.at(-1);
   c.weightsPreset = 'default';
   c.weights = { ...DEFAULT_WEIGHTS };
@@ -351,7 +360,7 @@ export function describe(c) {
     return `regras originais (${p ? p.label : 'valores à mão'}, ${ops})`;
   };
   const wtxt = c.mode === 'classic' ? classicName() : `${c.waves.length} onda${c.waves.length > 1 ? 's' : ''} (${c.waves.map((w) => w.type).join(', ')})`;
-  return `${names[key.tonic]} ${key.mode === 'major' ? 'maior' : 'menor'} · ${vtxt} · ${wtxt}`;
+  return `${names[key.tonic]} ${key.mode === 'major' ? 'maior' : 'menor'} · ${meterOfConfig(c).id} · ${vtxt} · ${wtxt}`;
 }
 
 export { INSTRUMENTS, ENSEMBLES, WAVE_PRESETS, INTERVALS, MAJOR_TONICS };

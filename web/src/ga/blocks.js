@@ -1,354 +1,320 @@
-// Building blocks learned from real melodies (tools/build_blocks.mjs -> src/data/blocks-data.js).
+// Building blocks learned from real melodies, one model per meter (tools/build_meters.mjs ->
+// src/data/blocks-data.js; every table is also in results/meters/*.csv and the choices are
+// explained in results/meters.md).
 //
-// A block is one beat (four 16ths): its rhythm cell ('x' onset, '-' held, '.' rest) and the
-// contour inside the beat in scale steps (e.g. "x-x-|+1": two eighths, the second a step up).
-// Blocks are transposable: the same block works in any key and register.
-// The model keeps
-//   * which block tends to follow which, by position in the bar (strong / middle / weak beat),
-//   * the interval into each block from the previous note, given the scale degree and the beat
-//     (tonal tendencies: the leading tone rises, the 4th falls, leaps on strong beats...),
-//   * association rules: "if block A is in a melody, block B is there with probability p"
-//     (lift = how much more often than by chance), mined from whole melodies,
-//   * how the melodies of the corpus begin (first degree, first blocks).
-// It is used three ways: to write initial individuals, as a mutation that rewrites one beat,
-// and as a fitness rule ("idiom") that asks for the melody to be as idiomatic as a typical
-// real melody (not more: the most probable blocks alone make every melody sound the same).
+// A melody is read beat by beat (figures.js): rhythmic figure, contour inside the beat, entry
+// interval, direction of the last interval, beat of the bar. For each meter the model keeps
+//   * P(figure | previous figures, beat of the bar): a variable-order Markov model (context.js).
+//     How many previous figures count (one, two - the "two-step tree" -, up to a bar or more)
+//     was chosen per meter by cross-validation on melodies left out of the counts;
+//   * P(entry interval | degree of the last note, direction of the last interval - up or down,
+//     by step or by leap, or repeated -, beat of the bar);
+//   * P(contour inside the beat | figure, direction of the entry);
+//   * association rules between the figures of the same melody (lift) and the first degree.
+// It is used three ways: to write initial individuals, as a mutation that rewrites one or two
+// beats, and as the "idiom" rule of the fitness, which asks a melody to be as idiomatic as a
+// typical real melody of that meter (not more: the most probable figures alone make every
+// melody sound the same).
 
-import { REST, HOLD, isNote, geneToMidi, midiToGene, clampGene } from '../core/score.js';
+import { REST, HOLD, isNote, midiToGene, clampGene } from '../core/score.js';
+import { meterOf, beatClass } from '../core/meter.js';
+import { lineToBeats, genesToLine, dposOf, midiOf, dirClass, dir3, contourSteps as stepsOf } from './figures.js';
+import { countsFromJSON, probOf, distOf } from './context.js';
 
-const MAJOR = [0, 2, 4, 5, 7, 9, 11];
-const MINOR = [0, 2, 3, 5, 7, 8, 10];
-const MINOR_H = [0, 2, 3, 5, 7, 8, 11]; // generation in minor uses the leading tone
+export { dposOf, midiOf, lineToBeats, genesToLine, compactToLine, figureName, figureWords, figureSyllables, contourWords } from './figures.js';
+
 const mod = (a, n) => ((a % n) + n) % n;
+const START = -1;
+const UNKNOWN = -2;
+export const MAX_ORDER = 8;
 
-/** Diatonic position of a MIDI pitch in a key (chromatic notes fall to the degree below). */
-export function dposOf(midi, key) {
-  const steps = key.mode === 'minor' ? MINOR : MAJOR;
-  const rel = midi - 60 - key.tonic;
-  const oct = Math.floor(rel / 12);
-  const s = mod(rel, 12);
-  let d = 0;
-  for (let i = 0; i < 7; i++) if (steps[i] <= s) d = i;
-  return oct * 7 + d;
+/** The features every table is keyed by, for beat i of a tokenised melody. */
+export function beatContext(beats, i, figIndex, posOf = (b) => b.pos) {
+  const b = beats[i];
+  const f = {
+    pos: posOf(b),
+    cls: b.cls,
+    d5: b.dirIn,
+    d3: dir3(b.dirIn),
+    deg: b.prevDeg,
+    ed: b.entryDir,
+    fig: figIndex(b.cell),
+  };
+  for (let k = 1; k <= MAX_ORDER; k++) f[`f${k}`] = i - k >= 0 ? figIndex(beats[i - k].cell) : START;
+  return f;
 }
 
-export function midiOf(dpos, key) {
-  const steps = key.mode === 'minor' ? MINOR_H : MAJOR;
-  return 60 + key.tonic + 12 * Math.floor(dpos / 7) + steps[mod(dpos, 7)];
-}
+// ------------------------------------------------------------------ model of one meter
 
-export const strengthOf = (beatInBar, beatsPerBar) => (beatInBar === 0 ? 's' : beatsPerBar === 4 && beatInBar === 2 ? 'm' : 'w');
-const clip = (x, a) => Math.max(-a, Math.min(a, x));
-const sign = (x) => (x >= 0 ? `+${x}` : `${x}`);
+function meterModel(d, meter) {
+  const figs = d.figs;
+  const figIdx = new Map(figs.map((c, i) => [c, i]));
+  const figIndex = (cell) => figIdx.get(cell) ?? UNKNOWN;
+  const rhythm = countsFromJSON(d.rhythm);
+  const entry = countsFromJSON(d.entry);
+  const contour = countsFromJSON(d.contour);
+  const entryValues = d.entry.values; // intervals in scale steps
+  const contourValues = d.contour.values; // "+1-1"...
+  const contourIdx = new Map(contourValues.map((c, i) => [c, i]));
+  const onsets = figs.map((c) => [...c].filter((x) => x === 'x').length);
+  const contourLen = contourValues.map((c) => stepsOf(c).length);
+  const assoc = new Map(Object.entries(d.assoc ?? {}).map(([a, list]) => [Number(a), new Map(list.map(([b, lift]) => [b, lift]))]));
+  const degTot = Object.values(d.firstDeg).reduce((a, b) => a + b, 0);
+  // meters without data of their own borrow a model (12/8 reads as two bars of 6/8)
+  const posOf = (b) => b.pos % d.beats;
+  const ctxOf = (beats, i) => beatContext(beats, i, figIndex, posOf);
 
-/**
- * Beats of a melody given as a sounding line.
- * @param pitch (MIDI|null)[] per 16th, onset boolean[] per 16th
- * @returns [{cell, contour, id, entry, prevDeg, pos, dpos: [...]}]
- */
-export function lineToBeats(pitch, onset, { barLen = 16, pickup = 0, key }) {
-  const beatsPerBar = barLen / 4;
-  const beats = [];
-  let prevD = null;
-  let t0 = mod(pickup, 4);
-  for (let t = t0; t + 4 <= pitch.length; t += 4) {
-    let cell = '';
-    const ds = [];
-    for (let k = 0; k < 4; k++) {
-      const s = t + k;
-      if (pitch[s] === null || pitch[s] === undefined) cell += '.';
-      else if (onset[s]) {
-        cell += 'x';
-        ds.push(dposOf(pitch[s], key));
-      } else cell += '-';
-    }
-    const contour = ds.slice(1).map((d, i) => sign(clip(d - ds[i], 5))).join('');
-    const beatInBar = mod(Math.round((t - pickup) / 4), beatsPerBar);
-    beats.push({
-      cell,
-      contour,
-      id: `${cell}|${contour}`,
-      entry: ds.length && prevD !== null ? clip(ds[0] - prevD, 9) : null,
-      prevDeg: prevD === null ? -1 : mod(prevD, 7),
-      pos: strengthOf(beatInBar, beatsPerBar),
-      dpos: ds,
-    });
-    if (ds.length) prevD = ds[ds.length - 1];
-  }
-  return beats;
-}
+  const pFigure = (f, fi) => probOf(rhythm, f, fi, figs.length, d.rhythm.beta);
+  const pEntry = (f, iv) => {
+    const k = entryValues.indexOf(iv);
+    return probOf(entry, f, k < 0 ? entryValues.length : k, entryValues.length, d.entry.beta);
+  };
+  const pContour = (f, c) => probOf(contour, f, contourIdx.get(c) ?? contourValues.length, contourValues.length, d.contour.beta);
 
-export function genesToLine(genes) {
-  const pitch = [];
-  const onset = [];
-  let cur = null;
-  for (const g of genes) {
-    if (g === REST) cur = null;
-    else if (g !== HOLD) cur = geneToMidi(g);
-    pitch.push(cur);
-    onset.push(isNote(g));
-  }
-  return { pitch, onset };
-}
-
-export function compactToLine(events) {
-  const pitch = [];
-  const onset = [];
-  for (const [p, d] of events) for (let k = 0; k < d; k++) {
-    pitch.push(p < 0 ? null : p);
-    onset.push(p >= 0 && k === 0);
-  }
-  return { pitch, onset };
-}
-
-// ------------------------------------------------------------------ model (runtime)
-
-/** Wraps the learned tables with lookups, smoothing and scores. */
-export function createBlockModel(data) {
-  const vocab = new Set(data.blocks.map((b) => b[0]));
-  const classOf = (id, cell) => (vocab.has(id) ? id : `?|${cell}`);
-  const uni = {};
-  for (const [pos, list] of Object.entries(data.uni)) {
-    const tot = list.reduce((a, [, c]) => a + c, 0);
-    uni[pos] = new Map(list.map(([id, c]) => [id, c / tot]));
-  }
-  const trans = {};
-  for (const [pos, rows] of Object.entries(data.trans)) {
-    trans[pos] = new Map(Object.entries(rows).map(([prev, list]) => {
-      const tot = list.reduce((a, [, c]) => a + c, 0) + (data.transOther?.[pos]?.[prev] ?? 0);
-      return [prev, { tot, next: new Map(list.map(([id, c]) => [id, c / tot])) }];
-    }));
-  }
-  const assoc = new Map(Object.entries(data.assoc).map(([a, list]) => [a, new Map(list.map(([b, lift]) => [b, lift]))]));
-  const entry = {};
-  for (const [k, row] of Object.entries(data.entry)) {
-    const tot = Object.values(row).reduce((a, b) => a + b, 0);
-    entry[k] = { tot, p: row };
-  }
-  const floor = 1e-4;
-
-  /** P(block | previous block, position): interpolated with the position's unigram. */
-  function pBlock(prev, id, pos) {
-    const u = uni[pos]?.get(id) ?? 0;
-    const row = trans[pos]?.get(prev);
-    const t = row?.next.get(id) ?? 0;
-    const lam = row ? row.tot / (row.tot + 20) : 0;
-    return Math.max(floor, lam * t + (1 - lam) * u);
-  }
-  /** P(interval into the block | degree of the previous note, position). */
-  function pEntry(prevDeg, pos, iv) {
-    const row = entry[`${prevDeg}${pos}`];
-    if (!row) return 0.05;
-    return ((row.p[iv] ?? 0) + 0.2) / (row.tot + 0.2 * 19);
-  }
-  const lift = (a, b) => assoc.get(a)?.get(b) ?? 1;
-
-  /** Mean log-probability per beat (blocks and entries), and association coherence. */
-  const degTot = Object.values(data.firstDeg).reduce((a, b) => a + b, 0);
-  function score(beats, key = null) {
+  /** Mean log-probability per beat (figure, entry and contour), and association coherence. */
+  function score(beats) {
     let lp = 0;
     let n = 0;
-    // how the melody begins counts like one more beat
     const first = beats.find((b) => b.dpos.length);
     if (first) {
-      lp += Math.log(((data.firstDeg[((first.dpos[0] % 7) + 7) % 7] ?? 0) + 1) / (degTot + 7));
+      lp += Math.log(((d.firstDeg[mod(first.dpos[0], 7)] ?? 0) + 1) / (degTot + 7));
       n++;
     }
-    let prev = '^';
-    const used = [];
-    for (const b of beats) {
-      const id = classOf(b.id, b.cell);
-      lp += Math.log(pBlock(prev, id, b.pos));
-      if (b.entry !== null) lp += Math.log(pEntry(b.prevDeg, b.pos, b.entry));
+    const used = new Set();
+    for (let i = 0; i < beats.length; i++) {
+      const f = ctxOf(beats, i);
+      lp += Math.log(pFigure(f, f.fig));
+      if (beats[i].entry !== null) lp += Math.log(pEntry(f, beats[i].entry));
+      if (beats[i].dpos.length >= 2) lp += Math.log(pContour(f, beats[i].contour));
       n++;
-      prev = id;
-      if (!used.includes(id)) used.push(id);
+      if (f.fig >= 0) used.add(f.fig);
     }
     let coh = 0;
     let pairs = 0;
-    for (let i = 0; i < used.length; i++) for (let j = 0; j < used.length; j++) {
+    const u = [...used];
+    for (let i = 0; i < u.length; i++) for (let j = 0; j < u.length; j++) {
       if (i === j) continue;
-      const l = assoc.get(used[i])?.get(used[j]);
+      const l = assoc.get(u[i])?.get(u[j]);
       if (l !== undefined) coh += Math.log(l);
       pairs++;
     }
     return { logp: n ? lp / n : -20, coherence: pairs ? coh / pairs : 0 };
   }
 
-  /** Fitness part in [-1, 1]: 0 at the corpus P10, 1 from the corpus median up (no reward beyond). */
-  function idiomPart(genes, key) {
+  const tokenise = (genes, key) => {
     const line = genesToLine(genes);
-    const beats = lineToBeats(line.pitch, line.onset, { barLen: 16, key });
-    const s = score(beats);
-    const st = data.stats;
+    return lineToBeats(line.pitch, line.onset, { meter, key });
+  };
+
+  /** Fitness part in [-1, 1]: 0 at the P10 of real melodies of this meter, 1 from their median up. */
+  function idiomPart(genes, key) {
+    const s = score(tokenise(genes, key));
+    const st = d.stats;
     const a = Math.max(-1, Math.min(1, (s.logp - st.logp.p10) / (st.logp.p50 - st.logp.p10)));
     const b = Math.max(-1, Math.min(1, (s.coherence - st.coherence.p10) / Math.max(1e-6, st.coherence.p50 - st.coherence.p10)));
     return 0.75 * a + 0.25 * b;
   }
 
-  return { data, vocab, classOf, pBlock, pEntry, lift, score, idiomPart, assoc };
+  // ---- summaries for the page (the full tables are in results/meters/*.csv)
+  const levelOf = (cm, names) => cm.levels.findIndex((l) => l.join('|') === names.join('|'));
+  /** Figures by how often they start a beat: [[figure, share], ...]. */
+  function topFigures(k = 10) {
+    const i = levelOf(rhythm, ['pos']);
+    const tot = new Map();
+    let all = 0;
+    for (const r of rhythm.rows[i].values()) for (const [y, c] of r.c) {
+      tot.set(y, (tot.get(y) || 0) + c);
+      all += c;
+    }
+    return [...tot].sort((a, b) => b[1] - a[1]).slice(0, k).map(([y, c]) => [figs[y], c / all]);
+  }
+  /** The most likely figures after figure `fi` when the next beat is `pos` (first-order counts). */
+  function nextFigures(fi, pos, k = 3) {
+    const i = levelOf(rhythm, ['f1', 'pos']);
+    const r = i >= 0 ? rhythm.rows[i].get(`${fi}|${pos}`) : null;
+    if (!r) return [];
+    return [...r.c].sort((a, b) => b[1] - a[1]).slice(0, k).map(([y, c]) => [figs[y], c / r.n]);
+  }
+  /** After each direction of the last interval: how often the next entry goes up, repeats, goes down. */
+  function entryByDirection() {
+    const i = levelOf(entry, ['deg', 'd5', 'pos']);
+    const out = {};
+    if (i < 0) return out;
+    for (const [key, r] of entry.rows[i]) {
+      const d5 = key.split('|')[1];
+      const o = (out[d5] ||= { up: 0, same: 0, down: 0, n: 0 });
+      for (const [y, c] of r.c) {
+        const iv = entryValues[y];
+        if (iv > 0) o.up += c;
+        else if (iv < 0) o.down += c;
+        else o.same += c;
+        o.n += c;
+      }
+    }
+    return out;
+  }
+
+  return {
+    meter, data: d, figs, figIndex, ctxOf, tokenise, score, idiomPart, pFigure, pEntry, pContour,
+    rhythm, entry, contour, entryValues, contourValues, onsets, contourLen, assoc, degTot,
+    topFigures, nextFigures, entryByDirection,
+  };
+}
+
+/** The models of every meter (data from tools/build_meters.mjs), built on first use. */
+export function createBlockModel(data) {
+  const cache = new Map();
+  return {
+    data,
+    forMeter(m) {
+      const meter = meterOf(m);
+      if (!cache.has(meter.id)) {
+        const d = data.meters[meter.id] ?? data.meters[data.borrow?.[meter.id]];
+        cache.set(meter.id, d ? meterModel(d, meter) : null);
+      }
+      return cache.get(meter.id);
+    },
+  };
 }
 
 // ------------------------------------------------------------------ writing with blocks
 
-const cellOfId = (id) => id.split('|')[0];
-const contourOfId = (id) => {
-  const c = id.split('|')[1] ?? '';
-  return c.match(/[+-]\d+/g)?.map(Number) ?? [];
-};
-
-function sampleWeighted(rng, items, weights) {
+function sampleIndex(rng, weights) {
   let tot = 0;
   for (const w of weights) tot += w;
   let r = rng.float() * tot;
-  for (let i = 0; i < items.length; i++) {
+  for (let i = 0; i < weights.length; i++) {
     r -= weights[i];
-    if (r <= 0) return items[i];
+    if (r <= 0) return i;
   }
-  return items[items.length - 1];
+  return weights.length - 1;
 }
 
-/**
- * Candidate blocks after `prev` at `pos`, weighted by the transition probabilities and by the
- * association rules with the blocks already used ("if A is here, B is likely").
- */
-function nextBlock(model, prev, pos, used, rng, gamma = 0.5) {
-  const cands = new Map();
-  const row = model.data.trans[pos]?.[prev];
-  for (const [id] of row ?? []) cands.set(id, 0);
-  for (const [id] of model.data.uni[pos] ?? []) cands.set(id, 0);
-  const ids = [...cands.keys()];
-  const w = ids.map((id) => {
-    let p = model.pBlock(prev, id, pos);
-    let boost = 1;
-    for (const a of used) boost *= model.lift(a, id);
-    return p * Math.min(4, Math.max(0.25, boost)) ** gamma;
-  });
-  return sampleWeighted(rng, ids, w);
+/** Next figure: the model's distribution, nudged by the association rules with the figures used. */
+function nextFigure(M, f, used, rng, gamma = 0.5) {
+  const p = distOf(M.rhythm, f, M.figs.length, M.data.rhythm.beta);
+  if (used.size) {
+    for (let y = 0; y < p.length; y++) {
+      if (p[y] < 1e-6) continue;
+      let boost = 1;
+      for (const a of used) boost *= M.assoc.get(a)?.get(y) ?? 1;
+      p[y] *= Math.min(4, Math.max(0.25, boost)) ** gamma;
+    }
+  }
+  return sampleIndex(rng, p);
 }
 
-/** Pitch of the first note of a block: entry-interval model x attraction of the waves x range. */
-function entryPitch(model, env, prevD, pos, step, rng) {
-  const key = env.key;
+/** Entry interval: the model x attraction of the waves at that step x the range. */
+function entryDegree(M, env, f, prevD, step, rng) {
+  const p = distOf(M.entry, f, M.entryValues.length, M.data.entry.beta);
   const cands = [];
   const w = [];
-  for (let iv = -7; iv <= 7; iv++) {
-    const d = prevD + iv;
-    const m = midiOf(d, key);
-    if (m < env.lowMidi || m > env.highMidi) continue;
+  M.entryValues.forEach((iv, k) => {
+    const dd = prevD + iv;
+    const m = midiOf(dd, env.key);
+    if (m < env.lowMidi || m > env.highMidi) return;
     let att = 0;
     for (const wave of env.waves) att = Math.max(att, Math.exp(-((m - wave[step]) ** 2) / (2 * (env.basin ?? 3) ** 2)));
-    cands.push(d);
-    w.push(model.pEntry(mod(prevD, 7), pos, iv) * (0.15 + att));
-  }
-  return cands.length ? sampleWeighted(rng, cands, w) : prevD;
+    cands.push(dd);
+    w.push(p[k] * (0.15 + att));
+  });
+  return cands.length ? cands[sampleIndex(rng, w)] : prevD;
 }
 
-function startDegree(model, env, rng) {
-  const key = env.key;
-  const degs = Object.keys(model.data.firstDeg).map(Number);
-  const deg = sampleWeighted(rng, degs, degs.map((d) => model.data.firstDeg[d]));
-  // the octave closest to the first wave value
+/** Contour inside the beat for a figure with `n` notes after the first. */
+function contourSteps(M, f, n, rng) {
+  if (n <= 0) return [];
+  const p = distOf(M.contour, f, M.contourValues.length, M.data.contour.beta);
+  for (let k = 0; k < p.length; k++) if (M.contourLen[k] !== n) p[k] = 0;
+  if (p.some((x) => x > 0)) return stepsOf(M.contourValues[sampleIndex(rng, p)]);
+  return Array.from({ length: n }, () => (rng.chance(0.5) ? 1 : -1));
+}
+
+function startDegree(M, env, rng) {
+  const degs = Object.keys(M.data.firstDeg).map(Number);
+  const deg = degs[sampleIndex(rng, degs.map((x) => M.data.firstDeg[x]))];
   const target = env.waves[0][0];
   let best = deg;
   for (let o = -3; o <= 3; o++) {
-    const d = o * 7 + deg;
-    if (Math.abs(midiOf(d, key) - target) < Math.abs(midiOf(best, key) - target)) best = d;
+    const dd = o * 7 + deg;
+    if (Math.abs(midiOf(dd, env.key) - target) < Math.abs(midiOf(best, env.key) - target)) best = dd;
   }
   return best;
 }
 
-/** Writes beats [from, to) of `genes` with blocks, continuing from what is before `from`. */
-function writeBeats(model, env, genes, from, to, rng, used) {
-  const bpb = env.stepsPerBar / 4;
+/** Writes beats [from, to) of `genes` with the model, continuing from what is before `from`. */
+function writeBeats(M, env, genes, from, to, rng, used) {
+  const meter = meterOf(env.meter ?? env.stepsPerBar);
+  const B = meter.beat;
   const line = genesToLine(genes);
-  let prevD = null;
-  for (let s = from * 4 - 1; s >= 0; s--) if (line.pitch[s] !== null && line.onset[s]) {
-    prevD = dposOf(line.pitch[s], env.key);
-    break;
-  }
-  const before = from > 0 ? lineToBeats(line.pitch.slice(0, from * 4), line.onset.slice(0, from * 4), { barLen: env.stepsPerBar, key: env.key }) : [];
-  let prev = before.length ? model.classOf(before[before.length - 1].id, before[before.length - 1].cell) : '^';
-  let sounding = from > 0 && line.pitch[from * 4 - 1] !== null;
+  const before = lineToBeats(line.pitch.slice(0, from * B), line.onset.slice(0, from * B), { meter, key: env.key });
+  const hist = before.map((b) => M.figIndex(b.cell));
+  // the last two notes before `from`
+  const notes = [];
+  for (let s = from * B - 1; s >= 0 && notes.length < 2; s--) if (line.onset[s] && line.pitch[s] !== null) notes.unshift({ midi: line.pitch[s], d: dposOf(line.pitch[s], env.key) });
+  let sounding = from > 0 && line.pitch[from * B - 1] !== null;
   for (let b = from; b < to; b++) {
-    const pos = strengthOf(b % bpb, bpb);
-    let id = nextBlock(model, prev, pos, used, rng);
-    let cell = cellOfId(id);
-    if (id.startsWith('?|')) id = cell + '|'; // rhythm class only: contour chosen freely below
-    const contour = contourOfId(id);
+    const last = notes[notes.length - 1] ?? null;
+    const pen = notes.length >= 2 ? notes[notes.length - 2] : null;
+    const d5 = dirClass(last && pen ? last.midi - pen.midi : null);
+    const pos = b % meter.beats;
+    const f = { pos: pos % M.data.beats, cls: beatClass(pos, meter), d5, d3: dir3(d5), deg: last ? mod(last.d, 7) : -1 };
+    for (let k = 1; k <= MAX_ORDER; k++) f[`f${k}`] = hist.length - k >= 0 ? hist[hist.length - k] : START;
+    const fi = nextFigure(M, f, used, rng);
+    const cell = M.figs[fi];
+    f.fig = fi;
     let k = 0;
-    let d = prevD;
-    for (let i = 0; i < 4; i++) {
-      const s = b * 4 + i;
+    let dd = last ? last.d : null;
+    let steps = [];
+    for (let i = 0; i < B; i++) {
+      const s = b * B + i;
       const ch = cell[i];
       if (ch === 'x') {
-        if (k === 0) d = prevD === null ? startDegree(model, env, rng) : entryPitch(model, env, prevD, pos, s, rng);
-        else d += contour[k - 1] ?? (rng.chance(0.5) ? 1 : -1);
-        let m = midiOf(d, env.key);
-        while (m > env.highMidi) (d -= 7), (m = midiOf(d, env.key));
-        while (m < env.lowMidi) (d += 7), (m = midiOf(d, env.key));
+        if (k === 0) {
+          dd = last ? entryDegree(M, env, f, last.d, s, rng) : startDegree(M, env, rng);
+          const ed = dirClass(last ? midiOf(dd, env.key) - last.midi : null);
+          steps = contourSteps(M, { ...f, fig: fi, ed }, M.onsets[fi] - 1, rng);
+        } else dd += steps[k - 1] ?? (rng.chance(0.5) ? 1 : -1);
+        let m = midiOf(dd, env.key);
+        while (m > env.highMidi) (dd -= 7), (m = midiOf(dd, env.key));
+        while (m < env.lowMidi) (dd += 7), (m = midiOf(dd, env.key));
         genes[s] = clampGene(midiToGene(m));
-        prevD = d;
+        notes.push({ midi: m, d: dd });
+        if (notes.length > 2) notes.shift();
         sounding = true;
         k++;
-      } else if (ch === '-') genes[s] = sounding ? HOLD : REST;
+      } else if (ch === '_') genes[s] = sounding ? HOLD : REST;
       else {
         genes[s] = REST;
         sounding = false;
       }
     }
-    if (!used.includes(prev) && prev !== '^') used.push(prev);
-    prev = model.classOf(id, cell);
+    hist.push(fi);
+    used.add(fi);
   }
   if (genes[0] === HOLD) genes[0] = REST;
   return genes;
 }
 
-/** A whole initial individual written with the corpus blocks. */
-export function blockGenome(model, env, rng) {
+/** A whole initial individual written with the corpus blocks of the meter. */
+export function blockGenome(M, env, rng) {
   const genes = new Array(env.length).fill(REST);
-  return writeBeats(model, env, genes, 0, env.length / 4, rng, []);
+  const B = meterOf(env.meter ?? env.stepsPerBar).beat;
+  return writeBeats(M, env, genes, 0, Math.floor(env.length / B), rng, new Set());
 }
 
 /** Mutation: rewrite one or two beats with blocks that fit what comes before (and the rest of the piece). */
-export function blockMutate(model, genes, env, rng) {
-  const beats = env.length / 4;
+export function blockMutate(M, genes, env, rng) {
+  const meter = meterOf(env.meter ?? env.stepsPerBar);
+  const B = meter.beat;
+  const beats = Math.floor(env.length / B);
   const from = rng.int(0, beats - 1);
   const to = Math.min(beats, from + (rng.chance(0.3) ? 2 : 1));
   const line = genesToLine(genes);
-  const used = [...new Set(lineToBeats(line.pitch, line.onset, { barLen: env.stepsPerBar, key: env.key }).map((b) => model.classOf(b.id, b.cell)))];
-  const next = to * 4 < genes.length ? genes[to * 4] : null;
-  writeBeats(model, env, genes, from, to, rng, used);
+  const used = new Set(lineToBeats(line.pitch, line.onset, { meter, key: env.key }).map((b) => M.figIndex(b.cell)).filter((x) => x >= 0));
+  const next = to * B < genes.length ? genes[to * B] : null;
+  writeBeats(M, env, genes, from, to, rng, used);
   // a held note after the rewritten beats needs a note to hold
-  if (next === HOLD && to * 4 < genes.length && !isNote(genes[to * 4 - 1]) && genes[to * 4 - 1] !== HOLD) genes[to * 4] = REST;
+  if (next === HOLD && to * B < genes.length && !isNote(genes[to * B - 1]) && genes[to * B - 1] !== HOLD) genes[to * B] = REST;
   return genes;
-}
-
-// ------------------------------------------------------------------ readable names
-
-const DUR = { 1: 'sc', 2: '♪', 3: '♪.', 4: '♩' };
-export function rhythmText(cell) {
-  const out = [];
-  let i = 0;
-  while (i < 4) {
-    const ch = cell[i];
-    let j = i + 1;
-    if (ch === 'x' || (ch === '-' && i === 0)) while (j < 4 && cell[j] === '-') j++;
-    else if (ch === '.') while (j < 4 && cell[j] === '.') j++;
-    const d = j - i;
-    if (ch === '.') out.push(`pausa ${DUR[d] ?? d}`);
-    else if (ch === '-') out.push(`(ligada) ${DUR[d] ?? d}`);
-    else out.push(DUR[d] ?? String(d));
-    i = j;
-  }
-  return out.join(' ');
-}
-
-/** "♪ ♪ · sobe 1" */
-export function describeBlock(id) {
-  const [cell, contour] = id.split('|');
-  if (id.startsWith('?')) return `${rhythmText(contour)} (outro contorno)`;
-  const steps = contour ? contour.match(/[+-]\d+/g) : null;
-  const c = steps ? ` · ${steps.map((x) => (Number(x) === 0 ? 'repete' : `${Number(x) > 0 ? 'sobe' : 'desce'} ${Math.abs(Number(x))}`)).join(', ')}` : '';
-  return `${rhythmText(cell)}${c}`;
 }

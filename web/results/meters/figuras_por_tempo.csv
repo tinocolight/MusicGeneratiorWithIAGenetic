@@ -1,0 +1,509 @@
+﻿compasso,tempo_do_compasso,figura_codigo,figura,silabas_takadimi,ocorrencias,P_figura_dado_tempo
+2/4,1,x_x_,♪ ♪,ta di,16489,0.3788
+2/4,1,x___,♩,ta,13061,0.3001
+2/4,1,xxxx,sc sc sc sc,ta ka di mi,5262,0.1209
+2/4,1,x__x,♪. sc,ta mi,3502,0.0805
+2/4,1,x_xx,♪ sc sc,ta di mi,3263,0.075
+2/4,1,xxx_,sc sc ♪,ta ka di,793,0.0182
+2/4,1,____,(lig.) ♩,(lig.),365,0.0084
+2/4,1,..x_,pausa ♪ ♪,(pausa) di,133,0.0031
+2/4,1,x_..,♪ pausa ♪,ta,105,0.0024
+2/4,1,xx_x,sc ♪ sc,ta ka mi,100,0.0023
+2/4,1,__x_,(lig.) ♪ ♪,(lig.) di,95,0.0022
+2/4,1,....,pausa ♩,(pausa),89,0.002
+2/4,1,xx__,sc ♪.,ta ka,71,0.0016
+2/4,1,_xx_,(lig.) sc sc ♪,(lig.) ka di,44,0.001
+2/4,1,xx.x,sc sc pausa sc sc,ta ka mi,25,0.0006
+2/4,1,..xx,pausa ♪ sc sc,(pausa) di mi,19,0.0004
+2/4,1,x_.x,♪ pausa sc sc,ta mi,19,0.0004
+2/4,1,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,19,0.0004
+2/4,1,__xx,(lig.) ♪ sc sc,(lig.) di mi,17,0.0004
+2/4,1,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,14,0.0003
+2/4,1,__..,(lig.) ♪ pausa ♪,(lig.),8,0.0002
+2/4,1,x.x.,sc pausa sc sc pausa sc,ta di,6,0.0001
+2/4,1,x.xx,sc pausa sc sc sc,ta di mi,6,0.0001
+2/4,1,xxx.,sc sc sc pausa sc,ta ka di,5,0.0001
+2/4,1,.xxx,pausa sc sc sc sc,(pausa) ka di mi,5,0.0001
+2/4,1,___x,(lig.) ♪. sc,(lig.) mi,2,0
+2/4,1,_x__,(lig.) sc ♪.,(lig.) ka,2,0
+2/4,1,.xx_,pausa sc sc ♪,(pausa) ka di,2,0
+2/4,1,...x,pausa ♪. sc,(pausa) mi,1,0
+2/4,1,xx..,sc sc pausa ♪,ta ka,1,0
+2/4,1,xx_.,sc ♪ pausa sc,ta ka,1,0
+2/4,1,x__.,♪. pausa sc,ta,1,0
+2/4,1,__.x,(lig.) ♪ pausa sc sc,(lig.) mi,1,0
+2/4,1,x...,sc pausa ♪.,ta,1,0
+2/4,2,x_x_,♪ ♪,ta di,17862,0.4138
+2/4,2,x___,♩,ta,6872,0.1592
+2/4,2,xxxx,sc sc sc sc,ta ka di mi,4492,0.1041
+2/4,2,x_xx,♪ sc sc,ta di mi,3069,0.0711
+2/4,2,____,(lig.) ♩,(lig.),2406,0.0557
+2/4,2,..x_,pausa ♪ ♪,(pausa) di,2058,0.0477
+2/4,2,__x_,(lig.) ♪ ♪,(lig.) di,1789,0.0414
+2/4,2,x__x,♪. sc,ta mi,1100,0.0255
+2/4,2,xxx_,sc sc ♪,ta ka di,958,0.0222
+2/4,2,x_..,♪ pausa ♪,ta,630,0.0146
+2/4,2,....,pausa ♩,(pausa),565,0.0131
+2/4,2,..xx,pausa ♪ sc sc,(pausa) di mi,505,0.0117
+2/4,2,__xx,(lig.) ♪ sc sc,(lig.) di mi,369,0.0085
+2/4,2,__..,(lig.) ♪ pausa ♪,(lig.),125,0.0029
+2/4,2,x_.x,♪ pausa sc sc,ta mi,90,0.0021
+2/4,2,xx__,sc ♪.,ta ka,52,0.0012
+2/4,2,xx_x,sc ♪ sc,ta ka mi,33,0.0008
+2/4,2,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,33,0.0008
+2/4,2,xx.x,sc sc pausa sc sc,ta ka mi,26,0.0006
+2/4,2,_xx_,(lig.) sc sc ♪,(lig.) ka di,22,0.0005
+2/4,2,...x,pausa ♪. sc,(pausa) mi,17,0.0004
+2/4,2,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,16,0.0004
+2/4,2,.xxx,pausa sc sc sc sc,(pausa) ka di mi,14,0.0003
+2/4,2,x.xx,sc pausa sc sc sc,ta di mi,11,0.0003
+2/4,2,xxx.,sc sc sc pausa sc,ta ka di,9,0.0002
+2/4,2,x.x.,sc pausa sc sc pausa sc,ta di,7,0.0002
+2/4,2,xx..,sc sc pausa ♪,ta ka,7,0.0002
+2/4,2,x.x_,sc pausa sc ♪,ta di,7,0.0002
+2/4,2,x...,sc pausa ♪.,ta,4,0.0001
+2/4,2,___x,(lig.) ♪. sc,(lig.) mi,3,0.0001
+2/4,2,_.x_,(lig.) sc pausa sc ♪,(lig.) di,2,0
+2/4,2,__.x,(lig.) ♪ pausa sc sc,(lig.) mi,2,0
+2/4,2,_x__,(lig.) sc ♪.,(lig.) ka,2,0
+2/4,2,x_x.,♪ sc pausa sc,ta di,2,0
+2/4,2,.xx_,pausa sc sc ♪,(pausa) ka di,1,0
+2/4,2,.x__,pausa sc ♪.,(pausa) ka,1,0
+3/4,1,x___,♩,ta,16187,0.7387
+3/4,1,x_x_,♪ ♪,ta di,3888,0.1774
+3/4,1,x__x,♪. sc,ta mi,1155,0.0527
+3/4,1,____,(lig.) ♩,(lig.),190,0.0087
+3/4,1,x_xx,♪ sc sc,ta di mi,164,0.0075
+3/4,1,....,pausa ♩,(pausa),91,0.0042
+3/4,1,xxxx,sc sc sc sc,ta ka di mi,73,0.0033
+3/4,1,__x_,(lig.) ♪ ♪,(lig.) di,51,0.0023
+3/4,1,xxx_,sc sc ♪,ta ka di,48,0.0022
+3/4,1,xx__,sc ♪.,ta ka,26,0.0012
+3/4,1,x_..,♪ pausa ♪,ta,11,0.0005
+3/4,1,__..,(lig.) ♪ pausa ♪,(lig.),6,0.0003
+3/4,1,x_.x,♪ pausa sc sc,ta mi,5,0.0002
+3/4,1,..x_,pausa ♪ ♪,(pausa) di,4,0.0002
+3/4,1,__xx,(lig.) ♪ sc sc,(lig.) di mi,3,0.0001
+3/4,1,_xx_,(lig.) sc sc ♪,(lig.) ka di,3,0.0001
+3/4,1,xx..,sc sc pausa ♪,ta ka,2,0.0001
+3/4,1,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,2,0.0001
+3/4,1,xx_.,sc ♪ pausa sc,ta ka,1,0
+3/4,1,xx_x,sc ♪ sc,ta ka mi,1,0
+3/4,1,.x__,pausa sc ♪.,(pausa) ka,1,0
+3/4,1,___x,(lig.) ♪. sc,(lig.) mi,1,0
+3/4,2,x___,♩,ta,9779,0.4521
+3/4,2,____,(lig.) ♩,(lig.),5211,0.2409
+3/4,2,x_x_,♪ ♪,ta di,2671,0.1235
+3/4,2,__x_,(lig.) ♪ ♪,(lig.) di,2296,0.1061
+3/4,2,....,pausa ♩,(pausa),660,0.0305
+3/4,2,..x_,pausa ♪ ♪,(pausa) di,447,0.0207
+3/4,2,x__x,♪. sc,ta mi,204,0.0094
+3/4,2,x_xx,♪ sc sc,ta di mi,76,0.0035
+3/4,2,__xx,(lig.) ♪ sc sc,(lig.) di mi,63,0.0029
+3/4,2,xxxx,sc sc sc sc,ta ka di mi,47,0.0022
+3/4,2,x_..,♪ pausa ♪,ta,43,0.002
+3/4,2,__..,(lig.) ♪ pausa ♪,(lig.),40,0.0018
+3/4,2,xxx_,sc sc ♪,ta ka di,37,0.0017
+3/4,2,..xx,pausa ♪ sc sc,(pausa) di mi,21,0.001
+3/4,2,xx__,sc ♪.,ta ka,13,0.0006
+3/4,2,x_.x,♪ pausa sc sc,ta mi,6,0.0003
+3/4,2,___x,(lig.) ♪. sc,(lig.) mi,4,0.0002
+3/4,2,_xx_,(lig.) sc sc ♪,(lig.) ka di,3,0.0001
+3/4,2,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,3,0.0001
+3/4,2,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,2,0.0001
+3/4,2,xx..,sc sc pausa ♪,ta ka,2,0.0001
+3/4,2,xx_.,sc ♪ pausa sc,ta ka,1,0
+3/4,2,xx_x,sc ♪ sc,ta ka mi,1,0
+3/4,2,_x__,(lig.) sc ♪.,(lig.) ka,1,0
+3/4,2,___.,(lig.) ♪. pausa sc,(lig.),1,0
+3/4,3,x___,♩,ta,9973,0.4581
+3/4,3,x_x_,♪ ♪,ta di,7218,0.3316
+3/4,3,____,(lig.) ♩,(lig.),1008,0.0463
+3/4,3,__x_,(lig.) ♪ ♪,(lig.) di,958,0.044
+3/4,3,x__x,♪. sc,ta mi,891,0.0409
+3/4,3,..x_,pausa ♪ ♪,(pausa) di,628,0.0288
+3/4,3,....,pausa ♩,(pausa),581,0.0267
+3/4,3,x_xx,♪ sc sc,ta di mi,174,0.008
+3/4,3,xxxx,sc sc sc sc,ta ka di mi,122,0.0056
+3/4,3,xxx_,sc sc ♪,ta ka di,74,0.0034
+3/4,3,__xx,(lig.) ♪ sc sc,(lig.) di mi,39,0.0018
+3/4,3,..xx,pausa ♪ sc sc,(pausa) di mi,31,0.0014
+3/4,3,x_..,♪ pausa ♪,ta,28,0.0013
+3/4,3,_xx_,(lig.) sc sc ♪,(lig.) ka di,8,0.0004
+3/4,3,xx__,sc ♪.,ta ka,8,0.0004
+3/4,3,___x,(lig.) ♪. sc,(lig.) mi,8,0.0004
+3/4,3,__..,(lig.) ♪ pausa ♪,(lig.),8,0.0004
+3/4,3,...x,pausa ♪. sc,(pausa) mi,3,0.0001
+3/4,3,x_.x,♪ pausa sc sc,ta mi,2,0.0001
+3/4,3,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,2,0.0001
+3/4,3,xx..,sc sc pausa ♪,ta ka,2,0.0001
+3/4,3,xx_.,sc ♪ pausa sc,ta ka,1,0
+3/4,3,_.x_,(lig.) sc pausa sc ♪,(lig.) di,1,0
+4/4,1,x___,♩,ta,25810,0.648
+4/4,1,x_x_,♪ ♪,ta di,9526,0.2392
+4/4,1,x__x,♪. sc,ta mi,2404,0.0604
+4/4,1,xx__,sc ♪.,ta ka,579,0.0145
+4/4,1,xxx_,sc sc ♪,ta ka di,287,0.0072
+4/4,1,x_xx,♪ sc sc,ta di mi,259,0.0065
+4/4,1,xxxx,sc sc sc sc,ta ka di mi,242,0.0061
+4/4,1,____,(lig.) ♩,(lig.),191,0.0048
+4/4,1,__x_,(lig.) ♪ ♪,(lig.) di,185,0.0046
+4/4,1,....,pausa ♩,(pausa),159,0.004
+4/4,1,_xx_,(lig.) sc sc ♪,(lig.) ka di,100,0.0025
+4/4,1,x_..,♪ pausa ♪,ta,25,0.0006
+4/4,1,__xx,(lig.) ♪ sc sc,(lig.) di mi,20,0.0005
+4/4,1,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,10,0.0003
+4/4,1,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,7,0.0002
+4/4,1,xx_x,sc ♪ sc,ta ka mi,6,0.0002
+4/4,1,__..,(lig.) ♪ pausa ♪,(lig.),4,0.0001
+4/4,1,..x_,pausa ♪ ♪,(pausa) di,4,0.0001
+4/4,1,___x,(lig.) ♪. sc,(lig.) mi,4,0.0001
+4/4,1,x_.x,♪ pausa sc sc,ta mi,3,0.0001
+4/4,1,xx..,sc sc pausa ♪,ta ka,3,0.0001
+4/4,2,x___,♩,ta,12308,0.3102
+4/4,2,x_x_,♪ ♪,ta di,12298,0.3099
+4/4,2,____,(lig.) ♩,(lig.),6592,0.1661
+4/4,2,__x_,(lig.) ♪ ♪,(lig.) di,4173,0.1052
+4/4,2,x__x,♪. sc,ta mi,2746,0.0692
+4/4,2,....,pausa ♩,(pausa),337,0.0085
+4/4,2,xxxx,sc sc sc sc,ta ka di mi,280,0.0071
+4/4,2,x_xx,♪ sc sc,ta di mi,269,0.0068
+4/4,2,xxx_,sc sc ♪,ta ka di,152,0.0038
+4/4,2,xx__,sc ♪.,ta ka,114,0.0029
+4/4,2,_xx_,(lig.) sc sc ♪,(lig.) ka di,106,0.0027
+4/4,2,__xx,(lig.) ♪ sc sc,(lig.) di mi,99,0.0025
+4/4,2,..x_,pausa ♪ ♪,(pausa) di,71,0.0018
+4/4,2,xx..,sc sc pausa ♪,ta ka,33,0.0008
+4/4,2,x_..,♪ pausa ♪,ta,32,0.0008
+4/4,2,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,31,0.0008
+4/4,2,__..,(lig.) ♪ pausa ♪,(lig.),13,0.0003
+4/4,2,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,11,0.0003
+4/4,2,..xx,pausa ♪ sc sc,(pausa) di mi,5,0.0001
+4/4,2,xx_x,sc ♪ sc,ta ka mi,5,0.0001
+4/4,2,_x__,(lig.) sc ♪.,(lig.) ka,4,0.0001
+4/4,2,___x,(lig.) ♪. sc,(lig.) mi,2,0.0001
+4/4,2,___.,(lig.) ♪. pausa sc,(lig.),1,0
+4/4,2,...x,pausa ♪. sc,(pausa) mi,1,0
+4/4,3,x___,♩,ta,22074,0.5668
+4/4,3,x_x_,♪ ♪,ta di,9157,0.2351
+4/4,3,....,pausa ♩,(pausa),2351,0.0604
+4/4,3,x__x,♪. sc,ta mi,1738,0.0446
+4/4,3,____,(lig.) ♩,(lig.),1399,0.0359
+4/4,3,..x_,pausa ♪ ♪,(pausa) di,641,0.0165
+4/4,3,xx__,sc ♪.,ta ka,418,0.0107
+4/4,3,xxx_,sc sc ♪,ta ka di,302,0.0078
+4/4,3,__x_,(lig.) ♪ ♪,(lig.) di,246,0.0063
+4/4,3,xxxx,sc sc sc sc,ta ka di mi,212,0.0054
+4/4,3,x_xx,♪ sc sc,ta di mi,157,0.004
+4/4,3,_xx_,(lig.) sc sc ♪,(lig.) ka di,81,0.0021
+4/4,3,x_..,♪ pausa ♪,ta,51,0.0013
+4/4,3,__xx,(lig.) ♪ sc sc,(lig.) di mi,24,0.0006
+4/4,3,...x,pausa ♪. sc,(pausa) mi,23,0.0006
+4/4,3,__..,(lig.) ♪ pausa ♪,(lig.),20,0.0005
+4/4,3,___x,(lig.) ♪. sc,(lig.) mi,12,0.0003
+4/4,3,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,11,0.0003
+4/4,3,..xx,pausa ♪ sc sc,(pausa) di mi,9,0.0002
+4/4,3,x_.x,♪ pausa sc sc,ta mi,6,0.0002
+4/4,3,xx_x,sc ♪ sc,ta ka mi,3,0.0001
+4/4,3,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,3,0.0001
+4/4,3,_x__,(lig.) sc ♪.,(lig.) ka,2,0.0001
+4/4,3,xx..,sc sc pausa ♪,ta ka,2,0.0001
+4/4,4,x___,♩,ta,15099,0.3805
+4/4,4,x_x_,♪ ♪,ta di,14959,0.3769
+4/4,4,____,(lig.) ♩,(lig.),2711,0.0683
+4/4,4,x__x,♪. sc,ta mi,2334,0.0588
+4/4,4,__x_,(lig.) ♪ ♪,(lig.) di,1710,0.0431
+4/4,4,..x_,pausa ♪ ♪,(pausa) di,980,0.0247
+4/4,4,....,pausa ♩,(pausa),732,0.0184
+4/4,4,x_xx,♪ sc sc,ta di mi,301,0.0076
+4/4,4,xxxx,sc sc sc sc,ta ka di mi,182,0.0046
+4/4,4,xx__,sc ♪.,ta ka,134,0.0034
+4/4,4,__xx,(lig.) ♪ sc sc,(lig.) di mi,130,0.0033
+4/4,4,xxx_,sc sc ♪,ta ka di,119,0.003
+4/4,4,x_..,♪ pausa ♪,ta,65,0.0016
+4/4,4,_xx_,(lig.) sc sc ♪,(lig.) ka di,62,0.0016
+4/4,4,..xx,pausa ♪ sc sc,(pausa) di mi,57,0.0014
+4/4,4,xx..,sc sc pausa ♪,ta ka,35,0.0009
+4/4,4,__..,(lig.) ♪ pausa ♪,(lig.),28,0.0007
+4/4,4,_xxx,(lig.) sc sc sc sc,(lig.) ka di mi,14,0.0004
+4/4,4,_x_x,(lig.) sc ♪ sc,(lig.) ka mi,11,0.0003
+4/4,4,x_.x,♪ pausa sc sc,ta mi,5,0.0001
+4/4,4,xx_x,sc ♪ sc,ta ka mi,4,0.0001
+4/4,4,_x__,(lig.) sc ♪.,(lig.) ka,4,0.0001
+4/4,4,___x,(lig.) ♪. sc,(lig.) mi,3,0.0001
+4/4,4,...x,pausa ♪. sc,(pausa) mi,3,0.0001
+4/4,4,.xxx,pausa sc sc sc sc,(pausa) ka di mi,1,0
+4/4,4,_x..,(lig.) sc sc pausa ♪,(lig.) ka,1,0
+4/4,4,.x_x,pausa sc ♪ sc,(pausa) ka mi,1,0
+3/8,1,x_x_x_,♪ ♪ ♪,ta ki da,1962,0.3459
+3/8,1,x___x_,♩ ♪,ta da,1086,0.1915
+3/8,1,x__xx_,♪. sc ♪,ta di da,537,0.0947
+3/8,1,x_____,♩.,ta,277,0.0488
+3/8,1,x_x_xx,♪ ♪ sc sc,ta ki da ma,201,0.0354
+3/8,1,x___xx,♩ sc sc,ta da ma,200,0.0353
+3/8,1,....x_,pausa ♩ ♪,(pausa) da,190,0.0335
+3/8,1,x___..,♩ pausa ♪,ta,158,0.0279
+3/8,1,x_xxxx,♪ sc sc sc sc,ta ki di da ma,141,0.0249
+3/8,1,xxx_x_,sc sc ♪ ♪,ta va ki da,134,0.0236
+3/8,1,x_xxx_,♪ sc sc ♪,ta ki di da,108,0.019
+3/8,1,x__xxx,♪. sc sc sc,ta di da ma,103,0.0182
+3/8,1,x_x__x,♪ ♪. sc,ta ki ma,73,0.0129
+3/8,1,xxxxxx,sc sc sc sc sc sc,ta va ki di da ma,67,0.0118
+3/8,1,xxxxx_,sc sc sc sc ♪,ta va ki di da,50,0.0088
+3/8,1,x_x___,♪ ♩,ta ki,48,0.0085
+3/8,1,x_..x_,♪ pausa ♪ ♪,ta da,46,0.0081
+3/8,1,x_x_..,♪ ♪ pausa ♪,ta ki,45,0.0079
+3/8,1,....xx,pausa ♩ sc sc,(pausa) da ma,40,0.0071
+3/8,1,xxx___,sc sc ♩,ta va ki,29,0.0051
+3/8,1,xxx_xx,sc sc ♪ sc sc,ta va ki da ma,29,0.0051
+3/8,1,xxx__x,sc sc ♪. sc,ta va ki ma,20,0.0035
+3/8,1,x_..xx,♪ pausa ♪ sc sc,ta da ma,18,0.0032
+3/8,1,xxx_..,sc sc ♪ pausa ♪,ta va ki,18,0.0032
+3/8,1,x_x_.x,♪ ♪ pausa sc sc,ta ki ma,15,0.0026
+3/8,1,______,(lig.) ♩.,(lig.),11,0.0019
+3/8,1,____x_,(lig.) ♩ ♪,(lig.) da,8,0.0014
+3/8,1,__..x_,(lig.) ♪ pausa ♪ ♪,(lig.) da,6,0.0011
+3/8,1,.xxxx_,pausa sc sc sc sc ♪,(pausa) va ki di da,6,0.0011
+3/8,1,xxx_.x,sc sc ♪ pausa sc sc,ta va ki ma,5,0.0009
+3/8,1,x___.x,♩ pausa sc sc,ta ma,5,0.0009
+3/8,1,__x_x_,(lig.) ♪ ♪ ♪,(lig.) ki da,4,0.0007
+3/8,1,x_.xxx,♪ pausa sc sc sc sc,ta di da ma,3,0.0005
+3/8,1,x_....,♪ pausa ♩,ta,3,0.0005
+3/8,1,____..,(lig.) ♩ pausa ♪,(lig.),2,0.0004
+3/8,1,xx....,sc sc pausa ♩,ta va,2,0.0004
+3/8,1,xx__..,sc ♪. pausa ♪,ta va,2,0.0004
+3/8,1,..x_x_,pausa ♪ ♪ ♪,(pausa) ki da,2,0.0004
+3/8,1,__....,(lig.) ♪ pausa ♩,(lig.),2,0.0004
+3/8,1,____xx,(lig.) ♩ sc sc,(lig.) da ma,2,0.0004
+3/8,1,x__x_x,♪. ♪ sc,ta di ma,2,0.0004
+3/8,1,x_.xx_,♪ pausa sc sc ♪,ta di da,2,0.0004
+3/8,1,.....x,pausa ♩~sc sc,(pausa) ma,2,0.0004
+3/8,1,.xx_x_,pausa sc sc ♪ ♪,(pausa) va ki da,1,0.0002
+3/8,1,xxx_x.,sc sc ♪ sc pausa sc,ta va ki da,1,0.0002
+3/8,1,xxx.xx,sc sc sc pausa sc sc sc,ta va ki da ma,1,0.0002
+3/8,1,x____x,♩~sc sc,ta ma,1,0.0002
+3/8,1,x_...x,♪ pausa ♪. sc,ta ma,1,0.0002
+3/8,1,xxxx__,sc sc sc ♪.,ta va ki di,1,0.0002
+3/8,1,x.x_xx,sc pausa sc ♪ sc sc,ta ki da ma,1,0.0002
+3/8,1,xxx.x_,sc sc sc pausa sc ♪,ta va ki da,1,0.0002
+6/8,1,x_x_x_,♪ ♪ ♪,ta ki da,14770,0.5217
+6/8,1,x___x_,♩ ♪,ta da,6839,0.2416
+6/8,1,x_____,♩.,ta,3287,0.1161
+6/8,1,x__xx_,♪. sc ♪,ta di da,1595,0.0563
+6/8,1,xxx_x_,sc sc ♪ ♪,ta va ki da,264,0.0093
+6/8,1,x___..,♩ pausa ♪,ta,233,0.0082
+6/8,1,x___xx,♩ sc sc,ta da ma,143,0.0051
+6/8,1,x__xxx,♪. sc sc sc,ta di da ma,140,0.0049
+6/8,1,x_x_..,♪ ♪ pausa ♪,ta ki,128,0.0045
+6/8,1,x_x___,♪ ♩,ta ki,126,0.0045
+6/8,1,x_x_xx,♪ ♪ sc sc,ta ki da ma,105,0.0037
+6/8,1,xx__x_,sc ♪. ♪,ta va da,88,0.0031
+6/8,1,x_xxxx,♪ sc sc sc sc,ta ki di da ma,83,0.0029
+6/8,1,__x_x_,(lig.) ♪ ♪ ♪,(lig.) ki da,81,0.0029
+6/8,1,____x_,(lig.) ♩ ♪,(lig.) da,58,0.002
+6/8,1,x_xxx_,♪ sc sc ♪,ta ki di da,55,0.0019
+6/8,1,_xx_x_,(lig.) sc sc ♪ ♪,(lig.) va ki da,36,0.0013
+6/8,1,x_..x_,♪ pausa ♪ ♪,ta da,31,0.0011
+6/8,1,....x_,pausa ♩ ♪,(pausa) da,26,0.0009
+6/8,1,xxxxxx,sc sc sc sc sc sc,ta va ki di da ma,24,0.0008
+6/8,1,_x_x_x,(lig.) sc ♪ ♪ sc,(lig.) va di ma,19,0.0007
+6/8,1,xxx___,sc sc ♩,ta va ki,16,0.0006
+6/8,1,xxxxx_,sc sc sc sc ♪,ta va ki di da,11,0.0004
+6/8,1,xxx_xx,sc sc ♪ sc sc,ta va ki da ma,11,0.0004
+6/8,1,______,(lig.) ♩.,(lig.),11,0.0004
+6/8,1,x_x__x,♪ ♪. sc,ta ki ma,9,0.0003
+6/8,1,__xxx_,(lig.) ♪ sc sc ♪,(lig.) ki di da,8,0.0003
+6/8,1,__x___,(lig.) ♪ ♩,(lig.) ki,8,0.0003
+6/8,1,....xx,pausa ♩ sc sc,(pausa) da ma,7,0.0002
+6/8,1,..x_x_,pausa ♪ ♪ ♪,(pausa) ki da,7,0.0002
+6/8,1,xx__..,sc ♪. pausa ♪,ta va,7,0.0002
+6/8,1,x_xx__,♪ sc ♪.,ta ki di,6,0.0002
+6/8,1,x_....,♪ pausa ♩,ta,6,0.0002
+6/8,1,xxx_..,sc sc ♪ pausa ♪,ta va ki,6,0.0002
+6/8,1,__..x_,(lig.) ♪ pausa ♪ ♪,(lig.) da,6,0.0002
+6/8,1,x___.x,♩ pausa sc sc,ta ma,5,0.0002
+6/8,1,____..,(lig.) ♩ pausa ♪,(lig.),4,0.0001
+6/8,1,_____x,(lig.) ♩~sc sc,(lig.) ma,4,0.0001
+6/8,1,__....,(lig.) ♪ pausa ♩,(lig.),4,0.0001
+6/8,1,__x_xx,(lig.) ♪ ♪ sc sc,(lig.) ki da ma,3,0.0001
+6/8,1,__xx_x,(lig.) ♪ sc ♪ sc,(lig.) ki di ma,3,0.0001
+6/8,1,x__x_x,♪. ♪ sc,ta di ma,3,0.0001
+6/8,1,......,pausa ♩.,(pausa),3,0.0001
+6/8,1,xx..x_,sc sc pausa ♪ ♪,ta va da,3,0.0001
+6/8,1,_x_x__,(lig.) sc ♪ ♪.,(lig.) va di,3,0.0001
+6/8,1,xxxx__,sc sc sc ♪.,ta va ki di,3,0.0001
+6/8,1,..x___,pausa ♪ ♩,(pausa) ki,3,0.0001
+6/8,1,_xx_xx,(lig.) sc sc ♪ sc sc,(lig.) va ki da ma,2,0.0001
+6/8,1,_xxxxx,(lig.) sc sc sc sc sc sc,(lig.) va ki di da ma,2,0.0001
+6/8,1,__xxxx,(lig.) ♪ sc sc sc sc,(lig.) ki di da ma,2,0.0001
+6/8,1,xx_xx_,sc ♪ sc ♪,ta va di da,2,0.0001
+6/8,1,___x_x,(lig.) ♪. ♪ sc,(lig.) di ma,2,0.0001
+6/8,1,xx__xx,sc ♪. sc sc,ta va da ma,2,0.0001
+6/8,1,_xxxx_,(lig.) sc sc sc sc ♪,(lig.) va ki di da,1,0
+6/8,1,____xx,(lig.) ♩ sc sc,(lig.) da ma,1,0
+6/8,1,x__x__,♪. ♪.,ta di,1,0
+6/8,1,xx___.,sc ♩ pausa sc,ta va,1,0
+6/8,1,_..xxx,(lig.) sc pausa ♪ sc sc sc,(lig.) di da ma,1,0
+6/8,1,___xx_,(lig.) ♪. sc ♪,(lig.) di da,1,0
+6/8,1,__xx__,(lig.) ♪ sc ♪.,(lig.) ki di,1,0
+6/8,1,___xxx,(lig.) ♪. sc sc sc,(lig.) di da ma,1,0
+6/8,1,_x___x,(lig.) sc ♩ sc,(lig.) va ma,1,0
+6/8,2,x_x_x_,♪ ♪ ♪,ta ki da,13448,0.4742
+6/8,2,x___x_,♩ ♪,ta da,8146,0.2873
+6/8,2,....x_,pausa ♩ ♪,(pausa) da,1847,0.0651
+6/8,2,x_____,♩.,ta,1016,0.0358
+6/8,2,x___xx,♩ sc sc,ta da ma,810,0.0286
+6/8,2,x__xx_,♪. sc ♪,ta di da,748,0.0264
+6/8,2,....xx,pausa ♩ sc sc,(pausa) da ma,448,0.0158
+6/8,2,x___..,♩ pausa ♪,ta,250,0.0088
+6/8,2,__x_x_,(lig.) ♪ ♪ ♪,(lig.) ki da,171,0.006
+6/8,2,__..x_,(lig.) ♪ pausa ♪ ♪,(lig.) da,170,0.006
+6/8,2,x_..x_,♪ pausa ♪ ♪,ta da,169,0.006
+6/8,2,____x_,(lig.) ♩ ♪,(lig.) da,164,0.0058
+6/8,2,xxx_x_,sc sc ♪ ♪,ta va ki da,133,0.0047
+6/8,2,x_x_xx,♪ ♪ sc sc,ta ki da ma,117,0.0041
+6/8,2,x_x___,♪ ♩,ta ki,89,0.0031
+6/8,2,......,pausa ♩.,(pausa),69,0.0024
+6/8,2,x__xxx,♪. sc sc sc,ta di da ma,61,0.0022
+6/8,2,xx__x_,sc ♪. ♪,ta va da,57,0.002
+6/8,2,______,(lig.) ♩.,(lig.),43,0.0015
+6/8,2,x_xxx_,♪ sc sc ♪,ta ki di da,41,0.0014
+6/8,2,____xx,(lig.) ♩ sc sc,(lig.) da ma,35,0.0012
+6/8,2,x_xxxx,♪ sc sc sc sc,ta ki di da ma,33,0.0012
+6/8,2,xxxxxx,sc sc sc sc sc sc,ta va ki di da ma,25,0.0009
+6/8,2,..x_x_,pausa ♪ ♪ ♪,(pausa) ki da,22,0.0008
+6/8,2,__xxx_,(lig.) ♪ sc sc ♪,(lig.) ki di da,20,0.0007
+6/8,2,xxxxx_,sc sc sc sc ♪,ta va ki di da,17,0.0006
+6/8,2,x_x__x,♪ ♪. sc,ta ki ma,17,0.0006
+6/8,2,x_x_..,♪ ♪ pausa ♪,ta ki,15,0.0005
+6/8,2,__..xx,(lig.) ♪ pausa ♪ sc sc,(lig.) da ma,15,0.0005
+6/8,2,x_..xx,♪ pausa ♪ sc sc,ta da ma,13,0.0005
+6/8,2,_xx_x_,(lig.) sc sc ♪ ♪,(lig.) va ki da,11,0.0004
+6/8,2,____..,(lig.) ♩ pausa ♪,(lig.),10,0.0004
+6/8,2,xxx___,sc sc ♩,ta va ki,9,0.0003
+6/8,2,__x_xx,(lig.) ♪ ♪ sc sc,(lig.) ki da ma,9,0.0003
+6/8,2,xxx_xx,sc sc ♪ sc sc,ta va ki da ma,9,0.0003
+6/8,2,_x_x_x,(lig.) sc ♪ ♪ sc,(lig.) va di ma,9,0.0003
+6/8,2,__....,(lig.) ♪ pausa ♩,(lig.),8,0.0003
+6/8,2,__x___,(lig.) ♪ ♩,(lig.) ki,6,0.0002
+6/8,2,xxx__x,sc sc ♪. sc,ta va ki ma,6,0.0002
+6/8,2,..x___,pausa ♪ ♩,(pausa) ki,6,0.0002
+6/8,2,xx..x_,sc sc pausa ♪ ♪,ta va da,6,0.0002
+6/8,2,_x_x__,(lig.) sc ♪ ♪.,(lig.) va di,6,0.0002
+6/8,2,xxx_..,sc sc ♪ pausa ♪,ta va ki,5,0.0002
+6/8,2,xx__xx,sc ♪. sc sc,ta va da ma,4,0.0001
+6/8,2,__xx_x,(lig.) ♪ sc ♪ sc,(lig.) ki di ma,3,0.0001
+6/8,2,x_x_.x,♪ ♪ pausa sc sc,ta ki ma,3,0.0001
+6/8,2,...xx_,pausa ♪. sc ♪,(pausa) di da,3,0.0001
+6/8,2,xx..xx,sc sc pausa ♪ sc sc,ta va da ma,3,0.0001
+6/8,2,x_xx__,♪ sc ♪.,ta ki di,2,0.0001
+6/8,2,xx___x,sc ♩ sc,ta va ma,2,0.0001
+6/8,2,x_....,♪ pausa ♩,ta,2,0.0001
+6/8,2,__xxxx,(lig.) ♪ sc sc sc sc,(lig.) ki di da ma,2,0.0001
+6/8,2,..x__x,pausa ♪ ♪. sc,(pausa) ki ma,2,0.0001
+6/8,2,x_.xx_,♪ pausa sc sc ♪,ta di da,2,0.0001
+6/8,2,___xxx,(lig.) ♪. sc sc sc,(lig.) di da ma,2,0.0001
+6/8,2,___x_x,(lig.) ♪. ♪ sc,(lig.) di ma,2,0.0001
+6/8,2,_xxx_x,(lig.) sc sc sc ♪ sc,(lig.) va ki di ma,2,0.0001
+6/8,2,_xx_xx,(lig.) sc sc ♪ sc sc,(lig.) va ki da ma,1,0
+6/8,2,__xx__,(lig.) ♪ sc ♪.,(lig.) ki di,1,0
+6/8,2,.x_x_x,pausa sc ♪ ♪ sc,(pausa) va di ma,1,0
+6/8,2,___..x,(lig.) ♪. pausa ♪ sc,(lig.) ma,1,0
+6/8,2,x___.x,♩ pausa sc sc,ta ma,1,0
+6/8,2,__x__x,(lig.) ♪ ♪. sc,(lig.) ki ma,1,0
+6/8,2,x__x_x,♪. ♪ sc,ta di ma,1,0
+6/8,2,xx_xx_,sc ♪ sc ♪,ta va di da,1,0
+6/8,2,xx....,sc sc pausa ♩,ta va,1,0
+6/8,2,..x_xx,pausa ♪ ♪ sc sc,(pausa) ki da ma,1,0
+6/8,2,_x___x,(lig.) sc ♩ sc,(lig.) va ma,1,0
+6/8,2,_____x,(lig.) ♩~sc sc,(lig.) ma,1,0
+6/8,2,___x__,(lig.) ♪. ♪.,(lig.) di,1,0
+6/8,2,___xx_,(lig.) ♪. sc ♪,(lig.) di da,1,0
+9/8,1,x_x_x_,♪ ♪ ♪,ta ki da,898,0.539
+9/8,1,x___x_,♩ ♪,ta da,559,0.3355
+9/8,1,x__xx_,♪. sc ♪,ta di da,57,0.0342
+9/8,1,xxx_x_,sc sc ♪ ♪,ta va ki da,52,0.0312
+9/8,1,x_____,♩.,ta,32,0.0192
+9/8,1,__x_x_,(lig.) ♪ ♪ ♪,(lig.) ki da,21,0.0126
+9/8,1,xx__x_,sc ♪. ♪,ta va da,10,0.006
+9/8,1,x_..x_,♪ pausa ♪ ♪,ta da,8,0.0048
+9/8,1,x_x_xx,♪ ♪ sc sc,ta ki da ma,6,0.0036
+9/8,1,_xx_x_,(lig.) sc sc ♪ ♪,(lig.) va ki da,6,0.0036
+9/8,1,....x_,pausa ♩ ♪,(pausa) da,4,0.0024
+9/8,1,..x_x_,pausa ♪ ♪ ♪,(pausa) ki da,4,0.0024
+9/8,1,x_x___,♪ ♩,ta ki,3,0.0018
+9/8,1,xxx__x,sc sc ♪. sc,ta va ki ma,2,0.0012
+9/8,1,x___..,♩ pausa ♪,ta,2,0.0012
+9/8,1,xxxxx_,sc sc sc sc ♪,ta va ki di da,1,0.0006
+9/8,1,x_x__x,♪ ♪. sc,ta ki ma,1,0.0006
+9/8,2,x_x_x_,♪ ♪ ♪,ta ki da,1069,0.6417
+9/8,2,x___x_,♩ ♪,ta da,473,0.2839
+9/8,2,xxx_x_,sc sc ♪ ♪,ta va ki da,27,0.0162
+9/8,2,x__xx_,♪. sc ♪,ta di da,24,0.0144
+9/8,2,x_____,♩.,ta,16,0.0096
+9/8,2,__x_x_,(lig.) ♪ ♪ ♪,(lig.) ki da,13,0.0078
+9/8,2,x_..x_,♪ pausa ♪ ♪,ta da,11,0.0066
+9/8,2,x_x_xx,♪ ♪ sc sc,ta ki da ma,10,0.006
+9/8,2,..x_x_,pausa ♪ ♪ ♪,(pausa) ki da,8,0.0048
+9/8,2,x___xx,♩ sc sc,ta da ma,4,0.0024
+9/8,2,x_xxxx,♪ sc sc sc sc,ta ki di da ma,2,0.0012
+9/8,2,x___..,♩ pausa ♪,ta,2,0.0012
+9/8,2,x__xxx,♪. sc sc sc,ta di da ma,1,0.0006
+9/8,2,_xxxx_,(lig.) sc sc sc sc ♪,(lig.) va ki di da,1,0.0006
+9/8,2,....xx,pausa ♩ sc sc,(pausa) da ma,1,0.0006
+9/8,2,____xx,(lig.) ♩ sc sc,(lig.) da ma,1,0.0006
+9/8,2,____x_,(lig.) ♩ ♪,(lig.) da,1,0.0006
+9/8,2,xx__x_,sc ♪. ♪,ta va da,1,0.0006
+9/8,2,x_xxx_,♪ sc sc ♪,ta ki di da,1,0.0006
+9/8,3,x_x_x_,♪ ♪ ♪,ta ki da,874,0.524
+9/8,3,x___x_,♩ ♪,ta da,548,0.3285
+9/8,3,x_____,♩.,ta,87,0.0522
+9/8,3,....x_,pausa ♩ ♪,(pausa) da,52,0.0312
+9/8,3,x___xx,♩ sc sc,ta da ma,24,0.0144
+9/8,3,x_..x_,♪ pausa ♪ ♪,ta da,16,0.0096
+9/8,3,____x_,(lig.) ♩ ♪,(lig.) da,11,0.0066
+9/8,3,xxx_x_,sc sc ♪ ♪,ta va ki da,10,0.006
+9/8,3,__x_x_,(lig.) ♪ ♪ ♪,(lig.) ki da,10,0.006
+9/8,3,x_x___,♪ ♩,ta ki,8,0.0048
+9/8,3,x___..,♩ pausa ♪,ta,6,0.0036
+9/8,3,....xx,pausa ♩ sc sc,(pausa) da ma,5,0.003
+9/8,3,x_x__x,♪ ♪. sc,ta ki ma,4,0.0024
+9/8,3,x__xx_,♪. sc ♪,ta di da,3,0.0018
+9/8,3,x__xxx,♪. sc sc sc,ta di da ma,3,0.0018
+9/8,3,__xxx_,(lig.) ♪ sc sc ♪,(lig.) ki di da,2,0.0012
+9/8,3,xxx__x,sc sc ♪. sc,ta va ki ma,2,0.0012
+9/8,3,xxxxx_,sc sc sc sc ♪,ta va ki di da,1,0.0006
+9/8,3,xxx_xx,sc sc ♪ sc sc,ta va ki da ma,1,0.0006
+9/8,3,x_x_xx,♪ ♪ sc sc,ta ki da ma,1,0.0006
+12/8,1,x_x_x_,♪ ♪ ♪,ta ki da,28,0.4242
+12/8,1,x___x_,♩ ♪,ta da,19,0.2879
+12/8,1,......,pausa ♩.,(pausa),6,0.0909
+12/8,1,___xx_,(lig.) ♪. sc ♪,(lig.) di da,4,0.0606
+12/8,1,x_____,♩.,ta,3,0.0455
+12/8,1,x__xx_,♪. sc ♪,ta di da,3,0.0455
+12/8,1,______,(lig.) ♩.,(lig.),1,0.0152
+12/8,1,x___..,♩ pausa ♪,ta,1,0.0152
+12/8,1,x_x___,♪ ♩,ta ki,1,0.0152
+12/8,2,x___x_,♩ ♪,ta da,31,0.4769
+12/8,2,x_x_x_,♪ ♪ ♪,ta ki da,22,0.3385
+12/8,2,x__xx_,♪. sc ♪,ta di da,4,0.0615
+12/8,2,......,pausa ♩.,(pausa),4,0.0615
+12/8,2,x_____,♩.,ta,2,0.0308
+12/8,2,x___..,♩ pausa ♪,ta,1,0.0154
+12/8,2,..x___,pausa ♪ ♩,(pausa) ki,1,0.0154
+12/8,3,x_x_x_,♪ ♪ ♪,ta ki da,29,0.4462
+12/8,3,x___x_,♩ ♪,ta da,18,0.2769
+12/8,3,......,pausa ♩.,(pausa),6,0.0923
+12/8,3,___xx_,(lig.) ♪. sc ♪,(lig.) di da,4,0.0615
+12/8,3,x__xx_,♪. sc ♪,ta di da,3,0.0462
+12/8,3,x_____,♩.,ta,2,0.0308
+12/8,3,x_x___,♪ ♩,ta ki,2,0.0308
+12/8,3,..x___,pausa ♪ ♩,(pausa) ki,1,0.0154
+12/8,4,x___x_,♩ ♪,ta da,23,0.3485
+12/8,4,x_x_x_,♪ ♪ ♪,ta ki da,20,0.303
+12/8,4,x_____,♩.,ta,10,0.1515
+12/8,4,......,pausa ♩.,(pausa),5,0.0758
+12/8,4,x__xx_,♪. sc ♪,ta di da,4,0.0606
+12/8,4,x___xx,♩ sc sc,ta da ma,2,0.0303
+12/8,4,....x_,pausa ♩ ♪,(pausa) da,1,0.0152
+12/8,4,x_x___,♪ ♩,ta ki,1,0.0152
