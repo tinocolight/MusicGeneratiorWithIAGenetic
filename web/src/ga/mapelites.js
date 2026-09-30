@@ -5,17 +5,16 @@
 // the best melody for every cell of a grid of *behaviour descriptors* — e.g. calm vs busy
 // rhythm x stepwise vs leaping melody — and returns a whole map of good but different pieces.
 
+import { withLabels } from '../i18n/i18n.js';
 import { toEvents } from '../core/score.js';
 import { musicalMutate, beatCrossover, randomMusicalGenome, randomCanonGenome } from './operators.js';
 
-export const DESCRIPTORS = {
+export const DESCRIPTORS = withLabels({
   density: {
-    label: 'Notas por tempo',
     range: [0.5, 3],
     compute: (notes, length) => notes.length / (length / 4),
   },
   leaps: {
-    label: 'Intervalo médio (semitons)',
     range: [0.5, 5],
     compute: (notes) => {
       let s = 0;
@@ -24,16 +23,14 @@ export const DESCRIPTORS = {
     },
   },
   range: {
-    label: 'Âmbito (semitons)',
     range: [4, 24],
     compute: (notes) => (notes.length ? Math.max(...notes.map((n) => n.pitch)) - Math.min(...notes.map((n) => n.pitch)) : 0),
   },
   register: {
-    label: 'Altura média (MIDI)',
     range: [60, 80],
     compute: (notes) => notes.reduce((a, n) => a + n.pitch, 0) / Math.max(1, notes.length),
   },
-};
+}, 'descriptor');
 
 export function createMapElites({ fitness, env, rng, x = 'density', y = 'leaps', bins = 8, initial = 120 }) {
   const dx = DESCRIPTORS[x];

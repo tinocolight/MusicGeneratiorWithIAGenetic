@@ -7,6 +7,8 @@
 // 3/4 and 6/8 both last 12 sixteenths, so the length of the bar alone cannot tell them apart:
 // the meter is carried explicitly (`meter: '6/8'`) wherever it matters.
 
+import { labelTable } from '../i18n/i18n.js';
+
 export const METERS = {
   '2/4': { id: '2/4', num: 2, den: 4, barLen: 8, beat: 4, beats: 2, compound: false },
   '3/4': { id: '3/4', num: 3, den: 4, barLen: 12, beat: 4, beats: 3, compound: false },
@@ -20,15 +22,8 @@ export const METERS = {
 export const METER_IDS = Object.keys(METERS);
 export const DEFAULT_METER = '4/4';
 
-export const METER_LABELS = {
-  '2/4': '2/4 · dois tempos de semínima',
-  '3/4': '3/4 · três tempos de semínima (valsa, minueto)',
-  '4/4': '4/4 · quatro tempos de semínima',
-  '3/8': '3/8 · composto, um tempo de semínima com ponto',
-  '6/8': '6/8 · composto, dois tempos de três colcheias (jiga)',
-  '9/8': '9/8 · composto, três tempos de três colcheias (slip jig)',
-  '12/8': '12/8 · composto, quatro tempos de três colcheias',
-};
+/** Names of the meters in the current language (src/i18n/texts.js). */
+export const METER_LABELS = labelTable(METER_IDS, 'meter');
 
 /**
  * The meter for an id ('6/8'), an object already resolved, or (for old callers that only know

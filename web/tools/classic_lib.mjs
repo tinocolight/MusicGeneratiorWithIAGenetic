@@ -16,7 +16,8 @@ import criticData from '../src/data/critic-data.js';
 const here = new URL('.', import.meta.url).pathname;
 export const critic = loadCritic(criticData);
 export const FEATURES = criticData.features;
-export const RULES = [...Object.keys(CLASSIC_DEFAULTS.g1)];
+// the rules of the study (the composition heuristics came later and are not part of it)
+export const RULES = Object.keys(CLASSIC_DEFAULTS.g1).filter((r) => r !== 'heuristics');
 export const BARS = 8;
 export const LEN = BARS * STEPS_PER_BAR;
 export const TONIC = 7; // G major = scale 1 of the original

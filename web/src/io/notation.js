@@ -13,6 +13,7 @@ const MAJOR_TONIC = { 0: 'C', 1: 'Db', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F', 6: 'F#',
 const MINOR_TONIC = { 0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'Bb', 11: 'B' };
 
 import { METERS } from '../core/meter.js';
+import { t } from '../i18n/i18n.js';
 
 // ------------------------------------------------------------------ meter
 
@@ -223,7 +224,7 @@ export function canonLineModel({ lead, entries, length, barLen, meter = null, ke
   const where = (step) => {
     const bar = 1 + Math.floor(step / m.barLen);
     const off = step % m.barLen;
-    return off === 0 ? `no c. ${bar}` : `no c. ${bar} (${1 + Math.floor(off / (m.barLen / m.num))}.º tempo)`;
+    return off === 0 ? t('score.where.bar', { bar }) : t('score.where.beat', { bar, beat: 1 + Math.floor(off / (m.barLen / m.num)) });
   };
   const n = entries.length;
   model.entries = entries.map((e, i) => ({ step: e.step, number: i + 1, short: e.name }));
@@ -231,16 +232,12 @@ export function canonLineModel({ lead, entries, length, barLen, meter = null, ke
   const lastEnd = length + Math.max(...entries.map((e) => e.step));
   const endBar = Math.ceil(lastEnd / m.barLen);
   model.legend = [
-    { text: `${model.repeat ? 'Ronda' : 'Cânone'} a ${n} vozes numa só linha: cada voz começa do início quando a 1.ª voz chega ao seu número.` },
+    { text: t(model.repeat ? 'score.legend.round' : 'score.legend.canon', { n }) },
     ...entries.map((e, i) => ({
       mark: i + 1,
-      text: i === 0 ? `${e.name} — a melodia, desde o início` : `${e.name} — entra quando a 1.ª voz está ${where(e.step)}${e.intervalLabel ? `, ${e.intervalLabel}` : ''}`,
+      text: i === 0 ? t('score.legend.lead', { name: e.name }) : t('score.legend.entry', { name: e.name, where: where(e.step), interval: e.intervalLabel ? `, ${e.intervalLabel}` : '' }),
     })),
-    {
-      text: model.repeat
-        ? 'Nos sinais de repetição cada voz volta ao início; para acabar, as vozes param uma a uma no fim da linha.'
-        : `Cada voz toca a linha até ao fim; a peça acaba quando a última voz termina (${endBar} compassos ao todo).`,
-    },
+    { text: model.repeat ? t('score.legend.repeatEnd') : t('score.legend.end', { bars: endBar }) },
   ];
   return model;
 }

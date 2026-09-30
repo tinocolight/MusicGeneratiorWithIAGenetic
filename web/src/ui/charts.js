@@ -1,5 +1,6 @@
 // Small canvas charts: evolution curve, contour spectrum, MAP-Elites map.
 
+import { t } from '../i18n/i18n.js';
 import { themeColors } from './pianoroll.js';
 
 function setup(canvas) {
@@ -133,7 +134,7 @@ export function spectrumChart(canvas, spectrum, threshold, marks = []) {
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = colors.muted;
-  ctx.fillText('ciclos por compasso', pad.l, pad.t + 2);
+  ctx.fillText(t('chart.cycles'), pad.l, pad.t + 2);
 }
 
 /** MAP-Elites map: colour = fitness (sequential scale), empty cells hatched. */

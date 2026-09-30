@@ -5,7 +5,8 @@ import { CLASSIC_DEFAULTS } from '../src/fitness/classic.js';
 import { createGA } from '../src/ga/ga.js';
 import { createRng } from '../src/core/rng.js';
 
-const RULES = Object.keys(CLASSIC_DEFAULTS.g1);
+// the rules calibrated by the study (the composition heuristics came later, weight 0 there)
+const RULES = Object.keys(CLASSIC_DEFAULTS.g1).filter((r) => r !== 'heuristics');
 
 test('the original and at least three calibrated starting combinations, each with both kinds of operators', () => {
   assert.equal(CLASSIC_PRESETS[0].id, 'original');

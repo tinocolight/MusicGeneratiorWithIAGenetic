@@ -8,17 +8,19 @@ import { INSTRUMENTS, ENSEMBLES, instrument } from '../core/instruments.js';
 import { INTERVALS, intervalMap } from '../fitness/canon.js';
 import { createClassicFitness, CLASSIC_DEFAULTS } from '../fitness/classic.js';
 import classicPresetsData from '../data/classic-presets.js';
-import { createAttractorFitness, DEFAULT_WEIGHTS } from '../fitness/attractor.js';
+import { createAttractorFitness, DEFAULT_WEIGHTS, FORMS } from '../fitness/attractor.js';
+import { STYLES, styleSettings } from '../fitness/styles.js';
 import { WAVE_PRESETS, resolvePreset } from '../fitness/presets.js';
 import { analyzePiece } from '../analysis/wavefit.js';
 import { LEARNED_WEIGHTS } from '../data/learned-weights.js';
+import { t, tn, withLabels } from '../i18n/i18n.js';
 
-export const WEIGHT_PRESETS = {
-  default: { label: 'Por omissão', weights: () => ({ ...DEFAULT_WEIGHTS }) },
-  learned: { label: 'Aprendidos da música real', weights: () => ({ ...DEFAULT_WEIGHTS, ...LEARNED_WEIGHTS }) },
-  counterpoint: { label: 'Ênfase no contraponto', weights: () => ({ ...DEFAULT_WEIGHTS, canon: 10 }) },
-  waves: { label: 'Ênfase nas ondas', weights: () => ({ ...DEFAULT_WEIGHTS, attractor: 8 }) },
-};
+export const WEIGHT_PRESETS = withLabels({
+  default: { weights: () => ({ ...DEFAULT_WEIGHTS }) },
+  learned: { weights: () => ({ ...DEFAULT_WEIGHTS, ...LEARNED_WEIGHTS }) },
+  counterpoint: { weights: () => ({ ...DEFAULT_WEIGHTS, canon: 10 }) },
+  waves: { weights: () => ({ ...DEFAULT_WEIGHTS, attractor: 8 }) },
+}, 'wpreset');
 
 export function defaultConfig() {
   return {
@@ -42,6 +44,8 @@ export function defaultConfig() {
     waves: resolvePreset('arch', 7),
     weightsPreset: 'default',
     weights: { ...DEFAULT_WEIGHTS },
+    // composition style of the heuristics (src/fitness/styles.js); 'none' = the general rules only
+    style: 'none',
     canonWeight: 6,
     // reward each rule only up to its typical value in real melodies (results/blocks.md)
     capRules: true,
@@ -76,25 +80,24 @@ export function adaptToVoices(c) {
   return c;
 }
 
-const CLASSIC_PRESET_HINTS = {
-  song: 'Calibrada em canções populares reais (Essen). Com operadores musicais: crítico 0,90, 75 % das características no intervalo típico das canções (reais: 85 %), acaba na tónica em 71 % (reais: 73 %), âmbito ~10 meios-tons. Com operadores de bits: notas mais longas e âmbito de ~14 meios-tons em vez de 36, mas o crítico fica em 0 (os ataques fora do tempo e os saltos são invisíveis para as regras).',
-  dance: 'Calibrada em reels e hornpipes irlandeses e escoceses. Com operadores musicais: figuração rápida (2,5 notas por tempo; reais: 2,4), 72 % das características no intervalo típico das danças (reais: 79 %), acaba na tónica em 75 %.',
-  chorale: 'Calibrada em sopranos de corais de Bach. Com operadores musicais: movimento por grau conjunto (66 %; reais: 68 %), âmbito ~8 meios-tons, final 3–2–1; ainda mais notas do que um coral (1,3 por tempo; reais: 0,9), o estilo mais difícil de aproximar.',
-};
 
 // Starting combinations for the original algorithm: its own values, and three calibrated on real
-// songs, dances and chorales (tools/classic_study.mjs, results/classic-study.md).
+// songs, dances and chorales (tools/classic_study.mjs, results/classic-study.md). Their names and
+// descriptions are in src/i18n/texts.js (cpreset.<id>, cpreset.<id>.hint).
 export const CLASSIC_PRESETS = [
   {
-    id: 'original', label: 'Original (2020)',
-    hint: 'Os valores do programa original. Com operadores de bits: ~2,7 notas por tempo, âmbito de ~36 meios-tons, crítico 0. Com operadores musicais: crítico 0,95, mas raramente acaba na tónica (17 %) e continua denso (3 notas por tempo).',
+    id: 'original',
     g1: { ...CLASSIC_DEFAULTS.g1 }, g2: { ...CLASSIC_DEFAULTS.g2 },
     waves: null, rangeAttractor: CLASSIC_DEFAULTS.rangeAttractor, balanceMin: CLASSIC_DEFAULTS.balanceMin,
     balanceMax: CLASSIC_DEFAULTS.balanceMax, phase1Fraction: CLASSIC_DEFAULTS.phase1Fraction,
     ga: { generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' },
   },
-  ...classicPresetsData.map((p) => ({ ...p, hint: CLASSIC_PRESET_HINTS[p.id] ?? '' })),
+  ...classicPresetsData.map((p) => ({ ...p })),
 ];
+for (const p of CLASSIC_PRESETS) {
+  Object.defineProperty(p, 'label', { get: () => t(`cpreset.${p.id}`), enumerable: true, configurable: true });
+  Object.defineProperty(p, 'hint', { get: () => t(`cpreset.${p.id}.hint`), enumerable: true, configurable: true });
+}
 // the GA settings of the page for each kind of operators (the original values keep their weights)
 const CLASSIC_GA = {
   binary: { generations: 1500, popSize: 60, mutation: 0.1, operators: 'binary' },
@@ -120,7 +123,7 @@ export function applyClassicPreset(c, id, operators = c.ga?.operators === 'music
   if (p.id !== 'original') c.classicFixLapses = true; // calibrated with the lapses fixed
   c.classicFirstRun = false;
   c.ga = { ...c.ga, ...(p.id === 'original' ? CLASSIC_GA[operators] : { ...p.ga, operators }) };
-  return c;
+  return ensureHeuristics(c);
 }
 
 export function defaultClassicWaves() {
@@ -175,6 +178,60 @@ export function applyEnsemble(c, id) {
   return adaptToVoices(c);
 }
 
+// ------------------------------------------------------------------ styles
+
+/** Weight the composition heuristics get when a style is chosen and their weight is 0. */
+export const STYLE_WEIGHT = { field: 4, classic: 10 };
+
+/** The style in use (null for none, or for a style the classic mode's 4/4 does not allow). */
+export function activeStyle(c) {
+  const s = STYLES[c.style];
+  if (!s) return null;
+  return c.mode === 'classic' && !s.meters.includes('4/4') ? null : c.style;
+}
+
+/** With a style the heuristics always count: their weight is kept above 0 (field and classic). */
+export function ensureHeuristics(c) {
+  if (!STYLES[c.style]) return c;
+  c.weights ||= { ...DEFAULT_WEIGHTS };
+  if (!(c.weights.heuristics > 0)) c.weights.heuristics = STYLE_WEIGHT.field;
+  for (const g of [c.classicG1, c.classicG2]) if (g && !(g.heuristics > 0)) g.heuristics = STYLE_WEIGHT.classic;
+  return c;
+}
+
+/**
+ * Choose a composition style. Its meter replaces one the style does not use, and the piece takes
+ * the phrase length, form and length the style suggests (form only for a single melody; length
+ * only upwards); in the classic mode (4/4) only the weights change. Returns what changed.
+ */
+export function applyStyle(c, id) {
+  c.style = STYLES[id] ? id : 'none';
+  const changed = [];
+  if (c.style === 'none') return { changed, settings: null };
+  const s = styleSettings(c.style, c.mode === 'classic' ? '4/4' : c.meter ?? '4/4');
+  if (c.mode !== 'classic') {
+    if (s.meter !== c.meter) {
+      c.meter = s.meter;
+      changed.push('meter');
+    }
+    const pb = s.phraseBars ?? phraseBarsFor(c.meter);
+    if (pb !== c.phraseBars) {
+      c.phraseBars = pb;
+      changed.push('phraseBars');
+    }
+    if (s.form && FORMS[s.form] && c.form !== s.form && activeVoices(c).length < 2) {
+      c.form = s.form;
+      changed.push('form');
+    }
+    if (s.bars && c.bars < s.bars) {
+      c.bars = s.bars;
+      changed.push('bars');
+    }
+  }
+  ensureHeuristics(c);
+  return { changed, settings: s };
+}
+
 // ------------------------------------------------------------------ fitness
 
 export function buildFitness(c) {
@@ -195,6 +252,7 @@ export function buildFitness(c) {
       fixLapses: c.classicFixLapses ?? true,
       // the original self-harmonisation rules compare with the bars where the other voices enter
       selfHarmDistances: [followers[0]?.delayBars ?? 1, followers[1]?.delayBars ?? 2],
+      style: activeStyle(c),
     });
     return {
       mode: 'classic', fit, key,
@@ -217,6 +275,7 @@ export function buildFitness(c) {
     seed,
     caps: !!c.capRules,
     blocks: c.ga.init === 'blocks',
+    style: activeStyle(c),
   });
   return {
     mode: 'field', fit, key,
@@ -282,6 +341,7 @@ export function autoConfigure(c) {
   c.bars = BAR_OPTIONS.find((b) => b >= need) ?? BAR_OPTIONS.at(-1);
   c.weightsPreset = 'default';
   c.weights = { ...DEFAULT_WEIGHTS };
+  ensureHeuristics(c);
   c.capRules = true;
   if (c.ga.init === 'auto' || c.ga.init === 'blocks') c.ga.init = canon ? 'auto' : 'blocks';
   c.canonWeight = 6;
@@ -348,19 +408,24 @@ export function surprise(c, rng) {
   return c;
 }
 
-/** One-line description, for the experiment list. */
+/** One-line description, for the experiment list (in the current language). */
 export function describe(c) {
   const key = keyOf(c);
-  const names = ['Dó', 'Dó#', 'Ré', 'Mib', 'Mi', 'Fá', 'Fá#', 'Sol', 'Láb', 'Lá', 'Sib', 'Si'];
   const voices = activeVoices(c);
-  const vtxt = voices.map((v, i) => `${instrument(v.instrument).label}${i ? ` (c.${1 + v.delayBars}${v.interval !== 'unison' ? `, ${INTERVALS[v.interval].label}` : ''})` : ''}`).join(' + ');
+  const vtxt = voices.map((v, i) => {
+    if (!i) return instrument(v.instrument).label;
+    const iv = v.interval !== 'unison' ? `, ${INTERVALS[v.interval].label}` : '';
+    return `${instrument(v.instrument).label} (${t('describe.entry', { bar: 1 + v.delayBars })}${iv})`;
+  }).join(' + ');
   const classicName = () => {
     const p = CLASSIC_PRESETS.find((x) => x.id === c.classicPreset);
-    const ops = c.ga?.operators === 'musical' ? 'operadores musicais' : 'operadores de bits';
-    return `regras originais (${p ? p.label : 'valores à mão'}, ${ops})`;
+    const ops = t(c.ga?.operators === 'musical' ? 'ops.musicalShort' : 'ops.binaryShort');
+    return t('describe.classic', { preset: p ? p.label : t('describe.handValues'), ops });
   };
-  const wtxt = c.mode === 'classic' ? classicName() : `${c.waves.length} onda${c.waves.length > 1 ? 's' : ''} (${c.waves.map((w) => w.type).join(', ')})`;
-  return `${names[key.tonic]} ${key.mode === 'major' ? 'maior' : 'menor'} · ${meterOfConfig(c).id} · ${vtxt} · ${wtxt}`;
+  const wtxt = c.mode === 'classic' ? classicName() : tn('describe.waves', c.waves.length, { types: c.waves.map((w) => w.type).join(', ') });
+  const style = activeStyle(c);
+  const stxt = style ? ` · ${t('describe.style', { name: t(`style.${style}`) })}` : '';
+  return `${t(`note.${key.tonic}`)} ${t(key.mode === 'major' ? 'mode.major.lower' : 'mode.minor.lower')} · ${meterOfConfig(c).id} · ${vtxt} · ${wtxt}${stxt}`;
 }
 
 export { INSTRUMENTS, ENSEMBLES, WAVE_PRESETS, INTERVALS, MAJOR_TONICS };
