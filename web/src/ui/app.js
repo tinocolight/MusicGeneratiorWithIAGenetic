@@ -1202,7 +1202,7 @@ function onMapClick(ev) {
 // ------------------------------------------------------------------ variations
 
 function renderVariationsPlaceholder() {
-  $('varList').innerHTML = '<p class="hint">Tema carregado. Carregue em «Gerar 3 variações».</p>';
+  $('varList').innerHTML = `<p class="hint">${t('var.loaded')}</p>`;
 }
 
 function makeVariations() {
@@ -1214,6 +1214,14 @@ function makeVariations() {
     return { events, divergence: Math.min(0.9, base * m), sim: similarityToTheme(theme.events, events), from: divergencePoint(theme.events, events) };
   });
   state.variations = list;
+  state.varTheme = theme;
+  renderVariationList();
+}
+
+function renderVariationList() {
+  const theme = state.varTheme;
+  const list = state.variations;
+  if (!theme) return;
   const box = $('varList');
   box.innerHTML = '';
   const addItem = (label, events, info) => {
@@ -1228,15 +1236,15 @@ function makeVariations() {
     play.className = 'btn';
     play.type = 'button';
     play.textContent = '▶';
-    play.setAttribute('aria-label', `Tocar ${label}`);
+    play.setAttribute('aria-label', t('var.play', { label }));
     play.addEventListener('click', () => playPiece(variant()));
     const load = document.createElement('button');
     load.className = 'btn';
     load.type = 'button';
-    load.textContent = 'Ver na partitura';
+    load.textContent = t('var.view');
     load.addEventListener('click', () => {
       const v = variant();
-      state.piece = { ...v, title: `${label} de «${theme.title}»`, fitness: undefined, parts: null };
+      state.piece = { ...v, title: t('var.of', { label, title: theme.title }), titleOf: null, baseTitle: null, heuristics: undefined, fitness: undefined, parts: null };
       renderChips(state.piece);
       render();
       renderParts();
@@ -1244,8 +1252,8 @@ function makeVariations() {
     div.append(play, load);
     box.appendChild(div);
   };
-  addItem('Tema', theme.events, 'original');
-  list.forEach((v, i) => addItem(`Variação ${i + 1}`, v.events, `perturbação ${v.divergence.toFixed(3)} · igual até à nota ${v.from + 1} · ${Math.round(v.sim * 100)} % das notas iguais`));
+  addItem(t('var.theme'), theme.events, t('var.original'));
+  list.forEach((v, i) => addItem(t('var.n', { n: i + 1 }), v.events, t('var.info', { d: v.divergence.toFixed(3), k: v.from + 1, s: Math.round(v.sim * 100) })));
 }
 
 function buildForm() {
@@ -1262,7 +1270,8 @@ function buildForm() {
   });
   const length = 4 * A.length;
   const genes = fromEvents(events, length);
-  setPiece({ ...A, events: toEvents(genes), genes, length, waves: [], circular: false, config: null, ensemble: null, evaluation: null, title: 'Forma A A′ B A″ (variações de Dabby)', fitness: undefined, parts: null });
+  const titleOf = () => t('var.formTitle');
+  setPiece({ ...A, events: toEvents(genes), genes, length, waves: [], circular: false, config: null, ensemble: null, evaluation: null, heuristics: undefined, title: titleOf(), titleOf, baseTitle: null, fitness: undefined, parts: null });
 }
 
 // ------------------------------------------------------------------ analyser
@@ -1305,20 +1314,20 @@ async function onMidiFile() {
   try {
     const bytes = new Uint8Array(await f.arrayBuffer());
     const res = readMidi(bytes);
-    if (!res.compact.length) throw new Error('sem notas');
+    if (!res.compact.length) throw new Error(t('an.midiNoNotes'));
     state.midiUpload = { compact: res.compact, barLen: res.barLen, meter: meterFromSignature(res.numerator, res.denominator)?.id ?? null, title: f.name, key: null };
     $('anSource').value = 'midi';
     $('anCorpusRow').hidden = true;
-    $('anStatus').textContent = `${f.name}: ${res.tracks.length} pista(s), compasso ${res.numerator}/${res.denominator}. Polifonia reduzida à nota mais aguda.`;
+    $('anStatus').textContent = t('an.midiInfo', { name: f.name, n: res.tracks.length, num: res.numerator, den: res.denominator });
   } catch (e) {
-    $('anStatus').textContent = `Não foi possível ler o MIDI (${e.message}). Use um ficheiro .mid padrão.`;
+    $('anStatus').textContent = t('an.midiError', { msg: e.message });
   }
 }
 
 function runAnalysis() {
   const src = analysisSource();
   if (!src) {
-    $('anStatus').textContent = 'Carregue primeiro um ficheiro MIDI.';
+    $('anStatus').textContent = t('an.loadFirst');
     return;
   }
   const t0 = performance.now();
@@ -1330,47 +1339,48 @@ function runAnalysis() {
     rng: createRng(99),
   });
   state.analysis = res;
+  state.analysisSrc = src;
   const events = compactToEvents(src.compact);
   state.analysisPiece = {
-    events, length: res.total, barLen: src.barLen, meter: src.meter ?? null, title: `Análise · ${src.title}`, key: src.key, waves: [],
+    events, length: res.total, barLen: src.barLen, meter: src.meter ?? null, title: t('an.pieceTitle', { title: src.title }), key: src.key, waves: [],
     voices: src.voices, circular: !!src.circular, end: src.end, tonic: src.key?.tonic,
   };
-  $('anStatus').textContent = `Análise em ${Math.round(performance.now() - t0)} ms.`;
+  $('anStatus').textContent = t('an.time', { ms: Math.round(performance.now() - t0) });
   $('anUse').disabled = !res.segments[0]?.fit;
   renderAnalysis(res, src);
   render();
 }
 
-const fmtF = (f) => (f === 0 ? 'constante' : f < 1 ? `${f.toFixed(3)} (1 ciclo em ${(1 / f).toFixed(1)} c.)` : `${f.toFixed(2)} ciclos/compasso`);
+const fmtF = (f) => (f === 0 ? t('an.constant') : f < 1 ? t('an.cycleIn', { f: f.toFixed(3), b: (1 / f).toFixed(1) }) : t('an.cyclesPerBar', { f: f.toFixed(2) }));
 // a mean value is rarely a note: name it, or say between which notes it lies
 const noteHz = (m) => {
   const r = Math.round(m);
-  const name = Math.abs(m - r) <= 0.25 ? midiName(r) : `entre ${midiName(Math.floor(m))} e ${midiName(Math.ceil(m))}`;
+  const name = Math.abs(m - r) <= 0.25 ? midiName(r) : t('an.between', { a: midiName(Math.floor(m)), b: midiName(Math.ceil(m)) });
   return `${name} · ${m.toFixed(1)} · ${hz(m).toFixed(0)} Hz`;
 };
 
 function waveRows(w) {
-  return `<dt>frequência</dt><dd>${fmtF(w.freq)}</dd><dt>valor médio</dt><dd>${noteHz(w.mean)}</dd><dt>amplitude</dt><dd>±${w.amplitude.toFixed(1)} semitons</dd><dt>bacia (σ)</dt><dd>${w.basin.toFixed(1)} semitons</dd><dt>notas atraídas</dt><dd>${Math.round(w.share * 100)} %</dd>`;
+  return `<dt>${t('an.freq')}</dt><dd>${fmtF(w.freq)}</dd><dt>${t('an.mean')}</dt><dd>${noteHz(w.mean)}</dd><dt>${t('an.amp')}</dt><dd>${t('an.ampValue', { a: w.amplitude.toFixed(1) })}</dd><dt>${t('an.basin')}</dt><dd>${t('an.basinValue', { b: w.basin.toFixed(1) })}</dd><dt>${t('an.share')}</dt><dd>${Math.round(w.share * 100)} %</dd>`;
 }
 
 function renderAnalysis(res, src) {
   const box = $('anSegments');
   box.innerHTML = '';
   res.segments.forEach((s, i) => {
-    const bars = `c. ${(s.start / res.barLen + 1).toFixed(s.start % res.barLen ? 1 : 0)}–${(s.end / res.barLen).toFixed(s.end % res.barLen ? 1 : 0)}`;
+    const bars = t('an.bars', { a: (s.start / res.barLen + 1).toFixed(s.start % res.barLen ? 1 : 0), b: (s.end / res.barLen).toFixed(s.end % res.barLen ? 1 : 0) });
     const lowW = s.lowestWave;
     const div = document.createElement('div');
     div.className = 'seg';
-    let html = `<h4>Parte ${i + 1} · ${bars}</h4>`;
-    html += `<dl class="kv"><dt>notas</dt><dd>${s.notes}</dd><dt>ondas (BIC)</dt><dd>${s.fit ? s.fit.M : '—'} · R² ${s.fit ? s.fit.r2.toFixed(2) : '—'}</dd><dt>nota mais grave</dt><dd>${noteHz(s.register.lowest)}</dd><dt>média das graves (¼)</dt><dd>${noteHz(s.register.lowMean)}</dd><dt>nota mais aguda</dt><dd>${noteHz(s.register.highest)}</dd><dt>média das agudas (¼)</dt><dd>${noteHz(s.register.highMean)}</dd></dl>`;
-    if (lowW) html += `<div><span class="wave-tag" style="background:var(--wave-1)"></span><strong>Onda de frequência mais baixa</strong></div><dl class="kv">${waveRows(lowW)}</dl>`;
+    let html = `<h4>${t('an.part', { n: i + 1, bars })}</h4>`;
+    html += `<dl class="kv"><dt>${t('an.notes')}</dt><dd>${s.notes}</dd><dt>${t('an.wavesBic')}</dt><dd>${s.fit ? s.fit.M : '—'} · R² ${s.fit ? s.fit.r2.toFixed(2) : '—'}</dd><dt>${t('an.lowest')}</dt><dd>${noteHz(s.register.lowest)}</dd><dt>${t('an.lowMean')}</dt><dd>${noteHz(s.register.lowMean)}</dd><dt>${t('an.highest')}</dt><dd>${noteHz(s.register.highest)}</dd><dt>${t('an.highMean')}</dt><dd>${noteHz(s.register.highMean)}</dd></dl>`;
+    if (lowW) html += `<div><span class="wave-tag" style="background:var(--wave-1)"></span><strong>${t('an.lowWave')}</strong></div><dl class="kv">${waveRows(lowW)}</dl>`;
     s.highestWaves.forEach((w, k) => {
-      html += `<div><span class="wave-tag" style="background:var(--wave-${k + 2})"></span><strong>${k === 0 ? 'Onda de frequência mais alta' : 'Onda seguinte'}</strong></div><dl class="kv">${waveRows(w)}</dl>`;
+      html += `<div><span class="wave-tag" style="background:var(--wave-${k + 2})"></span><strong>${t(k === 0 ? 'an.highWave' : 'an.nextWave')}</strong></div><dl class="kv">${waveRows(w)}</dl>`;
     });
-    html += `<canvas class="chart spec" data-seg="${i}" aria-label="Espectro do contorno da parte ${i + 1}"></canvas>`;
+    html += `<canvas class="chart spec" data-seg="${i}" aria-label="${t('an.specAria', { n: i + 1 })}"></canvas>`;
     const sig = s.significant.length
-      ? `Oscilações significativas (p < 0,05, permutação): ${s.significant.slice(0, 5).map((p) => p.freq.toFixed(3)).join(', ')} ciclos/compasso.`
-      : 'Nenhuma oscilação do contorno acima do limiar de permutação (p < 0,05).';
+      ? t('an.sig', { list: s.significant.slice(0, 5).map((p) => p.freq.toFixed(3)).join(', ') })
+      : t('an.noSig');
     html += `<p class="hint">${sig}</p>`;
     div.innerHTML = html;
     box.appendChild(div);
@@ -1380,11 +1390,11 @@ function renderAnalysis(res, src) {
   const lows = res.segments.map((s) => s.lowestWave).filter(Boolean);
   const highs = res.segments.flatMap((s) => s.highestWaves.slice(0, 1));
   const avg = (arr, f) => arr.reduce((a, x) => a + f(x), 0) / Math.max(1, arr.length);
-  let html = `<dl class="kv"><dt>peça</dt><dd>${src.title}</dd><dt>partes</dt><dd>${res.segments.length}</dd>`;
-  if (lows.length) html += `<dt>freq. mais baixa (média)</dt><dd>${fmtF(avg(lows, (w) => w.freq))}</dd><dt>valor médio dessa onda</dt><dd>${noteHz(avg(lows, (w) => w.mean))}</dd>`;
-  if (highs.length) html += `<dt>freq. mais alta (média)</dt><dd>${fmtF(avg(highs, (w) => w.freq))}</dd><dt>valor médio dessa onda</dt><dd>${noteHz(avg(highs, (w) => w.mean))}</dd>`;
-  html += `<dt>R² médio</dt><dd>${avg(res.segments.filter((s) => s.fit), (s) => s.fit.r2).toFixed(2)}</dd></dl>`;
-  html += '<p class="hint">R² mede quanto da altura das notas as ondas explicam. Com poucas notas por parte o R² sobe sempre; compare com uma melodia baralhada (README) antes de concluir.</p>';
+  let html = `<dl class="kv"><dt>${t('an.sum.piece')}</dt><dd>${src.title}</dd><dt>${t('an.sum.parts')}</dt><dd>${res.segments.length}</dd>`;
+  if (lows.length) html += `<dt>${t('an.sum.lowFreq')}</dt><dd>${fmtF(avg(lows, (w) => w.freq))}</dd><dt>${t('an.sum.lowMean')}</dt><dd>${noteHz(avg(lows, (w) => w.mean))}</dd>`;
+  if (highs.length) html += `<dt>${t('an.sum.highFreq')}</dt><dd>${fmtF(avg(highs, (w) => w.freq))}</dd><dt>${t('an.sum.lowMean')}</dt><dd>${noteHz(avg(highs, (w) => w.mean))}</dd>`;
+  html += `<dt>${t('an.sum.r2')}</dt><dd>${avg(res.segments.filter((s) => s.fit), (s) => s.fit.r2).toFixed(2)}</dd></dl>`;
+  html += `<p class="hint">${t('an.sum.hint')}</p>`;
   $('anSummary').innerHTML = html;
 }
 
@@ -1424,7 +1434,7 @@ function useAnalysisWaves() {
   c.mode = 'field';
   controls.renderAll();
   updatePreview();
-  $('anStatus').textContent = `${c.waves.length} onda(s) copiadas para Compor → Ondas atratoras${shift ? `, transpostas ${shift > 0 ? '+' : ''}${shift} semitons para a tonalidade escolhida` : ''}. Pode editá-las lá.`;
+  $('anStatus').textContent = t('an.used', { n: c.waves.length, shift: shift ? t('an.shift', { s: `${shift > 0 ? '+' : ''}${shift}` }) : '' });
 }
 
 // ------------------------------------------------------------------ corpus building blocks (analyser)
@@ -1434,7 +1444,7 @@ function renderBlocksBox() {
   const M = getBlockModel(meter);
   const pctx = (x) => `${(x * 100).toFixed(1)} %`;
   if (!M) {
-    $('blocksTables').innerHTML = '<p class="hint">Sem dados para este compasso.</p>';
+    $('blocksTables').innerHTML = `<p class="hint">${t('blocks.noData')}</p>`;
     return;
   }
   const d = M.data;
@@ -1446,35 +1456,37 @@ function renderBlocksBox() {
     return `<tr><td>${figureName(c)}</td><td>${nx || '—'}</td></tr>`;
   }).join('');
   const dirs = M.entryByDirection();
-  const DIRS = [['ss', 'subiu por salto'], ['sg', 'subiu por grau'], ['r', 'repetiu'], ['dg', 'desceu por grau'], ['ds', 'desceu por salto']];
-  const dirRows = DIRS.filter(([k]) => dirs[k]?.n).map(([k, label]) => `<tr><td>${label}</td><td class="num">${pctx(dirs[k].up / dirs[k].n)}</td><td class="num">${pctx(dirs[k].same / dirs[k].n)}</td><td class="num">${pctx(dirs[k].down / dirs[k].n)}</td></tr>`).join('');
-  const own = d.meter === meter.id ? meter.id : `${d.meter} (${meter.id} tem poucas melodias no corpus)`;
-  $('blocksTables').innerHTML = `<div><h4>Figuras de um tempo mais comuns em ${own}</h4><table class="data"><thead><tr><th>figura (sílabas Takadimi)</th><th>dos tempos</th></tr></thead><tbody>${top}</tbody></table>
-    <h4>Depois desta figura, no 2.º tempo (1 passo)</h4><table class="data"><thead><tr><th>figura</th><th>seguintes mais prováveis</th></tr></thead><tbody>${after}</tbody></table></div>
-    <div><h4>A direção da última nota e o intervalo seguinte</h4><table class="data"><thead><tr><th>se a última nota…</th><th>a seguinte sobe</th><th>repete</th><th>desce</th></tr></thead><tbody>${dirRows}</tbody></table>
-    <p class="hint">Modelo deste compasso: ritmo ${d.rhythm.model} (contexto de até ${Math.max(...d.rhythm.levels.map((l) => l.length - 1))} figuras anteriores, escolhido por validação cruzada), entrada ${d.entry.model}, contorno ${d.contour.model}; ${d.melodies} melodias reais. Figuras: ♩ semínima, ♪ colcheia, ♪. colcheia pontuada, sc semicolcheia, ♩. semínima pontuada. As tabelas completas, com todas as contagens, estão em <code>web/results/meters/analise-compassos.xlsx</code> e nos CSV ao lado; o estudo em <code>web/results/meters.md</code>.</p></div>`;
+  const DIRS = ['ss', 'sg', 'r', 'dg', 'ds'];
+  const dirRows = DIRS.filter((k) => dirs[k]?.n).map((k) => `<tr><td>${t(`dir.${k}`)}</td><td class="num">${pctx(dirs[k].up / dirs[k].n)}</td><td class="num">${pctx(dirs[k].same / dirs[k].n)}</td><td class="num">${pctx(dirs[k].down / dirs[k].n)}</td></tr>`).join('');
+  const own = d.meter === meter.id ? meter.id : t('blocks.few', { meter: d.meter, own: meter.id });
+  const model = t('blocks.model', { rhythm: d.rhythm.model, ctx: Math.max(...d.rhythm.levels.map((l) => l.length - 1)), entry: d.entry.model, contour: d.contour.model, n: d.melodies });
+  $('blocksTables').innerHTML = `<div><h4>${t('blocks.top', { meter: own })}</h4><table class="data"><thead><tr><th>${t('blocks.col.figure')}</th><th>${t('blocks.col.share')}</th></tr></thead><tbody>${top}</tbody></table>
+    <h4>${t('blocks.after')}</h4><table class="data"><thead><tr><th>${t('blocks.col.fig')}</th><th>${t('blocks.col.next')}</th></tr></thead><tbody>${after}</tbody></table></div>
+    <div><h4>${t('blocks.dir')}</h4><table class="data"><thead><tr><th>${t('blocks.col.if')}</th><th>${t('blocks.col.up')}</th><th>${t('blocks.col.same')}</th><th>${t('blocks.col.down')}</th></tr></thead><tbody>${dirRows}</tbody></table>
+    <p class="hint">${model}</p></div>`;
 }
 
 // ------------------------------------------------------------------ evaluation tab
 
 let referenceRows = null;
 function referenceCanonRows() {
-  if (referenceRows) return referenceRows;
+  if (referenceRows && referenceRows.lang === getLang()) return referenceRows;
   referenceRows = ['telemann', 'telemann2', 'telemann3'].map((k) => {
     const r = REFERENCE_CANONS[k];
     const c = analyzeCanon(compactToLine(referenceEvents(r)), { delay: r.delayBars * r.barLen, barLen: r.barLen, end: r.endStep });
     const roman = { telemann: 'I', telemann2: 'II', telemann3: 'III' }[k];
-    return canonRow(`<span title="${r.title}">Telemann ${roman} · ${r.delayBars} c.</span>`, c);
+    return canonRow(`<span title="${r.title}">Telemann ${roman} · ${t('ev.atBars', { d: r.delayBars })}</span>`, c);
   });
+  referenceRows.lang = getLang();
   return referenceRows;
 }
 
-const canonHead = (first) => `<tr><th>${first}</th><th title="Consonâncias nos tempos fortes">consonância</th><th title="Quintas e oitavas paralelas">paralelas</th><th>uníssonos</th><th title="Movimento contrário">contrário</th><th>pontuação</th></tr>`;
+const canonHead = (first) => `<tr><th>${first}</th><th title="${t('ev.col.consonance.title')}">${t('ev.col.consonance')}</th><th title="${t('ev.col.parallels.title')}">${t('ev.col.parallels')}</th><th>${t('ev.col.unisons')}</th><th title="${t('ev.col.contrary.title')}">${t('ev.col.contrary')}</th><th>${t('ev.col.score')}</th></tr>`;
 const canonRow = (label, c) => `<tr><td>${label}</td><td class="num">${pct(c.strongConsonance)}</td><td class="num">${c.parallels}</td><td class="num">${pct(c.unisonRatio)}</td><td class="num">${pct(c.contraryRatio)}</td><td class="num">${c.score.toFixed(2)}</td></tr>`;
 
 function renderEvaluation(p) {
   const ev = evaluationOf(p);
-  $('evalSummary').innerHTML = `<dl class="kv"><dt>crítico (melodia real?)</dt><dd>${pct(ev.humanLike)}</dd><dt>características típicas</dt><dd>${Math.round(ev.typicality * criticData.features.length)} de ${criticData.features.length}</dd><dt>surpresa melódica</dt><dd>${ev.features.icPitch.toFixed(2)} bits/nota (real: ${criticData.percentiles[criticData.features.indexOf('icPitch')].map((v) => v.toFixed(2)).join(' / ')})</dd><dt>complexidade LZ</dt><dd>${ev.features.lzComplexity.toFixed(2)}</dd><dt>validação do crítico</dt><dd>AUC ${criticData.cv.auc.toFixed(3)} (5-fold)</dd></dl><p class="hint">Avaliado nos primeiros 8 compassos de 4/4 (128 semicolcheias), como as melodias de referência. Todas as vozes tocam a mesma melodia, por isso o crítico avalia-a uma vez.</p>`;
+  $('evalSummary').innerHTML = `<dl class="kv"><dt>${t('ev.critic')}</dt><dd>${pct(ev.humanLike)}</dd><dt>${t('ev.typical')}</dt><dd>${t('ev.typicalValue', { a: Math.round(ev.typicality * criticData.features.length), b: criticData.features.length })}</dd><dt>${t('ev.surprise')}</dt><dd>${t('ev.surpriseValue', { v: ev.features.icPitch.toFixed(2), r: criticData.percentiles[criticData.features.indexOf('icPitch')].map((v) => v.toFixed(2)).join(' / ') })}</dd><dt>${t('ev.lz')}</dt><dd>${ev.features.lzComplexity.toFixed(2)}</dd><dt>${t('ev.validation')}</dt><dd>AUC ${criticData.cv.auc.toFixed(3)} (5-fold)</dd></dl><p class="hint">${t('ev.note')}</p>`;
   const line = lineOf(p);
   let html = '';
   const ens = ensembleOf(p);
@@ -1483,20 +1495,20 @@ function renderEvaluation(p) {
       const ps = [];
       for (let s = 0; s < line.pitch.length; s++) if (line.onset[s]) ps.push(v.map(line.pitch[s]));
       const out = ps.filter((q) => q < v.range[0] || q > v.range[1]).length / Math.max(1, ps.length);
-      return `<tr><td>${i + 1}</td><td>${instrument(v.instrument).label}</td><td>c. ${1 + v.delay / p.barLen}</td><td>${i ? INTERVALS[v.interval]?.label ?? '—' : 'melodia'}</td><td>${midiName(Math.min(...ps))}–${midiName(Math.max(...ps))}</td><td class="num ${out ? 'off' : 'ok'}">${pct(out)}</td></tr>`;
+      return `<tr><td>${i + 1}</td><td>${instrument(v.instrument).label}</td><td>${t('ev.entryBar', { n: 1 + v.delay / p.barLen })}</td><td>${i ? INTERVALS[v.interval]?.label ?? '—' : t('ev.melody')}</td><td>${midiName(Math.min(...ps))}–${midiName(Math.max(...ps))}</td><td class="num ${out ? 'off' : 'ok'}">${pct(out)}</td></tr>`;
     });
-    html += `<h4>Vozes</h4><table class="data"><thead><tr><th>#</th><th>instrumento</th><th>entrada</th><th>intervalo</th><th>registo</th><th>fora do alcance</th></tr></thead><tbody>${vrows.join('')}</tbody></table>`;
-    const prows = ens.pairs.map((pr) => canonRow(`${pr.i + 1} e ${pr.j + 1}`, pr));
-    html += `<h4>Pares de vozes</h4><table class="data"><thead>${canonHead('vozes')}</thead><tbody>${prows.join('')}</tbody><tfoot><tr><td>todas</td><td class="num">${pct(ens.strongConsonance)}</td><td class="num">${ens.parallels}</td><td class="num">${pct(ens.unisonRatio)}</td><td class="num">${pct(ens.contraryRatio)}</td><td class="num">${ens.score.toFixed(2)}</td></tr></tfoot></table>${p.voices.length >= 3 ? `<p class="hint">Tempos fortes em que as três vozes formam um acorde perfeito: ${pct(ens.triadRatio)}.</p>` : ''}`;
+    html += `<h4>${t('ev.voices')}</h4><table class="data"><thead><tr><th>#</th><th>${t('ev.col.instrument')}</th><th>${t('ev.col.entry')}</th><th>${t('ev.col.interval')}</th><th>${t('ev.col.register')}</th><th>${t('ev.col.out')}</th></tr></thead><tbody>${vrows.join('')}</tbody></table>`;
+    const prows = ens.pairs.map((pr) => canonRow(t('ev.pair', { a: pr.i + 1, b: pr.j + 1 }), pr));
+    html += `<h4>${t('ev.pairs')}</h4><table class="data"><thead>${canonHead(t('ev.col.voices'))}</thead><tbody>${prows.join('')}</tbody><tfoot><tr><td>${t('ev.all')}</td><td class="num">${pct(ens.strongConsonance)}</td><td class="num">${ens.parallels}</td><td class="num">${pct(ens.unisonRatio)}</td><td class="num">${pct(ens.contraryRatio)}</td><td class="num">${ens.score.toFixed(2)}</td></tr></tfoot></table>${p.voices.length >= 3 ? `<p class="hint">${t('ev.triads', { p: pct(ens.triadRatio) })}</p>` : ''}`;
   }
-  const rows = [1, 2, 3].map((d) => canonRow(`a ${d} c.`, analyzeCanon(line, { delay: d * p.barLen, barLen: p.barLen })));
-  html += `<h4>A melodia contra si própria, em uníssono</h4><table class="data"><thead>${canonHead('2.ª voz')}</thead><tbody>${rows.join('')}</tbody><tfoot>${referenceCanonRows().join('')}</tfoot></table>`;
+  const rows = [1, 2, 3].map((d) => canonRow(t('ev.atBars', { d }), analyzeCanon(line, { delay: d * p.barLen, barLen: p.barLen })));
+  html += `<h4>${t('ev.self')}</h4><table class="data"><thead>${canonHead(t('ev.secondVoice'))}</thead><tbody>${rows.join('')}</tbody><tfoot>${referenceCanonRows().join('')}</tfoot></table>`;
   $('canonTable').innerHTML = html;
   const frows = criticData.features.map((f) => {
     const pf = ev.perFeature[f];
     return `<tr><td>${FEATURE_LABELS[f] || f}</td><td class="num ${pf.ok ? 'ok' : 'off'}">${fmtNum(pf.value)}</td><td class="num">${fmtNum(pf.p10)} – ${fmtNum(pf.p90)}</td></tr>`;
   });
-  $('featureTable').innerHTML = `<table class="data"><thead><tr><th>Característica</th><th>Peça</th><th>Reais P10–P90</th></tr></thead><tbody>${frows.join('')}</tbody></table>`;
+  $('featureTable').innerHTML = `<table class="data"><thead><tr><th>${t('ev.col.feature')}</th><th>${t('ev.col.piece')}</th><th>${t('ev.col.real')}</th></tr></thead><tbody>${frows.join('')}</tbody></table>`;
 }
 
 const fmtNum = (v) => (Math.abs(v) >= 10 ? v.toFixed(1) : v.toFixed(2));
@@ -1504,6 +1516,9 @@ const fmtNum = (v) => (Math.abs(v) >= 10 ? v.toFixed(1) : v.toFixed(2));
 // ------------------------------------------------------------------ start
 
 function start() {
+  startLang(initialLang());
+  applyTexts();
+  initLanguage();
   initControls();
   try {
     if (localStorage.getItem('ondas-view') === 'score') state.view = 'score';
@@ -1516,12 +1531,13 @@ function start() {
   cfg.ga.seed = ex.seed;
   const built = buildFitness(cfg);
   const res = built.fit.evaluate(ex.genes);
-  setPiece(pieceFromGenes(ex.genes, built, cfg, { fitness: res.score, parts: res.parts, weights: built.fit.weights, title: ex.title }));
+  const titleOf = () => t('example.title');
+  setPiece(pieceFromGenes(ex.genes, built, cfg, { fitness: res.score, parts: res.parts, weights: built.fit.weights, title: titleOf(), titleOf }));
   state.history = ex.history || [];
   updatePreview();
   updateStartHint();
   drawHistory();
-  $('runStatus').textContent = `Pronto. ${describe(state.config)}.`;
+  $('runStatus').textContent = t('status.readyDesc', { desc: describe(state.config) });
   if (state.view === 'score') setView('score');
 }
 

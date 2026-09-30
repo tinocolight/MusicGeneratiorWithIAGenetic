@@ -264,3 +264,24 @@ table.data td .btn { padding: 3px 8px; font-size: 12px; }
 .score g.on path, .score g.on rect { fill: var(--paper-accent) !important; stroke: var(--paper-accent) !important; }
 .score .msg { padding: 24px; color: var(--muted); }
 #lilyText { min-height: 220px; font: 12px/1.45 var(--font-mono); }
+
+/* language menu in the header */
+.top-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.lang { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; }
+@media (max-width: 860px) { .top-tools { align-items: flex-start; } }
+
+/* rule weights: a "?" beside each weight opens what the rule does */
+.wgrid { grid-template-columns: 1fr auto auto; }
+.wgrid .wsub { grid-column: 1 / -1; margin-top: 6px; }
+.whelp {
+  width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--accent); font: 600 12px var(--font-body); cursor: pointer;
+}
+.whelp:hover { border-color: var(--accent); }
+.whelp[aria-expanded="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.wdesc {
+  grid-column: 1 / -1; margin: 0 0 6px; padding: 6px 9px; background: var(--surface-2);
+  border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; color: var(--ink); font-size: 12.5px; line-height: 1.45;
+}
+.wlabel.forced::after { content: " ●"; color: var(--accent); }
+.muted { color: var(--muted); }
