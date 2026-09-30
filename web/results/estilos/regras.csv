@@ -1,0 +1,1081 @@
+﻿estilo,compasso,regra,tipo,medida,alvo,tolerancia,origem_do_alvo,peso,fontes
+nenhum (regras gerais),2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+nenhum (regras gerais),2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+nenhum (regras gerais),2/4,leaps,geral,leaps,0.04–0.2581,0.25,corpus (todas as melodias do compasso),1,G01 G06
+nenhum (regras gerais),2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+nenhum (regras gerais),2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+nenhum (regras gerais),2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+nenhum (regras gerais),2/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+nenhum (regras gerais),2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (todas as melodias do compasso),0.5,G10 G15
+nenhum (regras gerais),2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+nenhum (regras gerais),2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+nenhum (regras gerais),2/4,finalLength,geral,finalLength,1.0247–2.3333,0.6543,corpus (todas as melodias do compasso),1,G07
+nenhum (regras gerais),2/4,motifs,geral,motifs,0.3333–0.8182,0.25,corpus (todas as melodias do compasso),1,G09 G15
+nenhum (regras gerais),2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+nenhum (regras gerais),2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+nenhum (regras gerais),3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+nenhum (regras gerais),3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+nenhum (regras gerais),3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+nenhum (regras gerais),3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+nenhum (regras gerais),3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+nenhum (regras gerais),3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+nenhum (regras gerais),3/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+nenhum (regras gerais),3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+nenhum (regras gerais),3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+nenhum (regras gerais),3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+nenhum (regras gerais),3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+nenhum (regras gerais),3/4,motifs,geral,motifs,0.2941–0.8182,0.2621,corpus (todas as melodias do compasso),1,G09 G15
+nenhum (regras gerais),3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+nenhum (regras gerais),3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+nenhum (regras gerais),4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+nenhum (regras gerais),4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+nenhum (regras gerais),4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+nenhum (regras gerais),4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+nenhum (regras gerais),4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+nenhum (regras gerais),4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+nenhum (regras gerais),4/4,range,geral,range,10–21,5.5,corpus (todas as melodias do compasso),1,G10 G11
+nenhum (regras gerais),4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+nenhum (regras gerais),4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+nenhum (regras gerais),4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+nenhum (regras gerais),4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+nenhum (regras gerais),4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+nenhum (regras gerais),4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+nenhum (regras gerais),4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+nenhum (regras gerais),3/8,stepDown,geral,stepDown,0.3636–0.8182,0.25,corpus (todas as melodias do compasso),1,G02
+nenhum (regras gerais),3/8,inertia,geral,inertia,0.4–0.8889,0.25,corpus (todas as melodias do compasso),1,G03
+nenhum (regras gerais),3/8,leaps,geral,leaps,0.0172–0.1961,0.25,corpus (todas as melodias do compasso),1,G01 G06
+nenhum (regras gerais),3/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+nenhum (regras gerais),3/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+nenhum (regras gerais),3/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+nenhum (regras gerais),3/8,range,geral,range,8–16,5,corpus (todas as melodias do compasso),1,G10 G11
+nenhum (regras gerais),3/8,climaxCount,geral,climaxCount,1–7,3,corpus (todas as melodias do compasso),0.5,G10 G15
+nenhum (regras gerais),3/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+nenhum (regras gerais),3/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+nenhum (regras gerais),3/8,finalLength,geral,finalLength,1.1062–2.3083,0.601,corpus (todas as melodias do compasso),1,G07
+nenhum (regras gerais),3/8,motifs,geral,motifs,0.5333–0.8667,0.25,corpus (todas as melodias do compasso),1,G09 G15
+nenhum (regras gerais),3/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+nenhum (regras gerais),3/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+nenhum (regras gerais),6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+nenhum (regras gerais),6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+nenhum (regras gerais),6/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+nenhum (regras gerais),6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+nenhum (regras gerais),6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+nenhum (regras gerais),6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+nenhum (regras gerais),6/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+nenhum (regras gerais),6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+nenhum (regras gerais),6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+nenhum (regras gerais),6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+nenhum (regras gerais),6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+nenhum (regras gerais),6/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+nenhum (regras gerais),6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+nenhum (regras gerais),6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+nenhum (regras gerais),9/8,stepDown,geral,stepDown,0.3429–0.64,0.25,corpus (todas as melodias do compasso),1,G02
+nenhum (regras gerais),9/8,inertia,geral,inertia,0.4865–0.8462,0.25,corpus (todas as melodias do compasso),1,G03
+nenhum (regras gerais),9/8,leaps,geral,leaps,0.0614–0.2308,0.25,corpus (todas as melodias do compasso),1,G01 G06
+nenhum (regras gerais),9/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+nenhum (regras gerais),9/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+nenhum (regras gerais),9/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+nenhum (regras gerais),9/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+nenhum (regras gerais),9/8,climaxCount,geral,climaxCount,1–7,3,corpus (todas as melodias do compasso),0.5,G10 G15
+nenhum (regras gerais),9/8,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+nenhum (regras gerais),9/8,endLow,geral,endLow,0–1,0.5,corpus (todas as melodias do compasso),1,G08
+nenhum (regras gerais),9/8,finalLength,geral,finalLength,0.8194–1.9722,0.6,corpus (todas as melodias do compasso),1,G07
+nenhum (regras gerais),9/8,motifs,geral,motifs,0.4286–0.8571,0.25,corpus (todas as melodias do compasso),1,G09 G15
+nenhum (regras gerais),9/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+nenhum (regras gerais),9/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+nenhum (regras gerais),12/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+nenhum (regras gerais),12/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+nenhum (regras gerais),12/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+nenhum (regras gerais),12/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+nenhum (regras gerais),12/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+nenhum (regras gerais),12/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+nenhum (regras gerais),12/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+nenhum (regras gerais),12/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+nenhum (regras gerais),12/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+nenhum (regras gerais),12/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+nenhum (regras gerais),12/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+nenhum (regras gerais),12/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+nenhum (regras gerais),12/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+nenhum (regras gerais),12/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+folk,4/4,density,do estilo,density,0.8254–1.4414,0.6,corpus (folk),1,E42
+folk,4/4,steps,do estilo,steps,0.3265–0.7,0.25,corpus (folk),1,G01
+folk,4/4,repeats,do estilo,repeats,0.0645–0.3571,0.25,corpus (folk),0.5,G09
+folk,4/4,restShare,do estilo,restShare,0–0.0968,0.25,corpus (folk),0.5,G07
+folk,4/4,stepDown,geral,stepDown,0.4286–0.8235,0.25,corpus (folk),1,G02
+folk,4/4,inertia,geral,inertia,0.5–0.9167,0.25,corpus (folk),1,G03
+folk,4/4,leaps,geral,leaps,0.0323–0.2,0.25,corpus (folk),1,G01 G06
+folk,4/4,recovery,geral,recovery,0–0.625,0.3125,corpus (folk),0.5,G04 G10
+folk,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+folk,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+folk,4/4,range,geral,range,9–17,5,corpus (folk),1,G10 G11
+folk,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (folk),0.5,G10 G15
+folk,4/4,arch,geral,arch,0–0.75,0.375,corpus (folk),0.5,G05
+folk,4/4,endLow,geral,endLow,0.3636–1,0.3182,corpus (folk),1,G08
+folk,4/4,finalLength,geral,finalLength,1.0667–2.0112,0.6,corpus (folk),1,G07
+folk,4/4,motifs,geral,motifs,0.1429–0.7222,0.2896,corpus (folk),1,G09 G15
+folk,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+folk,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+folk,2/4,density,do estilo,density,1.375–2.1905,0.6,corpus (folk),1,E42
+folk,2/4,steps,do estilo,steps,0.2449–0.6304,0.25,corpus (folk),1,G01
+folk,2/4,repeats,do estilo,repeats,0.069–0.4118,0.25,corpus (folk),0.5,G09
+folk,2/4,restShare,do estilo,restShare,0–0.0652,0.25,corpus (folk),0.5,G07
+folk,2/4,stepDown,geral,stepDown,0.4–0.8182,0.25,corpus (folk),1,G02
+folk,2/4,inertia,geral,inertia,0.25–0.9091,0.3296,corpus (folk),1,G03
+folk,2/4,leaps,geral,leaps,0.039–0.2593,0.25,corpus (folk),1,G01 G06
+folk,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (folk),0.5,G04 G10
+folk,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+folk,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+folk,2/4,range,geral,range,9–17,5,corpus (folk),1,G10 G11
+folk,2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (folk),0.5,G10 G15
+folk,2/4,arch,geral,arch,0–0.75,0.375,corpus (folk),0.5,G05
+folk,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (folk),1,G08
+folk,2/4,finalLength,geral,finalLength,1.0208–2.35,0.6646,corpus (folk),1,G07
+folk,2/4,motifs,geral,motifs,0.3125–0.8065,0.25,corpus (folk),1,G09 G15
+folk,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+folk,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+folk,3/4,density,do estilo,density,0.8085–1.625,0.6,corpus (folk),1,E42
+folk,3/4,steps,do estilo,steps,0.303–0.6923,0.25,corpus (folk),1,G01
+folk,3/4,repeats,do estilo,repeats,0.0566–0.3433,0.25,corpus (folk),0.5,G09
+folk,3/4,restShare,do estilo,restShare,0–0.069,0.25,corpus (folk),0.5,G07
+folk,3/4,stepDown,geral,stepDown,0.4–0.8462,0.25,corpus (folk),1,G02
+folk,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (folk),1,G03
+folk,3/4,leaps,geral,leaps,0.0278–0.2195,0.25,corpus (folk),1,G01 G06
+folk,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (folk),0.5,G04 G10
+folk,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+folk,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+folk,3/4,range,geral,range,9–17,5,corpus (folk),1,G10 G11
+folk,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (folk),0.5,G10 G15
+folk,3/4,arch,geral,arch,0–1,0.5,corpus (folk),0.5,G05
+folk,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (folk),1,G08
+folk,3/4,finalLength,geral,finalLength,1.1141–2.2778,0.6,corpus (folk),1,G07
+folk,3/4,motifs,geral,motifs,0.2857–0.8,0.2571,corpus (folk),1,G09 G15
+folk,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+folk,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+folk,6/8,density,do estilo,density,1.8261–2.5833,0.6,corpus (folk),1,E42
+folk,6/8,steps,do estilo,steps,0.2958–0.7,0.25,corpus (folk),1,G01
+folk,6/8,repeats,do estilo,repeats,0.0652–0.4103,0.25,corpus (folk),0.5,G09
+folk,6/8,restShare,do estilo,restShare,0–0.1087,0.25,corpus (folk),0.5,G07
+folk,6/8,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (folk),1,G02
+folk,6/8,inertia,geral,inertia,0.4545–0.9091,0.25,corpus (folk),1,G03
+folk,6/8,leaps,geral,leaps,0.033–0.2188,0.25,corpus (folk),1,G01 G06
+folk,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (folk),0.5,G04 G10
+folk,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+folk,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+folk,6/8,range,geral,range,9–17,5,corpus (folk),1,G10 G11
+folk,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (folk),0.5,G10 G15
+folk,6/8,arch,geral,arch,0–1,0.5,corpus (folk),0.5,G05
+folk,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (folk),1,G08
+folk,6/8,finalLength,geral,finalLength,1.2173–2.5909,0.6868,corpus (folk),1,G07
+folk,6/8,motifs,geral,motifs,0.2222–0.7273,0.2525,corpus (folk),1,G09 G15
+folk,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+folk,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+folk,3/8,density,do estilo,density,2.2593–3.4737,0.6072,corpus (folk),1,E42
+folk,3/8,steps,do estilo,steps,0.2273–0.6977,0.25,corpus (folk),1,G01
+folk,3/8,repeats,do estilo,repeats,0.0732–0.4154,0.25,corpus (folk),0.5,G09
+folk,3/8,restShare,do estilo,restShare,0–0.0638,0.25,corpus (folk),0.5,G07
+folk,3/8,stepDown,geral,stepDown,0.3636–0.8333,0.25,corpus (folk),1,G02
+folk,3/8,inertia,geral,inertia,0.3929–0.8889,0.25,corpus (folk),1,G03
+folk,3/8,leaps,geral,leaps,0.0164–0.2,0.25,corpus (folk),1,G01 G06
+folk,3/8,recovery,geral,recovery,0–0.5,0.25,corpus (folk),0.5,G04 G10
+folk,3/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+folk,3/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+folk,3/8,range,geral,range,8–16,5,corpus (folk),1,G10 G11
+folk,3/8,climaxCount,geral,climaxCount,1–7,3,corpus (folk),0.5,G10 G15
+folk,3/8,arch,geral,arch,0–1,0.5,corpus (folk),0.5,G05
+folk,3/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (folk),1,G08
+folk,3/8,finalLength,geral,finalLength,1.1–2.3083,0.6041,corpus (folk),1,G07
+folk,3/8,motifs,geral,motifs,0.5333–0.8667,0.25,corpus (folk),1,G09 G15
+folk,3/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+folk,3/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+children,2/4,range,do estilo,range,5–9,4,literatura,2,E21
+children,2/4,pentatonic,do estilo,pentatonic,0.9–1,0.2,literatura,2,E21
+children,2/4,motifs,do estilo,motifs,0.6–0.9,0.25,literatura,1.5,E21 G09
+children,2/4,repeats,do estilo,repeats,0.15–0.45,0.25,literatura,1,E21
+children,2/4,bigLeaps,do estilo,bigLeaps,0–0.02,0.1,literatura,1,E21
+children,2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+children,2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+children,2/4,leaps,geral,leaps,0.04–0.2581,0.25,corpus (todas as melodias do compasso),1,G01 G06
+children,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+children,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+children,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+children,2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (todas as melodias do compasso),0.5,G10 G15
+children,2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+children,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+children,2/4,finalLength,geral,finalLength,1.0247–2.3333,0.6543,corpus (todas as melodias do compasso),1,G07
+children,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+children,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+children,4/4,range,do estilo,range,5–9,4,literatura,2,E21
+children,4/4,pentatonic,do estilo,pentatonic,0.9–1,0.2,literatura,2,E21
+children,4/4,motifs,do estilo,motifs,0.6–0.9,0.25,literatura,1.5,E21 G09
+children,4/4,repeats,do estilo,repeats,0.15–0.45,0.25,literatura,1,E21
+children,4/4,bigLeaps,do estilo,bigLeaps,0–0.02,0.1,literatura,1,E21
+children,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+children,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+children,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+children,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+children,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+children,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+children,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+children,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+children,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+children,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+children,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+children,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+lullaby,6/8,steps,do estilo,steps,0.55–0.9,0.25,literatura,1.5,E19 E20
+lullaby,6/8,leaps,do estilo,leaps,0–0.08,0.15,literatura,1,E19 E20
+lullaby,6/8,dirChanges,do estilo,dirChanges,0.2–0.42,0.25,literatura,1.5,E19
+lullaby,6/8,phraseDescent,do estilo,phraseDescent,0.5–1,0.25,literatura,1.5,E19
+lullaby,6/8,range,do estilo,range,5–11,5,literatura,1,E19
+lullaby,6/8,density,do estilo,density,0.7–1.7,0.6,literatura,1,E20 E46
+lullaby,6/8,motifs,do estilo,motifs,0.5–0.9,0.25,literatura,1,E19
+lullaby,6/8,fig:rocking,do estilo,figuras x___x_ x_____,0.5–1,0.25,literatura,1.5,E46
+lullaby,6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+lullaby,6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+lullaby,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+lullaby,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+lullaby,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+lullaby,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+lullaby,6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+lullaby,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+lullaby,6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+lullaby,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+lullaby,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+lullaby,3/4,steps,do estilo,steps,0.55–0.9,0.25,literatura,1.5,E19 E20
+lullaby,3/4,leaps,do estilo,leaps,0–0.08,0.15,literatura,1,E19 E20
+lullaby,3/4,dirChanges,do estilo,dirChanges,0.2–0.42,0.25,literatura,1.5,E19
+lullaby,3/4,phraseDescent,do estilo,phraseDescent,0.5–1,0.25,literatura,1.5,E19
+lullaby,3/4,range,do estilo,range,5–11,5,literatura,1,E19
+lullaby,3/4,density,do estilo,density,0.7–1.7,0.6,literatura,1,E20 E46
+lullaby,3/4,motifs,do estilo,motifs,0.5–0.9,0.25,literatura,1,E19
+lullaby,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+lullaby,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+lullaby,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+lullaby,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+lullaby,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+lullaby,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+lullaby,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+lullaby,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+lullaby,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+lullaby,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+lullaby,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+lullaby,2/4,steps,do estilo,steps,0.55–0.9,0.25,literatura,1.5,E19 E20
+lullaby,2/4,leaps,do estilo,leaps,0–0.08,0.15,literatura,1,E19 E20
+lullaby,2/4,dirChanges,do estilo,dirChanges,0.2–0.42,0.25,literatura,1.5,E19
+lullaby,2/4,phraseDescent,do estilo,phraseDescent,0.5–1,0.25,literatura,1.5,E19
+lullaby,2/4,range,do estilo,range,5–11,5,literatura,1,E19
+lullaby,2/4,density,do estilo,density,0.7–1.7,0.6,literatura,1,E20 E46
+lullaby,2/4,motifs,do estilo,motifs,0.5–0.9,0.25,literatura,1,E19
+lullaby,2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+lullaby,2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+lullaby,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+lullaby,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+lullaby,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+lullaby,2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (todas as melodias do compasso),0.5,G10 G15
+lullaby,2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+lullaby,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+lullaby,2/4,finalLength,geral,finalLength,1.0247–2.3333,0.6543,corpus (todas as melodias do compasso),1,G07
+lullaby,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+lullaby,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+hymn,4/4,firstOnset,do estilo,firstOnset,12,,literatura,1.5,E33
+hymn,4/4,density,do estilo,density,0.8–1.2,0.6,literatura,1,E33
+hymn,4/4,fig:quarters,do estilo,figuras x___,0.55–0.9,0.25,literatura,1.5,E33
+hymn,4/4,steps,do estilo,steps,0.5–0.8,0.25,literatura,1,E18 E33
+hymn,4/4,range,do estilo,range,8–14,5,literatura,1,E33
+hymn,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+hymn,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+hymn,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+hymn,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+hymn,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+hymn,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+hymn,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+hymn,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+hymn,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+hymn,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+hymn,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+hymn,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+hymn,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+hymn,3/4,firstOnset,do estilo,firstOnset,8,,literatura,1.5,E33
+hymn,3/4,density,do estilo,density,0.8–1.2,0.6,literatura,1,E33
+hymn,3/4,fig:quarters,do estilo,figuras x___,0.55–0.9,0.25,literatura,1.5,E33
+hymn,3/4,steps,do estilo,steps,0.5–0.8,0.25,literatura,1,E18 E33
+hymn,3/4,range,do estilo,range,8–14,5,literatura,1,E33
+hymn,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+hymn,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+hymn,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+hymn,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+hymn,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+hymn,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+hymn,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+hymn,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+hymn,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+hymn,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+hymn,3/4,motifs,geral,motifs,0.2941–0.8182,0.2621,corpus (todas as melodias do compasso),1,G09 G15
+hymn,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+hymn,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+pentatonic,2/4,pentatonic,do estilo,pentatonic,0.97–1,0.15,literatura,2,E43
+pentatonic,2/4,chromatic,do estilo,chromatic,0–0,0.1,literatura,1,E43
+pentatonic,2/4,range,do estilo,range,9–16,5,literatura,1,E43
+pentatonic,2/4,bigLeaps,do estilo,bigLeaps,0–0.08,0.15,literatura,1,E42 E43
+pentatonic,2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+pentatonic,2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+pentatonic,2/4,leaps,geral,leaps,0.04–0.2581,0.25,corpus (todas as melodias do compasso),1,G01 G06
+pentatonic,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+pentatonic,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+pentatonic,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+pentatonic,2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (todas as melodias do compasso),0.5,G10 G15
+pentatonic,2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+pentatonic,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+pentatonic,2/4,finalLength,geral,finalLength,1.0247–2.3333,0.6543,corpus (todas as melodias do compasso),1,G07
+pentatonic,2/4,motifs,geral,motifs,0.3333–0.8182,0.25,corpus (todas as melodias do compasso),1,G09 G15
+pentatonic,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+pentatonic,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+pentatonic,4/4,pentatonic,do estilo,pentatonic,0.97–1,0.15,literatura,2,E43
+pentatonic,4/4,chromatic,do estilo,chromatic,0–0,0.1,literatura,1,E43
+pentatonic,4/4,range,do estilo,range,9–16,5,literatura,1,E43
+pentatonic,4/4,bigLeaps,do estilo,bigLeaps,0–0.08,0.15,literatura,1,E42 E43
+pentatonic,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+pentatonic,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+pentatonic,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+pentatonic,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+pentatonic,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+pentatonic,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+pentatonic,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+pentatonic,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+pentatonic,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+pentatonic,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+pentatonic,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+pentatonic,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+pentatonic,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+fado,4/4,finalLength,do estilo,finalLength,1.6–3,0.7,literatura,1.5,E32
+fado,4/4,range,do estilo,range,10–17,5,literatura,1,E32
+fado,4/4,steps,do estilo,steps,0.45–0.8,0.25,literatura,1,E32
+fado,4/4,restShare,do estilo,restShare,0.02–0.15,0.25,literatura,1,E32
+fado,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+fado,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+fado,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+fado,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+fado,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+fado,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+fado,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+fado,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+fado,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+fado,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+fado,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+fado,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+fado,2/4,finalLength,do estilo,finalLength,1.6–3,0.7,literatura,1.5,E32
+fado,2/4,range,do estilo,range,10–17,5,literatura,1,E32
+fado,2/4,steps,do estilo,steps,0.45–0.8,0.25,literatura,1,E32
+fado,2/4,restShare,do estilo,restShare,0.02–0.15,0.25,literatura,1,E32
+fado,2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+fado,2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+fado,2/4,leaps,geral,leaps,0.04–0.2581,0.25,corpus (todas as melodias do compasso),1,G01 G06
+fado,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+fado,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+fado,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+fado,2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (todas as melodias do compasso),0.5,G10 G15
+fado,2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+fado,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+fado,2/4,motifs,geral,motifs,0.3333–0.8182,0.25,corpus (todas as melodias do compasso),1,G09 G15
+fado,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+fado,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+reel,4/4,fig:eighths,do estilo,figuras x_x_,0.619–0.9219,0.25,corpus (reel),2,E02
+reel,4/4,density,do estilo,density,1.6866–2.0299,0.6,corpus (reel),1,E02
+reel,4/4,arpeggio,do estilo,arpeggio,0.301–0.64,0.25,corpus (reel),1,E02
+reel,4/4,restShare,do estilo,restShare,0–0.01,0.1,literatura,1,E02
+reel,4/4,stepDown,geral,stepDown,0.3051–0.68,0.25,corpus (reel),1,G02
+reel,4/4,inertia,geral,inertia,0.5–0.881,0.25,corpus (reel),1,G03
+reel,4/4,leaps,geral,leaps,0.0756–0.3241,0.25,corpus (reel),1,G01 G06
+reel,4/4,recovery,geral,recovery,0–0.4,0.25,corpus (reel),0.5,G04 G10
+reel,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+reel,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+reel,4/4,range,geral,range,15–22,5,corpus (reel),1,G10 G11
+reel,4/4,climaxCount,geral,climaxCount,1–7,3,corpus (reel),0.5,G10 G15
+reel,4/4,arch,geral,arch,0–0.75,0.375,corpus (reel),0.5,G05
+reel,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (reel),1,G08
+reel,4/4,finalLength,geral,finalLength,0.9688–1.5938,0.6,corpus (reel),1,G07
+reel,4/4,motifs,geral,motifs,0.5455–0.8667,0.25,corpus (reel),1,G09 G15
+reel,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+reel,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+jig,6/8,fig:threeEighths,do estilo,figuras x_x_x_,0.4375–0.9375,0.25,corpus (jig),2,E03
+jig,6/8,fig:longShort,do estilo,figuras x___x_,0.0303–0.35,0.25,corpus (jig),1,E03 E04
+jig,6/8,density,do estilo,density,2.4316–2.9688,0.6,corpus (jig),1,E03
+jig,6/8,stepDown,geral,stepDown,0.3784–0.6739,0.25,corpus (jig),1,G02
+jig,6/8,inertia,geral,inertia,0.5–0.8125,0.25,corpus (jig),1,G03
+jig,6/8,leaps,geral,leaps,0.0588–0.1951,0.25,corpus (jig),1,G01 G06
+jig,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (jig),0.5,G04 G10
+jig,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+jig,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+jig,6/8,range,geral,range,14–21,5,corpus (jig),1,G10 G11
+jig,6/8,climaxCount,geral,climaxCount,1–7,3,corpus (jig),0.5,G10 G15
+jig,6/8,arch,geral,arch,0–0.75,0.375,corpus (jig),0.5,G05
+jig,6/8,endLow,geral,endLow,0.25–1,0.375,corpus (jig),1,G08
+jig,6/8,finalLength,geral,finalLength,0.9896–1.9167,0.6,corpus (jig),1,G07
+jig,6/8,motifs,geral,motifs,0.6667–0.8824,0.25,corpus (jig),1,G09 G15
+jig,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+jig,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+singleJig,6/8,fig:longShort,do estilo,figuras x___x_,0.45–0.85,0.25,literatura,2,E04
+singleJig,6/8,density,do estilo,density,1.8–2.4,0.6,literatura,1,E04
+singleJig,6/8,motifs,do estilo,motifs,0.6–0.9,0.25,literatura,1,E01 E04
+singleJig,6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+singleJig,6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+singleJig,6/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+singleJig,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+singleJig,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+singleJig,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+singleJig,6/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+singleJig,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+singleJig,6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+singleJig,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+singleJig,6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+singleJig,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+singleJig,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+singleJig,12/8,fig:longShort,do estilo,figuras x___x_,0.45–0.85,0.25,literatura,2,E04
+singleJig,12/8,density,do estilo,density,1.8–2.4,0.6,literatura,1,E04
+singleJig,12/8,motifs,do estilo,motifs,0.6–0.9,0.25,literatura,1,E01 E04
+singleJig,12/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+singleJig,12/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+singleJig,12/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+singleJig,12/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+singleJig,12/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+singleJig,12/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+singleJig,12/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+singleJig,12/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+singleJig,12/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+singleJig,12/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+singleJig,12/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+singleJig,12/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+singleJig,12/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+slipJig,9/8,fig:threeEighths,do estilo,figuras x_x_x_,0.2917–0.8333,0.2708,corpus (slipJig),2,E05
+slipJig,9/8,fig:longShort,do estilo,figuras x___x_,0.08–0.5833,0.2517,corpus (slipJig),1,E05
+slipJig,9/8,density,do estilo,density,2.2708–2.9,0.6,corpus (slipJig),1,E05
+slipJig,9/8,stepDown,geral,stepDown,0.3333–0.6316,0.25,corpus (slipJig),1,G02
+slipJig,9/8,inertia,geral,inertia,0.4615–0.8462,0.25,corpus (slipJig),1,G03
+slipJig,9/8,leaps,geral,leaps,0.0614–0.2373,0.25,corpus (slipJig),1,G01 G06
+slipJig,9/8,recovery,geral,recovery,0–0.5,0.25,corpus (slipJig),0.5,G04 G10
+slipJig,9/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+slipJig,9/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+slipJig,9/8,range,geral,range,12–21,5,corpus (slipJig),1,G10 G11
+slipJig,9/8,climaxCount,geral,climaxCount,1–8,3.5,corpus (slipJig),0.5,G10 G15
+slipJig,9/8,arch,geral,arch,0–1,0.5,corpus (slipJig),0.5,G05
+slipJig,9/8,endLow,geral,endLow,0–1,0.5,corpus (slipJig),1,G08
+slipJig,9/8,finalLength,geral,finalLength,0.8194–1.9236,0.6,corpus (slipJig),1,G07
+slipJig,9/8,motifs,geral,motifs,0.4286–0.8571,0.25,corpus (slipJig),1,G09 G15
+slipJig,9/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+slipJig,9/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+hornpipe,4/4,fig:dotted,do estilo,figuras x__x,0–0,0.25,corpus (hornpipe),2,E06
+hornpipe,4/4,threeQuarterEnd,do estilo,threeQuarterEnd,0.5–1,0.5,literatura,1.5,E06
+hornpipe,4/4,density,do estilo,density,1.6719–1.9063,0.6,corpus (hornpipe),1,E06
+hornpipe,4/4,stepDown,geral,stepDown,0.4286–0.7447,0.25,corpus (hornpipe),1,G02
+hornpipe,4/4,inertia,geral,inertia,0.5652–0.8889,0.25,corpus (hornpipe),1,G03
+hornpipe,4/4,leaps,geral,leaps,0.0673–0.275,0.25,corpus (hornpipe),1,G01 G06
+hornpipe,4/4,recovery,geral,recovery,0.0455–0.6,0.2772,corpus (hornpipe),0.5,G04 G10
+hornpipe,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+hornpipe,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+hornpipe,4/4,range,geral,range,17–24,5,corpus (hornpipe),1,G10 G11
+hornpipe,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (hornpipe),0.5,G10 G15
+hornpipe,4/4,arch,geral,arch,0–0.625,0.3125,corpus (hornpipe),0.5,G05
+hornpipe,4/4,endLow,geral,endLow,0.375–0.875,0.25,corpus (hornpipe),1,G08
+hornpipe,4/4,finalLength,geral,finalLength,1.0837–1.6899,0.6,corpus (hornpipe),1,G07
+hornpipe,4/4,motifs,geral,motifs,0.6667–0.8667,0.25,corpus (hornpipe),1,G09 G15
+hornpipe,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+hornpipe,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+strathspey,4/4,fig:dotted,do estilo,figuras x__x,0.1429–0.625,0.25,corpus (strathspey),2,E07
+strathspey,4/4,fig:snap,do estilo,figuras xx__,0–0.2813,0.25,corpus (strathspey),1.5,E07
+strathspey,4/4,density,do estilo,density,1.8583–2.2292,0.6,corpus (strathspey),1,E07
+strathspey,4/4,stepDown,geral,stepDown,0.3056–0.6923,0.25,corpus (strathspey),1,G02
+strathspey,4/4,inertia,geral,inertia,0.4615–0.9167,0.25,corpus (strathspey),1,G03
+strathspey,4/4,leaps,geral,leaps,0.1221–0.3231,0.25,corpus (strathspey),1,G01 G06
+strathspey,4/4,recovery,geral,recovery,0–0.3929,0.25,corpus (strathspey),0.5,G04 G10
+strathspey,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+strathspey,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+strathspey,4/4,range,geral,range,16–24,5,corpus (strathspey),1,G10 G11
+strathspey,4/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (strathspey),0.5,G10 G15
+strathspey,4/4,arch,geral,arch,0–0.6667,0.3333,corpus (strathspey),0.5,G05
+strathspey,4/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (strathspey),1,G08
+strathspey,4/4,finalLength,geral,finalLength,1.0313–1.8687,0.6,corpus (strathspey),1,G07
+strathspey,4/4,motifs,geral,motifs,0.1818–0.6,0.25,corpus (strathspey),1,G09 G15
+strathspey,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+strathspey,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+polka,2/4,fig:quickQuick,do estilo,figuras x_xx xxx_,0.12–0.45,0.25,literatura,1.5,E08 E30
+polka,2/4,fig:eighths,do estilo,figuras x_x_,0.3–0.7,0.25,literatura,1,E08
+polka,2/4,density,do estilo,density,1.8–2.8,0.6,literatura,1,E08 E30
+polka,2/4,motifs,do estilo,motifs,0.6–0.9,0.25,literatura,1,E08
+polka,2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+polka,2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+polka,2/4,leaps,geral,leaps,0.04–0.2581,0.25,corpus (todas as melodias do compasso),1,G01 G06
+polka,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+polka,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+polka,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+polka,2/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+polka,2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (todas as melodias do compasso),0.5,G10 G15
+polka,2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+polka,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+polka,2/4,finalLength,geral,finalLength,1.0247–2.3333,0.6543,corpus (todas as melodias do compasso),1,G07
+polka,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+polka,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+march,2/4,fig:dotted,do estilo,figuras x__x,0–0.1071,0.25,corpus (march),1.5,E09
+march,2/4,arpeggio,do estilo,arpeggio,0.1379–0.4746,0.25,corpus (march),1.5,E47
+march,2/4,density,do estilo,density,1.8542–2.5625,0.6,corpus (march),1,E09
+march,2/4,stepDown,geral,stepDown,0.4516–0.7391,0.25,corpus (march),1,G02
+march,2/4,inertia,geral,inertia,0.5417–0.8158,0.25,corpus (march),1,G03
+march,2/4,leaps,geral,leaps,0.0405–0.2239,0.25,corpus (march),1,G01 G06
+march,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (march),0.5,G04 G10
+march,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+march,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+march,2/4,range,geral,range,12–19,5,corpus (march),1,G10 G11
+march,2/4,climaxCount,geral,climaxCount,1–5,3,corpus (march),0.5,G10 G15
+march,2/4,arch,geral,arch,0–0.75,0.375,corpus (march),0.5,G05
+march,2/4,endLow,geral,endLow,0.5–1,0.25,corpus (march),1,G08
+march,2/4,finalLength,geral,finalLength,0.9844–2.025,0.6,corpus (march),1,G07
+march,2/4,motifs,geral,motifs,0.5333–0.8667,0.25,corpus (march),1,G09 G15
+march,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+march,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+march,6/8,fig:longShort,do estilo,figuras x___x_,0.0833–0.5,0.25,corpus (march),1.5,E09
+march,6/8,arpeggio,do estilo,arpeggio,0.1892–0.5082,0.25,corpus (march),1.5,E47
+march,6/8,density,do estilo,density,2.25–2.75,0.6,corpus (march),1,E09
+march,6/8,stepDown,geral,stepDown,0.3448–0.6857,0.25,corpus (march),1,G02
+march,6/8,inertia,geral,inertia,0.5–0.8214,0.25,corpus (march),1,G03
+march,6/8,leaps,geral,leaps,0.08–0.2073,0.25,corpus (march),1,G01 G06
+march,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (march),0.5,G04 G10
+march,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+march,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+march,6/8,range,geral,range,14–21,5,corpus (march),1,G10 G11
+march,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (march),0.5,G10 G15
+march,6/8,arch,geral,arch,0.25–0.75,0.25,corpus (march),0.5,G05
+march,6/8,endLow,geral,endLow,0.5–1,0.25,corpus (march),1,G08
+march,6/8,finalLength,geral,finalLength,1.3021–2.3333,0.6,corpus (march),1,G07
+march,6/8,motifs,geral,motifs,0.6–0.8,0.25,corpus (march),1,G09 G15
+march,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+march,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+march,4/4,fig:dotted,do estilo,figuras x__x,0–0.4219,0.25,corpus (march),1.5,E09
+march,4/4,arpeggio,do estilo,arpeggio,0.1628–0.3981,0.25,corpus (march),1.5,E47
+march,4/4,density,do estilo,density,1.1563–1.9524,0.6,corpus (march),1,E09
+march,4/4,stepDown,geral,stepDown,0.4667–0.6809,0.25,corpus (march),1,G02
+march,4/4,inertia,geral,inertia,0.5893–0.8788,0.25,corpus (march),1,G03
+march,4/4,leaps,geral,leaps,0.0738–0.2053,0.25,corpus (march),1,G01 G06
+march,4/4,recovery,geral,recovery,0–0.5,0.25,corpus (march),0.5,G04 G10
+march,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+march,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+march,4/4,range,geral,range,14–21,5,corpus (march),1,G10 G11
+march,4/4,climaxCount,geral,climaxCount,1–5,3,corpus (march),0.5,G10 G15
+march,4/4,arch,geral,arch,0.125–0.5714,0.25,corpus (march),0.5,G05
+march,4/4,endLow,geral,endLow,0.375–0.875,0.25,corpus (march),1,G08
+march,4/4,finalLength,geral,finalLength,1.0302–1.9124,0.6,corpus (march),1,G07
+march,4/4,motifs,geral,motifs,0.2857–0.7333,0.25,corpus (march),1,G09 G15
+march,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+march,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+waltz,3/4,downbeatLong,do estilo,downbeatLong,0.3–0.8,0.25,literatura,2,E10
+waltz,3/4,density,do estilo,density,0.6–1.3,0.6,literatura,1,E10
+waltz,3/4,leaps,do estilo,leaps,0.08–0.3,0.25,literatura,1,E10
+waltz,3/4,range,do estilo,range,10–19,5,literatura,1,E10
+waltz,3/4,motifs,do estilo,motifs,0.5–0.9,0.25,literatura,1,E10
+waltz,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+waltz,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+waltz,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+waltz,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+waltz,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+waltz,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+waltz,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+waltz,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+waltz,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+waltz,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+waltz,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+mazurka,3/4,fig:shortShort,do estilo,figuras x__x x_x_ x_xx no tempo 1,0.5–0.9,0.25,literatura,1.5,E26
+mazurka,3/4,beat2Long,do estilo,beat2Long,0.15–0.5,0.25,literatura,1.5,E26
+mazurka,3/4,density,do estilo,density,1.1–2,0.6,literatura,1,E26
+mazurka,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+mazurka,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+mazurka,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+mazurka,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+mazurka,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+mazurka,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+mazurka,3/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+mazurka,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+mazurka,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+mazurka,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+mazurka,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+mazurka,3/4,motifs,geral,motifs,0.2941–0.8182,0.2621,corpus (todas as melodias do compasso),1,G09 G15
+mazurka,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+mazurka,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+polonaise,3/4,fig:polonaise,do estilo,figuras x_xx no tempo 1,0.35–0.8,0.25,literatura,2,E27
+polonaise,3/4,finalBeat,do estilo,finalBeat,1,,literatura,1.5,E27
+polonaise,3/4,density,do estilo,density,1.5–2.6,0.6,literatura,1,E27
+polonaise,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+polonaise,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+polonaise,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+polonaise,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+polonaise,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+polonaise,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+polonaise,3/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+polonaise,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+polonaise,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+polonaise,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+polonaise,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+polonaise,3/4,motifs,geral,motifs,0.2941–0.8182,0.2621,corpus (todas as melodias do compasso),1,G09 G15
+polonaise,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+polonaise,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+tarantella,6/8,fig:threeEighths,do estilo,figuras x_x_x_,0.75–1,0.25,literatura,2,E28
+tarantella,6/8,density,do estilo,density,2.6–3,0.6,literatura,1,E28
+tarantella,6/8,restShare,do estilo,restShare,0–0.02,0.1,literatura,1,E28
+tarantella,6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+tarantella,6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+tarantella,6/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+tarantella,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+tarantella,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+tarantella,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+tarantella,6/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+tarantella,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+tarantella,6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+tarantella,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+tarantella,6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+tarantella,6/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+tarantella,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+tarantella,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+tarantella,3/8,fig:threeEighths,do estilo,figuras x_x_x_,0.75–1,0.25,literatura,2,E28
+tarantella,3/8,density,do estilo,density,2.6–3,0.6,literatura,1,E28
+tarantella,3/8,restShare,do estilo,restShare,0–0.02,0.1,literatura,1,E28
+tarantella,3/8,stepDown,geral,stepDown,0.3636–0.8182,0.25,corpus (todas as melodias do compasso),1,G02
+tarantella,3/8,inertia,geral,inertia,0.4–0.8889,0.25,corpus (todas as melodias do compasso),1,G03
+tarantella,3/8,leaps,geral,leaps,0.0172–0.1961,0.25,corpus (todas as melodias do compasso),1,G01 G06
+tarantella,3/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+tarantella,3/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+tarantella,3/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+tarantella,3/8,range,geral,range,8–16,5,corpus (todas as melodias do compasso),1,G10 G11
+tarantella,3/8,climaxCount,geral,climaxCount,1–7,3,corpus (todas as melodias do compasso),0.5,G10 G15
+tarantella,3/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+tarantella,3/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+tarantella,3/8,finalLength,geral,finalLength,1.1062–2.3083,0.601,corpus (todas as melodias do compasso),1,G07
+tarantella,3/8,motifs,geral,motifs,0.5333–0.8667,0.25,corpus (todas as melodias do compasso),1,G09 G15
+tarantella,3/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+tarantella,3/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+vira,6/8,fig:longShort,do estilo,figuras x___x_,0.25–0.6,0.25,literatura,1.5,E29
+vira,6/8,fig:threeEighths,do estilo,figuras x_x_x_,0.25–0.6,0.25,literatura,1,E29
+vira,6/8,density,do estilo,density,1.8–2.8,0.6,literatura,1,E29
+vira,6/8,motifs,do estilo,motifs,0.55–0.9,0.25,literatura,1,E29
+vira,6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+vira,6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+vira,6/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+vira,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+vira,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+vira,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+vira,6/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+vira,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+vira,6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+vira,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+vira,6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+vira,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+vira,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+vira,3/4,density,do estilo,density,1.8–2.8,0.6,literatura,1,E29
+vira,3/4,motifs,do estilo,motifs,0.55–0.9,0.25,literatura,1,E29
+vira,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+vira,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+vira,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+vira,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+vira,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+vira,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+vira,3/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+vira,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+vira,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+vira,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+vira,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+vira,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+vira,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+habanera,2/4,fig:habanera,do estilo,figuras x__x no tempo 1,0.3–0.8,0.25,literatura,2,E25
+habanera,2/4,fig:sincopa,do estilo,figuras xx_x,0.05–0.3,0.25,literatura,1,E25
+habanera,2/4,syncBar,do estilo,syncBar,0.1–0.8,0.6,literatura,1.5,E25
+habanera,2/4,density,do estilo,density,1.5–2.5,0.6,literatura,1,E25
+habanera,2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+habanera,2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+habanera,2/4,leaps,geral,leaps,0.04–0.2581,0.25,corpus (todas as melodias do compasso),1,G01 G06
+habanera,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+habanera,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+habanera,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+habanera,2/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+habanera,2/4,climaxCount,geral,climaxCount,1–8,3.5,corpus (todas as melodias do compasso),0.5,G10 G15
+habanera,2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+habanera,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+habanera,2/4,finalLength,geral,finalLength,1.0247–2.3333,0.6543,corpus (todas as melodias do compasso),1,G07
+habanera,2/4,motifs,geral,motifs,0.3333–0.8182,0.25,corpus (todas as melodias do compasso),1,G09 G15
+habanera,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+palestrina,4/4,density,do estilo,density,0.5–1.1,0.6,literatura,1,G11
+palestrina,4/4,steps,do estilo,steps,0.6–0.9,0.25,literatura,1.5,G10 G11
+palestrina,4/4,dissonant,do estilo,dissonant,0–0.005,0.05,literatura,2,G11
+palestrina,4/4,bigLeaps,do estilo,bigLeaps,0–0.03,0.1,literatura,1,G11
+palestrina,4/4,leapChain,do estilo,leapChain,0–0.005,0.05,literatura,1,G10
+palestrina,4/4,recovery,do estilo,recovery,0.5–1,0.25,literatura,1.5,G10 G11
+palestrina,4/4,range,do estilo,range,8–13,5,literatura,1,G10 G11
+palestrina,4/4,climaxCount,do estilo,climaxCount,1–2,2,literatura,1,G10
+palestrina,4/4,fig:long,do estilo,figuras x___ ____,0.8–1,0.25,literatura,1.5,G11
+palestrina,4/4,syncBar,do estilo,syncBar,0–0.5,0.6,literatura,1,G11
+palestrina,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+palestrina,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+palestrina,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+palestrina,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+palestrina,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+palestrina,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+palestrina,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+palestrina,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+chorale,4/4,density,do estilo,density,0.8056–1.1538,0.6,corpus (chorale),1.5,E18
+chorale,4/4,fig:quarters,do estilo,figuras x___,0.6563–0.8906,0.25,corpus (chorale),1.5,E18
+chorale,4/4,steps,do estilo,steps,0.5135–0.8235,0.25,corpus (chorale),1.5,E18
+chorale,4/4,bigLeaps,do estilo,bigLeaps,0–0.0317,0.25,corpus (chorale),1,E18
+chorale,4/4,restShare,do estilo,restShare,0–0.0463,0.25,corpus (chorale),0.5,E18
+chorale,4/4,stepDown,geral,stepDown,0.4138–0.6786,0.25,corpus (chorale),1,G02
+chorale,4/4,inertia,geral,inertia,0.5676–0.8235,0.25,corpus (chorale),1,G03
+chorale,4/4,leaps,geral,leaps,0.0222–0.1569,0.25,corpus (chorale),1,G01 G06
+chorale,4/4,recovery,geral,recovery,0–0.75,0.375,corpus (chorale),0.5,G04 G10
+chorale,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+chorale,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+chorale,4/4,range,geral,range,9–16,5,corpus (chorale),1,G10 G11
+chorale,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (chorale),0.5,G10 G15
+chorale,4/4,arch,geral,arch,0–0.6,0.3,corpus (chorale),0.5,G05
+chorale,4/4,endLow,geral,endLow,0.4–0.875,0.25,corpus (chorale),1,G08
+chorale,4/4,finalLength,geral,finalLength,1.0179–1.6667,0.6,corpus (chorale),1,G07
+chorale,4/4,motifs,geral,motifs,0.2857–0.7692,0.25,corpus (chorale),1,G09 G15
+chorale,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+chorale,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+chorale,3/4,density,do estilo,density,0.6389–0.8519,0.6,corpus (chorale),1.5,E18
+chorale,3/4,fig:quarters,do estilo,figuras x___,0.5464–0.746,0.25,corpus (chorale),1.5,E18
+chorale,3/4,steps,do estilo,steps,0.3448–0.7632,0.25,corpus (chorale),1.5,E18
+chorale,3/4,bigLeaps,do estilo,bigLeaps,0–0.0741,0.25,corpus (chorale),1,E18
+chorale,3/4,restShare,do estilo,restShare,0–0,0.25,corpus (chorale),0.5,E18
+chorale,3/4,stepDown,geral,stepDown,0.3878–0.6875,0.25,corpus (chorale),1,G02
+chorale,3/4,inertia,geral,inertia,0.5385–0.8182,0.25,corpus (chorale),1,G03
+chorale,3/4,leaps,geral,leaps,0.0278–0.25,0.25,corpus (chorale),1,G01 G06
+chorale,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (chorale),0.5,G04 G10
+chorale,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+chorale,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+chorale,3/4,range,geral,range,8–15,5,corpus (chorale),1,G10 G11
+chorale,3/4,climaxCount,geral,climaxCount,1–5,3,corpus (chorale),0.5,G10 G15
+chorale,3/4,arch,geral,arch,0–0.6,0.3,corpus (chorale),0.5,G05
+chorale,3/4,endLow,geral,endLow,0.25–0.8,0.275,corpus (chorale),1,G08
+chorale,3/4,finalLength,geral,finalLength,0.9083–1.8679,0.6,corpus (chorale),1,G07
+chorale,3/4,motifs,geral,motifs,0.65–0.8919,0.25,corpus (chorale),1,G09 G15
+chorale,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+chorale,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+minuet,3/4,fig:quarters,do estilo,figuras x___,0.4–0.75,0.25,literatura,1.5,E14 E17
+minuet,3/4,density,do estilo,density,1–1.8,0.6,literatura,1,E14
+minuet,3/4,firstOnset,do estilo,firstOnset,0,,literatura,1,E14
+minuet,3/4,motifs,do estilo,motifs,0.45–0.85,0.25,literatura,1,E14 G14
+minuet,3/4,downbeatLong,do estilo,downbeatLong,0–0.3,0.25,literatura,1,E14
+minuet,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+minuet,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+minuet,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+minuet,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+minuet,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+minuet,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+minuet,3/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+minuet,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+minuet,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+minuet,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+minuet,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+minuet,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+minuet,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+gavotte,4/4,firstOnset,do estilo,firstOnset,8,,literatura,2,E11
+gavotte,4/4,leaps,do estilo,leaps,0.1–0.3,0.25,literatura,1.5,E11
+gavotte,4/4,density,do estilo,density,1.2–2,0.6,literatura,1,E11
+gavotte,4/4,fig:quartersEighths,do estilo,figuras x___ x_x_,0.7–1,0.25,literatura,1,E11
+gavotte,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+gavotte,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+gavotte,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+gavotte,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+gavotte,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+gavotte,4/4,range,geral,range,10–21,5.5,corpus (todas as melodias do compasso),1,G10 G11
+gavotte,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+gavotte,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+gavotte,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+gavotte,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+gavotte,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+gavotte,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+gavotte,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+bourree,4/4,firstOnset,do estilo,firstOnset,12,,literatura,2,E12
+bourree,4/4,fig:eighths,do estilo,figuras x_x_,0.35–0.7,0.25,literatura,1,E12
+bourree,4/4,fig:quarters,do estilo,figuras x___,0.25–0.6,0.25,literatura,1,E12
+bourree,4/4,density,do estilo,density,1.4–2.1,0.6,literatura,1,E12
+bourree,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+bourree,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+bourree,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+bourree,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+bourree,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+bourree,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+bourree,4/4,range,geral,range,10–21,5.5,corpus (todas as melodias do compasso),1,G10 G11
+bourree,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+bourree,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+bourree,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+bourree,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+bourree,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+bourree,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+bourree,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+sarabande,3/4,beat2Long,do estilo,beat2Long,0.3–0.8,0.25,literatura,2,E13
+sarabande,3/4,density,do estilo,density,0.8–1.5,0.6,literatura,1,E13
+sarabande,3/4,firstOnset,do estilo,firstOnset,0,,literatura,1,E13
+sarabande,3/4,finalLength,do estilo,finalLength,1.2–3,0.9,literatura,1,E13
+sarabande,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+sarabande,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+sarabande,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+sarabande,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+sarabande,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+sarabande,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+sarabande,3/4,range,geral,range,9–17,5,corpus (todas as melodias do compasso),1,G10 G11
+sarabande,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+sarabande,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+sarabande,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+sarabande,3/4,motifs,geral,motifs,0.2941–0.8182,0.2621,corpus (todas as melodias do compasso),1,G09 G15
+sarabande,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+sarabande,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+gigue,6/8,fig:threeEighths,do estilo,figuras x_x_x_,0.5–0.85,0.25,literatura,1.5,E16
+gigue,6/8,leaps,do estilo,leaps,0.12–0.35,0.25,literatura,1.5,E16
+gigue,6/8,arpeggio,do estilo,arpeggio,0.3–0.6,0.25,literatura,1,E16
+gigue,6/8,density,do estilo,density,2.3–3,0.6,literatura,1,E16
+gigue,6/8,range,do estilo,range,12–21,5,literatura,1,E16
+gigue,6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+gigue,6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+gigue,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+gigue,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+gigue,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+gigue,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+gigue,6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+gigue,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+gigue,6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+gigue,6/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+gigue,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+gigue,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+gigue,12/8,fig:threeEighths,do estilo,figuras x_x_x_,0.5–0.85,0.25,literatura,1.5,E16
+gigue,12/8,leaps,do estilo,leaps,0.12–0.35,0.25,literatura,1.5,E16
+gigue,12/8,arpeggio,do estilo,arpeggio,0.3–0.6,0.25,literatura,1,E16
+gigue,12/8,density,do estilo,density,2.3–3,0.6,literatura,1,E16
+gigue,12/8,range,do estilo,range,12–21,5,literatura,1,E16
+gigue,12/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+gigue,12/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+gigue,12/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+gigue,12/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+gigue,12/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+gigue,12/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+gigue,12/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+gigue,12/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+gigue,12/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+gigue,12/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+gigue,12/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+gigue,12/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+siciliana,6/8,fig:siciliana,do estilo,figuras x__xx_,0.25–0.6,0.25,literatura,2,E15 E17
+siciliana,6/8,density,do estilo,density,1.5–2.6,0.6,literatura,1,E15
+siciliana,6/8,steps,do estilo,steps,0.5–0.85,0.25,literatura,1,E15
+siciliana,6/8,bigLeaps,do estilo,bigLeaps,0–0.05,0.15,literatura,1,E15
+siciliana,6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+siciliana,6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+siciliana,6/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+siciliana,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+siciliana,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+siciliana,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+siciliana,6/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+siciliana,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+siciliana,6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+siciliana,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+siciliana,6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+siciliana,6/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+siciliana,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+siciliana,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+siciliana,12/8,fig:siciliana,do estilo,figuras x__xx_,0.25–0.6,0.25,literatura,2,E15 E17
+siciliana,12/8,density,do estilo,density,1.5–2.6,0.6,literatura,1,E15
+siciliana,12/8,steps,do estilo,steps,0.5–0.85,0.25,literatura,1,E15
+siciliana,12/8,bigLeaps,do estilo,bigLeaps,0–0.05,0.15,literatura,1,E15
+siciliana,12/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+siciliana,12/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+siciliana,12/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+siciliana,12/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+siciliana,12/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+siciliana,12/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+siciliana,12/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+siciliana,12/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+siciliana,12/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+siciliana,12/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+siciliana,12/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+siciliana,12/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+siciliana,12/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+siciliana,12/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+passepied,3/8,firstOnset,do estilo,firstOnset,4,,literatura,2,E38
+passepied,3/8,fig:threeEighths,do estilo,figuras x_x_x_,0.5–0.9,0.25,literatura,1.5,E38
+passepied,3/8,density,do estilo,density,2.2–3,0.6,literatura,1,E38
+passepied,3/8,stepDown,geral,stepDown,0.3636–0.8182,0.25,corpus (todas as melodias do compasso),1,G02
+passepied,3/8,inertia,geral,inertia,0.4–0.8889,0.25,corpus (todas as melodias do compasso),1,G03
+passepied,3/8,leaps,geral,leaps,0.0172–0.1961,0.25,corpus (todas as melodias do compasso),1,G01 G06
+passepied,3/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+passepied,3/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+passepied,3/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+passepied,3/8,range,geral,range,8–16,5,corpus (todas as melodias do compasso),1,G10 G11
+passepied,3/8,climaxCount,geral,climaxCount,1–7,3,corpus (todas as melodias do compasso),0.5,G10 G15
+passepied,3/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+passepied,3/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+passepied,3/8,finalLength,geral,finalLength,1.1062–2.3083,0.601,corpus (todas as melodias do compasso),1,G07
+passepied,3/8,motifs,geral,motifs,0.5333–0.8667,0.25,corpus (todas as melodias do compasso),1,G09 G15
+passepied,3/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+passepied,3/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+allemande,4/4,firstOnset,do estilo,firstOnset,15,,literatura,1.5,E37
+allemande,4/4,fig:sixteenths,do estilo,figuras xxxx,0.35–0.8,0.25,literatura,2,E37
+allemande,4/4,density,do estilo,density,2.3–3.6,0.65,literatura,1,E37
+allemande,4/4,steps,do estilo,steps,0.45–0.8,0.25,literatura,1,E37
+allemande,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+allemande,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+allemande,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+allemande,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+allemande,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+allemande,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+allemande,4/4,range,geral,range,10–21,5.5,corpus (todas as melodias do compasso),1,G10 G11
+allemande,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+allemande,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+allemande,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+allemande,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+allemande,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+allemande,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+allemande,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+fortspinnung,4/4,sequences,do estilo,sequences,0.2–0.6,0.25,literatura,2,E35
+fortspinnung,4/4,density,do estilo,density,2–3.8,0.9,literatura,1,E35
+fortspinnung,4/4,fig:sixteenths,do estilo,figuras xxxx,0.3–0.8,0.25,literatura,1,E35
+fortspinnung,4/4,range,do estilo,range,12–20,5,literatura,1,E35
+fortspinnung,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+fortspinnung,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+fortspinnung,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+fortspinnung,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+fortspinnung,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+fortspinnung,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+fortspinnung,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+fortspinnung,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+fortspinnung,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+fortspinnung,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+fortspinnung,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+fortspinnung,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+fortspinnung,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+fortspinnung,3/4,sequences,do estilo,sequences,0.2–0.6,0.25,literatura,2,E35
+fortspinnung,3/4,density,do estilo,density,2–3.8,0.9,literatura,1,E35
+fortspinnung,3/4,fig:sixteenths,do estilo,figuras xxxx,0.3–0.8,0.25,literatura,1,E35
+fortspinnung,3/4,range,do estilo,range,12–20,5,literatura,1,E35
+fortspinnung,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+fortspinnung,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+fortspinnung,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+fortspinnung,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+fortspinnung,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+fortspinnung,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+fortspinnung,3/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+fortspinnung,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+fortspinnung,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+fortspinnung,3/4,finalLength,geral,finalLength,1.1091–2.3333,0.6121,corpus (todas as melodias do compasso),1,G07
+fortspinnung,3/4,motifs,geral,motifs,0.2941–0.8182,0.2621,corpus (todas as melodias do compasso),1,G09 G15
+fortspinnung,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+fortspinnung,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+classical,4/4,motifs,do estilo,motifs,0.5–0.85,0.25,literatura,1.5,G12 G15
+classical,4/4,sequences,do estilo,sequences,0.05–0.4,0.25,literatura,1,G12
+classical,4/4,finalLength,do estilo,finalLength,1.3–2.5,0.6,literatura,1.5,G13 G14
+classical,4/4,range,do estilo,range,10–17,5,literatura,1,G12
+classical,4/4,climaxCount,do estilo,climaxCount,1–2,2,literatura,1,G15
+classical,4/4,steps,do estilo,steps,0.45–0.8,0.25,literatura,1,G13
+classical,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+classical,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+classical,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+classical,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+classical,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+classical,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+classical,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+classical,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+classical,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+classical,4/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+classical,2/4,motifs,do estilo,motifs,0.5–0.85,0.25,literatura,1.5,G12 G15
+classical,2/4,sequences,do estilo,sequences,0.05–0.4,0.25,literatura,1,G12
+classical,2/4,finalLength,do estilo,finalLength,1.3–2.5,0.6,literatura,1.5,G13 G14
+classical,2/4,range,do estilo,range,10–17,5,literatura,1,G12
+classical,2/4,climaxCount,do estilo,climaxCount,1–2,2,literatura,1,G15
+classical,2/4,steps,do estilo,steps,0.45–0.8,0.25,literatura,1,G13
+classical,2/4,stepDown,geral,stepDown,0.3871–0.8,0.25,corpus (todas as melodias do compasso),1,G02
+classical,2/4,inertia,geral,inertia,0.2857–0.9091,0.3117,corpus (todas as melodias do compasso),1,G03
+classical,2/4,leaps,geral,leaps,0.04–0.2581,0.25,corpus (todas as melodias do compasso),1,G01 G06
+classical,2/4,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+classical,2/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+classical,2/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+classical,2/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+classical,2/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+classical,2/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+classical,2/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+classical,3/4,motifs,do estilo,motifs,0.5–0.85,0.25,literatura,1.5,G12 G15
+classical,3/4,sequences,do estilo,sequences,0.05–0.4,0.25,literatura,1,G12
+classical,3/4,finalLength,do estilo,finalLength,1.3–2.5,0.6,literatura,1.5,G13 G14
+classical,3/4,range,do estilo,range,10–17,5,literatura,1,G12
+classical,3/4,climaxCount,do estilo,climaxCount,1–2,2,literatura,1,G15
+classical,3/4,steps,do estilo,steps,0.45–0.8,0.25,literatura,1,G13
+classical,3/4,stepDown,geral,stepDown,0.4–0.8333,0.25,corpus (todas as melodias do compasso),1,G02
+classical,3/4,inertia,geral,inertia,0.5–1,0.25,corpus (todas as melodias do compasso),1,G03
+classical,3/4,leaps,geral,leaps,0.0288–0.2154,0.25,corpus (todas as melodias do compasso),1,G01 G06
+classical,3/4,recovery,geral,recovery,0–0.6667,0.3333,corpus (todas as melodias do compasso),0.5,G04 G10
+classical,3/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+classical,3/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+classical,3/4,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+classical,3/4,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+classical,3/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+classical,3/4,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+hunt,6/8,arpeggio,do estilo,arpeggio,0.35–0.65,0.25,literatura,2,E36
+hunt,6/8,repeats,do estilo,repeats,0.12–0.35,0.25,literatura,1,E36
+hunt,6/8,fig:jigging,do estilo,figuras x___x_ x_x_x_,0.8–1,0.25,literatura,1,E36
+hunt,6/8,density,do estilo,density,2–2.8,0.6,literatura,1,E36
+hunt,6/8,stepDown,geral,stepDown,0.375–0.7391,0.25,corpus (todas as melodias do compasso),1,G02
+hunt,6/8,inertia,geral,inertia,0.48–0.8571,0.25,corpus (todas as melodias do compasso),1,G03
+hunt,6/8,leaps,geral,leaps,0.0444–0.2063,0.25,corpus (todas as melodias do compasso),1,G01 G06
+hunt,6/8,recovery,geral,recovery,0–0.5,0.25,corpus (todas as melodias do compasso),0.5,G04 G10
+hunt,6/8,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+hunt,6/8,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+hunt,6/8,range,geral,range,12–21,5,corpus (todas as melodias do compasso),1,G10 G11
+hunt,6/8,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+hunt,6/8,arch,geral,arch,0–1,0.5,corpus (todas as melodias do compasso),0.5,G05
+hunt,6/8,endLow,geral,endLow,0.3333–1,0.3334,corpus (todas as melodias do compasso),1,G08
+hunt,6/8,finalLength,geral,finalLength,1.1174–2.3333,0.6079,corpus (todas as melodias do compasso),1,G07
+hunt,6/8,motifs,geral,motifs,0.2857–0.8667,0.2905,corpus (todas as melodias do compasso),1,G09 G15
+hunt,6/8,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+hunt,6/8,syncBar,geral,syncBar,0–0.1,0.6,literatura,1,G16 G17
+blues,4/4,restShare,do estilo,restShare,0.15–0.45,0.25,literatura,1.5,E22
+blues,4/4,syncBar,do estilo,syncBar,0.3–1.5,0.6,literatura,1.5,E22 G17
+blues,4/4,pentatonic,do estilo,pentatonic,0.85–1,0.25,literatura,1.5,E22 G19
+blues,4/4,repeats,do estilo,repeats,0.1–0.4,0.25,literatura,1,E22
+blues,4/4,motifs,do estilo,motifs,0.5–0.9,0.25,literatura,1,E22
+blues,4/4,range,do estilo,range,7–15,5,literatura,1,E22
+blues,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+blues,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+blues,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+blues,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+blues,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+blues,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+blues,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+blues,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+blues,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+blues,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+blues,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+jazz,4/4,density,do estilo,density,1.8–2.6,0.6,literatura,1,E23
+jazz,4/4,syncBar,do estilo,syncBar,0.4–1.8,0.7,literatura,1.5,E23 G17
+jazz,4/4,offbeatEnds,do estilo,offbeatEnds,0.3–1,0.35,literatura,1.5,E23
+jazz,4/4,leaps,do estilo,leaps,0.1–0.3,0.25,literatura,1,E23
+jazz,4/4,arpeggio,do estilo,arpeggio,0.3–0.6,0.25,literatura,1,E23
+jazz,4/4,dissonant,do estilo,dissonant,0–0.1,0.25,literatura,1,E23
+jazz,4/4,range,do estilo,range,12–22,5,literatura,1,E23
+jazz,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+jazz,4/4,inertia,geral,inertia,0.5–0.8919,0.25,corpus (todas as melodias do compasso),1,G03
+jazz,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+jazz,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+jazz,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+jazz,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+jazz,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+jazz,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+jazz,4/4,motifs,geral,motifs,0.1765–0.8,0.3118,corpus (todas as melodias do compasso),1,G09 G15
+jazz,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16
+pop,4/4,syncBar,do estilo,syncBar,0.4–1.8,0.7,literatura,1.5,G17 G18
+pop,4/4,motifs,do estilo,motifs,0.6–0.95,0.25,literatura,1.5,E24 E45
+pop,4/4,repeats,do estilo,repeats,0.2–0.45,0.25,literatura,1,E24
+pop,4/4,inertia,do estilo,inertia,0.3–0.6,0.25,literatura,1,G03
+pop,4/4,pentatonic,do estilo,pentatonic,0.8–1,0.25,literatura,1,G19
+pop,4/4,restShare,do estilo,restShare,0.08–0.3,0.25,literatura,1,E24
+pop,4/4,range,do estilo,range,9–17,5,literatura,1,E45
+pop,4/4,stepDown,geral,stepDown,0.3939–0.7778,0.25,corpus (todas as melodias do compasso),1,G02
+pop,4/4,leaps,geral,leaps,0.0392–0.2366,0.25,corpus (todas as melodias do compasso),1,G01 G06
+pop,4/4,recovery,geral,recovery,0–0.6,0.3,corpus (todas as melodias do compasso),0.5,G04 G10
+pop,4/4,leapChain,geral,leapChain,0–0.02,0.1,literatura,1,G10
+pop,4/4,dissonant,geral,dissonant,0–0.03,0.1,literatura,1,G10 G11
+pop,4/4,climaxCount,geral,climaxCount,1–6,3,corpus (todas as melodias do compasso),0.5,G10 G15
+pop,4/4,arch,geral,arch,0–0.75,0.375,corpus (todas as melodias do compasso),0.5,G05
+pop,4/4,endLow,geral,endLow,0.375–1,0.3125,corpus (todas as melodias do compasso),1,G08
+pop,4/4,finalLength,geral,finalLength,1.0208–1.9125,0.6,corpus (todas as melodias do compasso),1,G07
+pop,4/4,longOnBeat,geral,longOnBeat,0.8–1,0.4,literatura,1,G16

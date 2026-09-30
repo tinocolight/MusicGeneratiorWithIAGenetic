@@ -154,6 +154,23 @@ for (const [g, byMeter] of Object.entries(full.styles)) {
 }
 writeCsv('calibracao', ['grupo', 'compasso', 'melodias', 'regra', 'medida', 'p10', 'p50', 'p90'], calRows);
 
+// every rule as the app uses it: by style and meter, with its target and where the target comes from
+const measureOf = (r) => r.feature ?? `figuras ${r.figures.join(' ')}${r.at !== undefined ? ` no tempo ${r.at + 1}` : ''}`;
+const fmt = (x) => (Number.isFinite(x) ? +x.toFixed(4) : '');
+const ruleRows = [];
+for (const style of ['none', ...STYLE_IDS]) {
+  const meters = style === 'none' ? ORDER : STYLES[style].meters;
+  const own = new Set(style === 'none' ? [] : STYLES[style].rules.map((r) => r.id));
+  for (const meter of meters) {
+    for (const r of resolveRules(style, meter)) {
+      const target = r.in ? r.in.join(' ou ') : `${fmt(r.lo)}–${fmt(r.hi)}`;
+      const origin = r.calibrated ? (own.has(r.id) || STYLES[style]?.group ? `corpus (${STYLES[style]?.group ?? 'todas as melodias do compasso'})` : 'corpus (todas as melodias do compasso)') : 'literatura';
+      ruleRows.push([style === 'none' ? 'nenhum (regras gerais)' : style, meter, r.id, own.has(r.id) ? 'do estilo' : 'geral', measureOf(r), target, r.in ? '' : fmt(r.tol), origin, r.weight ?? 1, r.src.join(' ')]);
+    }
+  }
+}
+writeCsv('regras', ['estilo', 'compasso', 'regra', 'tipo', 'medida', 'alvo', 'tolerancia', 'origem_do_alvo', 'peso', 'fontes'], ruleRows);
+
 // ------------------------------------------------------------------ validation (5-fold cross-validation)
 
 const folds = [0, 1, 2, 3, 4].map((k) => calibrate(items.filter((x) => x.fold !== k)));
