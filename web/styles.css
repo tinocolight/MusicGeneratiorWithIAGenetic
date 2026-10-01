@@ -326,6 +326,7 @@ dialog.qs::backdrop { background: rgba(14, 22, 32, 0.45); backdrop-filter: blur(
 .qs-opt-d { grid-column: 2; color: var(--muted); font-size: 12.5px; }
 .qs-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .qs-row.wrap { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.qs-row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .qs-field { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
 .qs-field select { width: 100%; }
 .qs-desc { margin: 0; font-size: 13.5px; line-height: 1.45; }

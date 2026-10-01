@@ -245,7 +245,7 @@ export function createQuickStart({ onApply }) {
       const sel = h('select', { id: 'qsScale', onchange: (e) => set('scale')(Number(e.target.value)) });
       SCALE_LABELS.forEach((l, i) => sel.append(h('option', { value: String(i), text: l, selected: a.scale === i })));
       const mode = modeFor(a);
-      const row = h('div', { className: 'qs-row' });
+      const row = h('div', { className: 'qs-row two' });
       for (const m of ['major', 'minor']) row.append(option('mode', m, t(`qs.mode.${m}`), null, mode === m, set('mode')));
       const s = STYLES[a.style];
       return [
