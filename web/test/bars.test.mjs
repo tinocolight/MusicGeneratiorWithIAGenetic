@@ -26,7 +26,7 @@ test('auto-configuration picks a length of the menu that leaves room for the las
   const c = applyEnsemble(defaultConfig(), 'trio');
   c.voices[2].delayBars = 10;
   autoConfigure(c);
-  assert.equal(c.bars, 32); // 2 x 10 + 4 = 24 -> 32 (before: capped at 16)
+  assert.equal(c.bars, 24); // 2 x 10 + 4 = 24 (before: capped at 16, then 32)
   const s = applyEnsemble(defaultConfig(), 'solo');
   autoConfigure(s);
   assert.equal(s.bars, 8);
