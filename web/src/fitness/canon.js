@@ -24,6 +24,7 @@
 // With three voices, complete triads on strong beats are rewarded, and every voice is
 // checked against the range of its instrument.
 
+import { withLabels } from '../i18n/i18n.js';
 import { meterOf, metricWeight } from '../core/meter.js';
 
 const IMPERFECT = new Set([3, 4, 8, 9]);
@@ -55,15 +56,15 @@ export function intervalQuality(iv) {
 
 // ------------------------------------------------------------------ voice transformations
 
-export const INTERVALS = {
-  unison: { label: 'Uníssono', semitones: 0 },
-  octaveUp: { label: '8.ª acima', semitones: 12 },
-  octaveDown: { label: '8.ª abaixo', semitones: -12 },
-  twoOctavesDown: { label: '2 oitavas abaixo', semitones: -24 },
-  fifthDown: { label: '5.ª abaixo (diatónica)', degrees: -4 },
-  fifthUp: { label: '5.ª acima (diatónica)', degrees: 4 },
-  fourthDown: { label: '4.ª abaixo (diatónica)', degrees: -3 },
-};
+export const INTERVALS = withLabels({
+  unison: { semitones: 0 },
+  octaveUp: { semitones: 12 },
+  octaveDown: { semitones: -12 },
+  twoOctavesDown: { semitones: -24 },
+  fifthDown: { degrees: -4 },
+  fifthUp: { degrees: 4 },
+  fourthDown: { degrees: -3 },
+}, 'interval');
 
 /** Pitch map of a voice: chromatic transposition, or diatonic (degrees inside the key). */
 export function intervalMap(name, key) {

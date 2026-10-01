@@ -12,6 +12,7 @@
 //    interesting music is neither trivially compressible nor random;
 //  * MusPy / Yang & Lerch (2020) — pitch-class entropy, used as distribution descriptors.
 
+import { labelTable } from '../i18n/i18n.js';
 import { estimateKey } from '../core/theory.js';
 
 /** @param compact [[midi|-1, dur16], ...]  @param info {barLen, pickup, beat (16ths: 4 simple, 6 compound)} */
@@ -215,31 +216,5 @@ export function linfit(xs, ys) {
   return { slope, intercept: my - slope * mx };
 }
 
-export const FEATURE_LABELS = {
-  pitchVariety: 'Variedade de alturas',
-  pitchRange: 'Âmbito (semitons)',
-  keyCentred: 'Centralidade tonal',
-  nonScale: 'Notas fora da escala',
-  dissonantIntervals: 'Intervalos dissonantes',
-  contourDirection: 'Direção do contorno',
-  contourStability: 'Estabilidade do contorno',
-  stepMovement: 'Movimento por grau',
-  leapReturns: 'Retorno após salto',
-  climaxStrength: 'Força do clímax',
-  repeatedPitch: 'Notas repetidas',
-  meanAbsInterval: 'Intervalo médio',
-  noteDensity: 'Notas por tempo',
-  restRatio: 'Proporção de pausas',
-  rhythmicVariety: 'Variedade rítmica',
-  syncopation: 'Síncopa',
-  repeatedIntervalPatterns: 'Padrões melódicos repetidos',
-  repeatedRhythmPatterns: 'Padrões rítmicos repetidos',
-  pcEntropy: 'Entropia de classes de altura',
-  intervalEntropy: 'Entropia de intervalos',
-  lzComplexity: 'Complexidade LZ',
-  zipfPitch: 'Zipf (alturas)',
-  zipfInterval: 'Zipf (intervalos)',
-  spectralSlope: 'Declive espectral (1/f)',
-  icPitch: 'Surpresa melódica (bits)',
-  icRhythm: 'Surpresa rítmica (bits)',
-};
+/** Names of the features in the current language (src/i18n/texts.js). */
+export const FEATURE_LABELS = labelTable(['pitchVariety', 'pitchRange', 'keyCentred', 'nonScale', 'dissonantIntervals', 'contourDirection', 'contourStability', 'stepMovement', 'leapReturns', 'climaxStrength', 'repeatedPitch', 'meanAbsInterval', 'noteDensity', 'restRatio', 'rhythmicVariety', 'syncopation', 'repeatedIntervalPatterns', 'repeatedRhythmPatterns', 'pcEntropy', 'intervalEntropy', 'lzComplexity', 'zipfPitch', 'zipfInterval', 'spectralSlope', 'icPitch', 'icRhythm'], 'feature');

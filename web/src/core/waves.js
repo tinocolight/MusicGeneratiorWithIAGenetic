@@ -17,14 +17,10 @@
 // Every generator returns a Float64Array of `length` values in the same unit as `mean`
 // (MIDI in the attractor-field fitness, genes in the classic fitness).
 
-export const WAVE_TYPES = {
-  sine: 'Seno',
-  arch: 'Arco de frase',
-  pink: 'Flutuação 1/f',
-  rossler: 'Atrator de Rössler',
-  lorenz: 'Atrator de Lorenz',
-  flat: 'Constante (tessitura)',
-};
+/** Wave types of the editor, with their names in the current language (src/i18n/texts.js). */
+import { labelTable } from '../i18n/i18n.js';
+
+export const WAVE_TYPES = labelTable(['sine', 'arch', 'pink', 'rossler', 'lorenz', 'flat'], 'wtype');
 
 /**
  * Wave described the way a musician sets it in the editor:

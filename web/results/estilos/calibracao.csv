@@ -1,0 +1,833 @@
+﻿grupo,compasso,melodias,regra,medida,p10,p50,p90
+geral,2/4,2451,stepDown,stepDown,0.3871,0.5714,0.8
+geral,2/4,2451,inertia,inertia,0.2857,0.6512,0.9091
+geral,2/4,2451,leaps,leaps,0.04,0.1226,0.2581
+geral,2/4,2451,recovery,recovery,0,0.1579,0.5
+geral,2/4,2451,leapChain,leapChain,0,0,0.0112
+geral,2/4,2451,dissonant,dissonant,0,0,0.0308
+geral,2/4,2451,range,range,9,14,17
+geral,2/4,2451,climaxCount,climaxCount,1,2,8
+geral,2/4,2451,arch,arch,0,0.3333,0.75
+geral,2/4,2451,endLow,endLow,0.3333,0.6667,1
+geral,2/4,2451,finalLength,finalLength,1.0247,1.5167,2.3333
+geral,2/4,2451,motifs,motifs,0.3333,0.6154,0.8182
+geral,2/4,2451,longOnBeat,longOnBeat,0.7778,1,1
+geral,2/4,2451,syncBar,syncBar,0,0,0.1176
+geral,2/4,2451,density,density,1.3895,1.7778,2.3438
+geral,2/4,2451,steps,steps,0.2553,0.4348,0.6452
+geral,2/4,2451,repeats,repeats,0.0588,0.1818,0.3966
+geral,2/4,2451,restShare,restShare,0,0.0101,0.0645
+geral,2/4,2451,pentatonic,pentatonic,0.7661,0.875,1
+geral,2/4,2451,bigLeaps,bigLeaps,0,0.0182,0.0794
+geral,2/4,2451,dirChanges,dirChanges,0.3636,0.5,0.6897
+geral,2/4,2451,phraseDescent,phraseDescent,0,0.5,1
+geral,2/4,2451,firstOnset,firstOnset,0,0,6
+geral,2/4,2451,fig:quarters,figuras x___,0.0625,0.2292,0.4375
+geral,2/4,2451,chromatic,chromatic,0,0,0.0333
+geral,2/4,2451,fig:eighths,figuras x_x_,0.1667,0.4444,0.7
+geral,2/4,2451,arpeggio,arpeggio,0.1613,0.3235,0.5
+geral,2/4,2451,fig:dotted,figuras x__x,0,0,0.1667
+geral,2/4,2451,fig:snap,figuras xx__,0,0,0
+geral,2/4,2451,fig:quickQuick,figuras x_xx xxx_,0,0.0417,0.25
+geral,2/4,2451,downbeatLong,downbeatLong,0,0,0.1667
+geral,2/4,2451,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0.2609,0.625,0.8667
+geral,2/4,2451,beat2Long,beat2Long,0,0,0
+geral,2/4,2451,fig:polonaise,figuras x_xx no tempo 1,0,0,0.25
+geral,2/4,2451,finalBeat,finalBeat,0,0,1
+geral,2/4,2451,fig:habanera,figuras x__x no tempo 1,0,0,0.2667
+geral,2/4,2451,fig:sincopa,figuras xx_x,0,0,0
+geral,2/4,2451,fig:long,figuras x___ ____,0.0741,0.25,0.475
+geral,2/4,2451,fig:quartersEighths,figuras x___ x_x_,0.375,0.7308,0.9333
+geral,2/4,2451,fig:sixteenths,figuras xxxx,0,0,0.1724
+geral,2/4,2451,sequences,sequences,0,0,0.0769
+geral,2/4,2451,offbeatEnds,offbeatEnds,0,0,0.6667
+geral,3/4,1514,stepDown,stepDown,0.4,0.6,0.8333
+geral,3/4,1514,inertia,inertia,0.5,0.7143,1
+geral,3/4,1514,leaps,leaps,0.0288,0.1045,0.2154
+geral,3/4,1514,recovery,recovery,0,0.2222,0.6667
+geral,3/4,1514,leapChain,leapChain,0,0,0
+geral,3/4,1514,dissonant,dissonant,0,0,0.0317
+geral,3/4,1514,range,range,9,13,17
+geral,3/4,1514,climaxCount,climaxCount,1,2,6
+geral,3/4,1514,arch,arch,0,0.5,1
+geral,3/4,1514,endLow,endLow,0.3333,0.6667,1
+geral,3/4,1514,finalLength,finalLength,1.1091,1.5697,2.3333
+geral,3/4,1514,motifs,motifs,0.2941,0.6,0.8182
+geral,3/4,1514,longOnBeat,longOnBeat,1,1,1
+geral,3/4,1514,syncBar,syncBar,0,0,0
+geral,3/4,1514,density,density,0.7907,1.25,1.6271
+geral,3/4,1514,steps,steps,0.3077,0.5,0.7059
+geral,3/4,1514,repeats,repeats,0.05,0.1714,0.3333
+geral,3/4,1514,restShare,restShare,0,0.0185,0.0678
+geral,3/4,1514,pentatonic,pentatonic,0.7424,0.8451,0.925
+geral,3/4,1514,bigLeaps,bigLeaps,0,0,0.0725
+geral,3/4,1514,dirChanges,dirChanges,0.3333,0.4681,0.6429
+geral,3/4,1514,phraseDescent,phraseDescent,0,0.4,0.75
+geral,3/4,1514,firstOnset,firstOnset,0,8,10
+geral,3/4,1514,fig:quarters,figuras x___,0.2778,0.5417,0.766
+geral,3/4,1514,chromatic,chromatic,0,0,0.04
+geral,3/4,1514,fig:eighths,figuras x_x_,0,0.2222,0.5
+geral,3/4,1514,arpeggio,arpeggio,0.1389,0.2813,0.4688
+geral,3/4,1514,fig:dotted,figuras x__x,0,0,0.1379
+geral,3/4,1514,fig:snap,figuras xx__,0,0,0
+geral,3/4,1514,fig:quickQuick,figuras x_xx xxx_,0,0,0.0417
+geral,3/4,1514,downbeatLong,downbeatLong,0,0.0833,0.5
+geral,3/4,1514,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0,0.1667,0.7692
+geral,3/4,1514,beat2Long,beat2Long,0,0,0.25
+geral,3/4,1514,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+geral,3/4,1514,finalBeat,finalBeat,0,0,1
+geral,3/4,1514,fig:habanera,figuras x__x no tempo 1,0,0,0.2222
+geral,3/4,1514,fig:sincopa,figuras xx_x,0,0,0
+geral,3/4,1514,fig:long,figuras x___ ____,0.3043,0.6,0.9457
+geral,3/4,1514,fig:quartersEighths,figuras x___ x_x_,0.6042,0.7872,0.9167
+geral,3/4,1514,fig:sixteenths,figuras xxxx,0,0,0
+geral,3/4,1514,sequences,sequences,0,0,0.1429
+geral,3/4,1514,offbeatEnds,offbeatEnds,0,0,0.3333
+geral,4/4,3276,stepDown,stepDown,0.3939,0.5714,0.7778
+geral,4/4,3276,inertia,inertia,0.5,0.7105,0.8919
+geral,4/4,3276,leaps,leaps,0.0392,0.1136,0.2366
+geral,4/4,3276,recovery,recovery,0,0.2222,0.6
+geral,4/4,3276,leapChain,leapChain,0,0,0.0098
+geral,4/4,3276,dissonant,dissonant,0,0,0.0261
+geral,4/4,3276,range,range,10,14,21
+geral,4/4,3276,climaxCount,climaxCount,1,2,6
+geral,4/4,3276,arch,arch,0,0.3333,0.75
+geral,4/4,3276,endLow,endLow,0.375,0.6667,1
+geral,4/4,3276,finalLength,finalLength,1.0208,1.3646,1.9125
+geral,4/4,3276,motifs,motifs,0.1765,0.5333,0.8
+geral,4/4,3276,longOnBeat,longOnBeat,1,1,1
+geral,4/4,3276,syncBar,syncBar,0,0,0
+geral,4/4,3276,density,density,0.8696,1.2421,1.9219
+geral,4/4,3276,steps,steps,0.3125,0.5191,0.7103
+geral,4/4,3276,repeats,repeats,0.0326,0.1373,0.3273
+geral,4/4,3276,restShare,restShare,0,0,0.0781
+geral,4/4,3276,pentatonic,pentatonic,0.7447,0.8438,0.9375
+geral,4/4,3276,bigLeaps,bigLeaps,0,0.0187,0.084
+geral,4/4,3276,dirChanges,dirChanges,0.3462,0.4762,0.6263
+geral,4/4,3276,phraseDescent,phraseDescent,0.2,0.5,0.75
+geral,4/4,3276,firstOnset,firstOnset,0,12,14
+geral,4/4,3276,fig:quarters,figuras x___,0.0952,0.4872,0.8
+geral,4/4,3276,chromatic,chromatic,0,0,0.0465
+geral,4/4,3276,fig:eighths,figuras x_x_,0.0139,0.2432,0.8254
+geral,4/4,3276,arpeggio,arpeggio,0.1333,0.2909,0.5078
+geral,4/4,3276,fig:dotted,figuras x__x,0,0,0.1667
+geral,4/4,3276,threeQuarterEnd,threeQuarterEnd,0,0,1
+geral,4/4,3276,fig:snap,figuras xx__,0,0,0
+geral,4/4,3276,fig:quickQuick,figuras x_xx xxx_,0,0,0.0323
+geral,4/4,3276,downbeatLong,downbeatLong,0,0,0.375
+geral,4/4,3276,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0,0.25,0.875
+geral,4/4,3276,beat2Long,beat2Long,0,0,0
+geral,4/4,3276,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+geral,4/4,3276,finalBeat,finalBeat,0,2,3
+geral,4/4,3276,fig:habanera,figuras x__x no tempo 1,0,0,0.1875
+geral,4/4,3276,fig:sincopa,figuras xx_x,0,0,0
+geral,4/4,3276,fig:long,figuras x___ ____,0.1,0.5484,0.9167
+geral,4/4,3276,fig:quartersEighths,figuras x___ x_x_,0.5625,0.825,1
+geral,4/4,3276,fig:sixteenths,figuras xxxx,0,0,0
+geral,4/4,3276,sequences,sequences,0,0,0
+geral,4/4,3276,offbeatEnds,offbeatEnds,0,0,0.625
+geral,3/8,342,stepDown,stepDown,0.3636,0.575,0.8182
+geral,3/8,342,inertia,inertia,0.4,0.6667,0.8889
+geral,3/8,342,leaps,leaps,0.0172,0.0938,0.1961
+geral,3/8,342,recovery,recovery,0,0.1538,0.5
+geral,3/8,342,leapChain,leapChain,0,0,0
+geral,3/8,342,dissonant,dissonant,0,0,0.0227
+geral,3/8,342,range,range,8,12,16
+geral,3/8,342,climaxCount,climaxCount,1,2,7
+geral,3/8,342,arch,arch,0,0.5,1
+geral,3/8,342,endLow,endLow,0.3333,0.6667,1
+geral,3/8,342,finalLength,finalLength,1.1062,1.6273,2.3083
+geral,3/8,342,motifs,motifs,0.5333,0.7273,0.8667
+geral,3/8,342,longOnBeat,longOnBeat,1,1,1
+geral,3/8,342,syncBar,syncBar,0,0,0
+geral,3/8,342,density,density,2.2593,2.75,3.5
+geral,3/8,342,steps,steps,0.2286,0.4889,0.697
+geral,3/8,342,repeats,repeats,0.0732,0.209,0.4054
+geral,3/8,342,restShare,restShare,0,0,0.0632
+geral,3/8,342,pentatonic,pentatonic,0.7292,0.8444,0.9318
+geral,3/8,342,bigLeaps,bigLeaps,0,0,0.0571
+geral,3/8,342,dirChanges,dirChanges,0.3529,0.5,0.6667
+geral,3/8,342,phraseDescent,phraseDescent,0,0.5,1
+geral,3/8,342,fig:rocking,figuras x___x_ x_____,0,0.1818,0.4706
+geral,3/8,342,firstOnset,firstOnset,0,4,4
+geral,3/8,342,chromatic,chromatic,0,0,0.0408
+geral,3/8,342,arpeggio,arpeggio,0.1176,0.2632,0.4688
+geral,3/8,342,fig:threeEighths,figuras x_x_x_,0.0667,0.3529,0.625
+geral,3/8,342,fig:longShort,figuras x___x_,0,0.125,0.4375
+geral,3/8,342,downbeatLong,downbeatLong,0,0,0
+geral,3/8,342,beat2Long,beat2Long,0,0,0
+geral,3/8,342,finalBeat,finalBeat,0,0,0
+geral,3/8,342,fig:siciliana,figuras x__xx_,0,0,0.3333
+geral,3/8,342,sequences,sequences,0,0,0.2
+geral,3/8,342,fig:jigging,figuras x___x_ x_x_x_,0.1333,0.5455,0.875
+geral,3/8,342,offbeatEnds,offbeatEnds,0,0.3333,0.6667
+geral,6/8,1911,stepDown,stepDown,0.375,0.5455,0.7391
+geral,6/8,1911,inertia,inertia,0.48,0.6667,0.8571
+geral,6/8,1911,leaps,leaps,0.0444,0.1136,0.2063
+geral,6/8,1911,recovery,recovery,0,0.2,0.5
+geral,6/8,1911,leapChain,leapChain,0,0,0.0114
+geral,6/8,1911,dissonant,dissonant,0,0,0.0244
+geral,6/8,1911,range,range,12,15,21
+geral,6/8,1911,climaxCount,climaxCount,1,2,6
+geral,6/8,1911,arch,arch,0,0.5,1
+geral,6/8,1911,endLow,endLow,0.3333,0.75,1
+geral,6/8,1911,finalLength,finalLength,1.1174,1.65,2.3333
+geral,6/8,1911,motifs,motifs,0.2857,0.6667,0.8667
+geral,6/8,1911,longOnBeat,longOnBeat,1,1,1
+geral,6/8,1911,syncBar,syncBar,0,0,0
+geral,6/8,1911,density,density,1.9355,2.4956,2.9231
+geral,6/8,1911,steps,steps,0.3222,0.4943,0.6757
+geral,6/8,1911,repeats,repeats,0.0492,0.1471,0.3288
+geral,6/8,1911,restShare,restShare,0,0,0.0714
+geral,6/8,1911,pentatonic,pentatonic,0.7396,0.8385,0.9278
+geral,6/8,1911,bigLeaps,bigLeaps,0,0.0226,0.0737
+geral,6/8,1911,dirChanges,dirChanges,0.3614,0.4783,0.6111
+geral,6/8,1911,phraseDescent,phraseDescent,0,0.5,0.8333
+geral,6/8,1911,fig:rocking,figuras x___x_ x_____,0.0625,0.3333,0.6957
+geral,6/8,1911,firstOnset,firstOnset,0,10,10
+geral,6/8,1911,chromatic,chromatic,0,0,0.0513
+geral,6/8,1911,arpeggio,arpeggio,0.1596,0.3125,0.4783
+geral,6/8,1911,fig:threeEighths,figuras x_x_x_,0.087,0.45,0.8438
+geral,6/8,1911,fig:longShort,figuras x___x_,0.0313,0.25,0.5625
+geral,6/8,1911,downbeatLong,downbeatLong,0,0,0
+geral,6/8,1911,beat2Long,beat2Long,0,0,0
+geral,6/8,1911,finalBeat,finalBeat,0,1,1
+geral,6/8,1911,fig:siciliana,figuras x__xx_,0,0,0.1875
+geral,6/8,1911,sequences,sequences,0,0,0
+geral,6/8,1911,fig:jigging,figuras x___x_ x_x_x_,0.4688,0.7778,0.9688
+geral,6/8,1911,offbeatEnds,offbeatEnds,0,0,0.7143
+geral,9/8,143,stepDown,stepDown,0.3429,0.4839,0.64
+geral,9/8,143,inertia,inertia,0.4865,0.7,0.8462
+geral,9/8,143,leaps,leaps,0.0614,0.1264,0.2308
+geral,9/8,143,recovery,recovery,0,0.1923,0.5
+geral,9/8,143,leapChain,leapChain,0,0,0.0169
+geral,9/8,143,dissonant,dissonant,0,0,0.03
+geral,9/8,143,range,range,12,17,21
+geral,9/8,143,climaxCount,climaxCount,1,2,7
+geral,9/8,143,arch,arch,0,0.5,0.75
+geral,9/8,143,endLow,endLow,0,1,1
+geral,9/8,143,finalLength,finalLength,0.8194,1.1095,1.9722
+geral,9/8,143,motifs,motifs,0.4286,0.6364,0.8571
+geral,9/8,143,longOnBeat,longOnBeat,1,1,1
+geral,9/8,143,syncBar,syncBar,0,0,0
+geral,9/8,143,density,density,2.2564,2.6389,2.9
+geral,9/8,143,steps,steps,0.3333,0.5,0.6438
+geral,9/8,143,repeats,repeats,0.0337,0.097,0.1683
+geral,9/8,143,restShare,restShare,0,0,0
+geral,9/8,143,pentatonic,pentatonic,0.75,0.8333,0.9167
+geral,9/8,143,bigLeaps,bigLeaps,0,0.0333,0.09
+geral,9/8,143,dirChanges,dirChanges,0.3701,0.4912,0.6154
+geral,9/8,143,phraseDescent,phraseDescent,0,0.6667,1
+geral,9/8,143,fig:rocking,figuras x___x_ x_____,0.1,0.3191,0.625
+geral,9/8,143,firstOnset,firstOnset,0,0,16
+geral,9/8,143,chromatic,chromatic,0,0,0.0316
+geral,9/8,143,arpeggio,arpeggio,0.2299,0.3671,0.5229
+geral,9/8,143,fig:threeEighths,figuras x_x_x_,0.2917,0.5833,0.8333
+geral,9/8,143,fig:longShort,figuras x___x_,0.08,0.2917,0.5833
+geral,9/8,143,downbeatLong,downbeatLong,0,0,0
+geral,9/8,143,beat2Long,beat2Long,0,0,0
+geral,9/8,143,finalBeat,finalBeat,2,2,2
+geral,9/8,143,fig:siciliana,figuras x__xx_,0,0,0.0392
+geral,9/8,143,sequences,sequences,0,0,0
+geral,9/8,143,fig:jigging,figuras x___x_ x_x_x_,0.6571,0.9167,1
+geral,9/8,143,offbeatEnds,offbeatEnds,0,1,1
+march,2/4,36,stepDown,stepDown,0.4516,0.62,0.7391
+march,2/4,36,inertia,inertia,0.5417,0.7015,0.8158
+march,2/4,36,leaps,leaps,0.0405,0.1429,0.2239
+march,2/4,36,recovery,recovery,0,0.1429,0.5
+march,2/4,36,leapChain,leapChain,0,0,0
+march,2/4,36,dissonant,dissonant,0,0,0.0244
+march,2/4,36,range,range,12,17,19
+march,2/4,36,climaxCount,climaxCount,1,2,5
+march,2/4,36,arch,arch,0,0.2857,0.75
+march,2/4,36,endLow,endLow,0.5,0.8333,1
+march,2/4,36,finalLength,finalLength,0.9844,1.4881,2.025
+march,2/4,36,motifs,motifs,0.5333,0.7333,0.8667
+march,2/4,36,longOnBeat,longOnBeat,1,1,1
+march,2/4,36,syncBar,syncBar,0,0,0
+march,2/4,36,density,density,1.8542,2.0971,2.5625
+march,2/4,36,steps,steps,0.36,0.5289,0.6724
+march,2/4,36,repeats,repeats,0.0282,0.1205,0.2333
+march,2/4,36,restShare,restShare,0,0,0
+march,2/4,36,pentatonic,pentatonic,0.7656,0.8203,0.9063
+march,2/4,36,bigLeaps,bigLeaps,0,0.0294,0.0816
+march,2/4,36,dirChanges,dirChanges,0.3976,0.4954,0.6071
+march,2/4,36,phraseDescent,phraseDescent,0.25,0.7143,1
+march,2/4,36,firstOnset,firstOnset,0,0,6
+march,2/4,36,fig:quarters,figuras x___,0,0.1563,0.2917
+march,2/4,36,chromatic,chromatic,0,0,0.0156
+march,2/4,36,fig:eighths,figuras x_x_,0.3214,0.5625,0.75
+march,2/4,36,arpeggio,arpeggio,0.1379,0.3095,0.4746
+march,2/4,36,fig:dotted,figuras x__x,0,0,0.1071
+march,2/4,36,fig:snap,figuras xx__,0,0,0
+march,2/4,36,fig:quickQuick,figuras x_xx xxx_,0,0.0625,0.2188
+march,2/4,36,downbeatLong,downbeatLong,0,0,0
+march,2/4,36,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0.5357,0.6875,0.875
+march,2/4,36,beat2Long,beat2Long,0,0,0
+march,2/4,36,fig:polonaise,figuras x_xx no tempo 1,0,0,0.1875
+march,2/4,36,finalBeat,finalBeat,0,1,1
+march,2/4,36,fig:habanera,figuras x__x no tempo 1,0,0,0.2
+march,2/4,36,fig:sincopa,figuras xx_x,0,0,0
+march,2/4,36,fig:long,figuras x___ ____,0,0.1563,0.2917
+march,2/4,36,fig:quartersEighths,figuras x___ x_x_,0.5357,0.775,0.8958
+march,2/4,36,fig:sixteenths,figuras xxxx,0,0.125,0.2292
+march,2/4,36,sequences,sequences,0,0,0.1333
+march,2/4,36,offbeatEnds,offbeatEnds,0,0.25,0.5
+march,4/4,44,stepDown,stepDown,0.4667,0.5526,0.6809
+march,4/4,44,inertia,inertia,0.5893,0.6939,0.8788
+march,4/4,44,leaps,leaps,0.0738,0.1223,0.2053
+march,4/4,44,recovery,recovery,0,0.1923,0.5
+march,4/4,44,leapChain,leapChain,0,0,0.0104
+march,4/4,44,dissonant,dissonant,0,0,0.0274
+march,4/4,44,range,range,14,19,21
+march,4/4,44,climaxCount,climaxCount,1,2,5
+march,4/4,44,arch,arch,0.125,0.25,0.5714
+march,4/4,44,endLow,endLow,0.375,0.625,0.875
+march,4/4,44,finalLength,finalLength,1.0302,1.4102,1.9124
+march,4/4,44,motifs,motifs,0.2857,0.4667,0.7333
+march,4/4,44,longOnBeat,longOnBeat,1,1,1
+march,4/4,44,syncBar,syncBar,0,0,0
+march,4/4,44,density,density,1.1563,1.5313,1.9524
+march,4/4,44,steps,steps,0.3034,0.5033,0.625
+march,4/4,44,repeats,repeats,0.0556,0.1604,0.3012
+march,4/4,44,restShare,restShare,0,0,0.0323
+march,4/4,44,pentatonic,pentatonic,0.7891,0.8555,0.9063
+march,4/4,44,bigLeaps,bigLeaps,0,0.0278,0.0825
+march,4/4,44,dirChanges,dirChanges,0.4024,0.4821,0.5614
+march,4/4,44,phraseDescent,phraseDescent,0.3333,0.5,0.625
+march,4/4,44,firstOnset,firstOnset,0,12,12
+march,4/4,44,fig:quarters,figuras x___,0.1406,0.375,0.5781
+march,4/4,44,chromatic,chromatic,0,0,0.0144
+march,4/4,44,fig:eighths,figuras x_x_,0.0208,0.25,0.5385
+march,4/4,44,arpeggio,arpeggio,0.1628,0.2987,0.3981
+march,4/4,44,fig:dotted,figuras x__x,0,0.1563,0.4219
+march,4/4,44,threeQuarterEnd,threeQuarterEnd,0,0,0
+march,4/4,44,fig:snap,figuras xx__,0,0,0
+march,4/4,44,fig:quickQuick,figuras x_xx xxx_,0,0,0.0625
+march,4/4,44,downbeatLong,downbeatLong,0,0,0.1875
+march,4/4,44,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0.125,0.375,0.75
+march,4/4,44,beat2Long,beat2Long,0,0,0.0313
+march,4/4,44,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+march,4/4,44,finalBeat,finalBeat,0,2,2
+march,4/4,44,fig:habanera,figuras x__x no tempo 1,0,0,0.375
+march,4/4,44,fig:sincopa,figuras xx_x,0,0,0
+march,4/4,44,fig:long,figuras x___ ____,0.1406,0.4219,0.625
+march,4/4,44,fig:quartersEighths,figuras x___ x_x_,0.3854,0.6806,0.925
+march,4/4,44,fig:sixteenths,figuras xxxx,0,0,0.0476
+march,4/4,44,sequences,sequences,0,0,0.0909
+march,4/4,44,offbeatEnds,offbeatEnds,0,0.1875,0.6667
+march,6/8,43,stepDown,stepDown,0.3448,0.5217,0.6857
+march,6/8,43,inertia,inertia,0.5,0.6757,0.8214
+march,6/8,43,leaps,leaps,0.08,0.1527,0.2073
+march,6/8,43,recovery,recovery,0,0.2308,0.5
+march,6/8,43,leapChain,leapChain,0,0,0.0119
+march,6/8,43,dissonant,dissonant,0,0,0.0216
+march,6/8,43,range,range,14,17,21
+march,6/8,43,climaxCount,climaxCount,1,3,6
+march,6/8,43,arch,arch,0.25,0.5,0.75
+march,6/8,43,endLow,endLow,0.5,0.8333,1
+march,6/8,43,finalLength,finalLength,1.3021,1.7,2.3333
+march,6/8,43,motifs,motifs,0.6,0.7333,0.8
+march,6/8,43,syncBar,syncBar,0,0,0
+march,6/8,43,density,density,2.25,2.5833,2.75
+march,6/8,43,steps,steps,0.3222,0.5135,0.6415
+march,6/8,43,repeats,repeats,0.0323,0.0928,0.2151
+march,6/8,43,restShare,restShare,0,0,0
+march,6/8,43,pentatonic,pentatonic,0.7813,0.8229,0.8958
+march,6/8,43,bigLeaps,bigLeaps,0,0.0405,0.0909
+march,6/8,43,dirChanges,dirChanges,0.375,0.4746,0.6066
+march,6/8,43,phraseDescent,phraseDescent,0.25,0.5,1
+march,6/8,43,fig:rocking,figuras x___x_ x_____,0.1563,0.375,0.5625
+march,6/8,43,firstOnset,firstOnset,0,10,10
+march,6/8,43,chromatic,chromatic,0,0,0.0161
+march,6/8,43,arpeggio,arpeggio,0.1892,0.3588,0.5082
+march,6/8,43,fig:threeEighths,figuras x_x_x_,0.3125,0.5313,0.75
+march,6/8,43,fig:longShort,figuras x___x_,0.0833,0.3125,0.5
+march,6/8,43,downbeatLong,downbeatLong,0,0,0
+march,6/8,43,beat2Long,beat2Long,0,0,0
+march,6/8,43,finalBeat,finalBeat,1,1,1
+march,6/8,43,fig:siciliana,figuras x__xx_,0,0,0.0625
+march,6/8,43,sequences,sequences,0,0,0.0667
+march,6/8,43,fig:jigging,figuras x___x_ x_x_x_,0.6875,0.875,0.9375
+march,6/8,43,offbeatEnds,offbeatEnds,0,0,0.5
+strathspey,4/4,70,stepDown,stepDown,0.3056,0.5094,0.6923
+strathspey,4/4,70,inertia,inertia,0.4615,0.6944,0.9167
+strathspey,4/4,70,leaps,leaps,0.1221,0.1961,0.3231
+strathspey,4/4,70,recovery,recovery,0,0.16,0.3929
+strathspey,4/4,70,leapChain,leapChain,0,0,0.0169
+strathspey,4/4,70,dissonant,dissonant,0,0.0096,0.0331
+strathspey,4/4,70,range,range,16,19,24
+strathspey,4/4,70,climaxCount,climaxCount,1,3,8
+strathspey,4/4,70,arch,arch,0,0.25,0.6667
+strathspey,4/4,70,endLow,endLow,0.3333,0.625,1
+strathspey,4/4,70,finalLength,finalLength,1.0313,1.2515,1.8687
+strathspey,4/4,70,motifs,motifs,0.1818,0.3636,0.6
+strathspey,4/4,70,longOnBeat,longOnBeat,1,1,1
+strathspey,4/4,70,syncBar,syncBar,0,0,0
+strathspey,4/4,70,density,density,1.8583,2.0625,2.2292
+strathspey,4/4,70,steps,steps,0.2323,0.4113,0.5496
+strathspey,4/4,70,repeats,repeats,0.0536,0.0945,0.188
+strathspey,4/4,70,restShare,restShare,0,0,0
+strathspey,4/4,70,pentatonic,pentatonic,0.8385,0.9063,0.9766
+strathspey,4/4,70,bigLeaps,bigLeaps,0.015,0.0603,0.1484
+strathspey,4/4,70,dirChanges,dirChanges,0.4322,0.5281,0.6714
+strathspey,4/4,70,phraseDescent,phraseDescent,0.25,0.625,1
+strathspey,4/4,70,firstOnset,firstOnset,0,14,14
+strathspey,4/4,70,fig:quarters,figuras x___,0,0.0625,0.1875
+strathspey,4/4,70,chromatic,chromatic,0,0,0.0079
+strathspey,4/4,70,fig:eighths,figuras x_x_,0.0156,0.2083,0.5208
+strathspey,4/4,70,arpeggio,arpeggio,0.301,0.4319,0.6134
+strathspey,4/4,70,fig:dotted,figuras x__x,0.1429,0.3651,0.625
+strathspey,4/4,70,threeQuarterEnd,threeQuarterEnd,0,0,0
+strathspey,4/4,70,fig:snap,figuras xx__,0,0.1094,0.2813
+strathspey,4/4,70,fig:quickQuick,figuras x_xx xxx_,0,0.0469,0.1563
+strathspey,4/4,70,downbeatLong,downbeatLong,0,0,0
+strathspey,4/4,70,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0.25,0.625,1
+strathspey,4/4,70,beat2Long,beat2Long,0,0,0
+strathspey,4/4,70,fig:polonaise,figuras x_xx no tempo 1,0,0,0.0833
+strathspey,4/4,70,finalBeat,finalBeat,2,3,3
+strathspey,4/4,70,fig:habanera,figuras x__x no tempo 1,0,0.375,0.75
+strathspey,4/4,70,fig:sincopa,figuras xx_x,0,0,0
+strathspey,4/4,70,fig:long,figuras x___ ____,0,0.0625,0.1875
+strathspey,4/4,70,fig:quartersEighths,figuras x___ x_x_,0.0794,0.303,0.5692
+strathspey,4/4,70,fig:sixteenths,figuras xxxx,0,0.0308,0.125
+strathspey,4/4,70,sequences,sequences,0,0,0
+strathspey,4/4,70,offbeatEnds,offbeatEnds,0,0,0.75
+reel,4/4,264,stepDown,stepDown,0.3051,0.5062,0.68
+reel,4/4,264,inertia,inertia,0.5,0.6984,0.881
+reel,4/4,264,leaps,leaps,0.0756,0.178,0.3241
+reel,4/4,264,recovery,recovery,0,0.1364,0.4
+reel,4/4,264,leapChain,leapChain,0,0,0.0161
+reel,4/4,264,dissonant,dissonant,0,0,0.0325
+reel,4/4,264,range,range,15,19,22
+reel,4/4,264,climaxCount,climaxCount,1,3,7
+reel,4/4,264,arch,arch,0,0.375,0.75
+reel,4/4,264,endLow,endLow,0.375,0.6667,1
+reel,4/4,264,finalLength,finalLength,0.9688,1.2109,1.5938
+reel,4/4,264,motifs,motifs,0.5455,0.7333,0.8667
+reel,4/4,264,longOnBeat,longOnBeat,1,1,1
+reel,4/4,264,syncBar,syncBar,0,0,0
+reel,4/4,264,density,density,1.6866,1.8594,2.0299
+reel,4/4,264,steps,steps,0.2602,0.4352,0.6
+reel,4/4,264,repeats,repeats,0.0093,0.064,0.1468
+reel,4/4,264,restShare,restShare,0,0,0
+reel,4/4,264,pentatonic,pentatonic,0.7656,0.8516,0.9453
+reel,4/4,264,bigLeaps,bigLeaps,0,0.0403,0.1138
+reel,4/4,264,dirChanges,dirChanges,0.4337,0.5392,0.6765
+reel,4/4,264,phraseDescent,phraseDescent,0.25,0.5,1
+reel,4/4,264,firstOnset,firstOnset,0,12,14
+reel,4/4,264,fig:quarters,figuras x___,0.0317,0.1406,0.2813
+reel,4/4,264,chromatic,chromatic,0,0,0.0333
+reel,4/4,264,fig:eighths,figuras x_x_,0.619,0.8125,0.9219
+reel,4/4,264,arpeggio,arpeggio,0.301,0.4627,0.64
+reel,4/4,264,fig:dotted,figuras x__x,0,0,0
+reel,4/4,264,threeQuarterEnd,threeQuarterEnd,0,0,0
+reel,4/4,264,fig:snap,figuras xx__,0,0,0
+reel,4/4,264,fig:quickQuick,figuras x_xx xxx_,0,0,0.0625
+reel,4/4,264,downbeatLong,downbeatLong,0,0,0
+reel,4/4,264,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0.5,0.8125,1
+reel,4/4,264,beat2Long,beat2Long,0,0,0
+reel,4/4,264,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+reel,4/4,264,finalBeat,finalBeat,2,3,3
+reel,4/4,264,fig:habanera,figuras x__x no tempo 1,0,0,0
+reel,4/4,264,fig:sincopa,figuras xx_x,0,0,0
+reel,4/4,264,fig:long,figuras x___ ____,0.0317,0.1406,0.2813
+reel,4/4,264,fig:quartersEighths,figuras x___ x_x_,0.8333,0.9846,1
+reel,4/4,264,fig:sixteenths,figuras xxxx,0,0,0
+reel,4/4,264,sequences,sequences,0,0,0
+reel,4/4,264,offbeatEnds,offbeatEnds,0,0.5,0.875
+hornpipe,4/4,166,stepDown,stepDown,0.4286,0.5714,0.7447
+hornpipe,4/4,166,inertia,inertia,0.5652,0.72,0.8889
+hornpipe,4/4,166,leaps,leaps,0.0673,0.1429,0.275
+hornpipe,4/4,166,recovery,recovery,0.0455,0.2143,0.6
+hornpipe,4/4,166,leapChain,leapChain,0,0,0.0092
+hornpipe,4/4,166,dissonant,dissonant,0,0.0084,0.0336
+hornpipe,4/4,166,range,range,17,20,24
+hornpipe,4/4,166,climaxCount,climaxCount,1,3,6
+hornpipe,4/4,166,arch,arch,0,0.25,0.625
+hornpipe,4/4,166,endLow,endLow,0.375,0.625,0.875
+hornpipe,4/4,166,finalLength,finalLength,1.0837,1.2969,1.6899
+hornpipe,4/4,166,motifs,motifs,0.6667,0.8,0.8667
+hornpipe,4/4,166,longOnBeat,longOnBeat,1,1,1
+hornpipe,4/4,166,syncBar,syncBar,0,0,0
+hornpipe,4/4,166,density,density,1.6719,1.8281,1.9063
+hornpipe,4/4,166,steps,steps,0.3363,0.4956,0.6606
+hornpipe,4/4,166,repeats,repeats,0.008,0.0424,0.1062
+hornpipe,4/4,166,restShare,restShare,0,0,0
+hornpipe,4/4,166,pentatonic,pentatonic,0.75,0.8047,0.8672
+hornpipe,4/4,166,bigLeaps,bigLeaps,0,0.0336,0.1111
+hornpipe,4/4,166,dirChanges,dirChanges,0.3839,0.4911,0.6118
+hornpipe,4/4,166,phraseDescent,phraseDescent,0.25,0.5,0.625
+hornpipe,4/4,166,firstOnset,firstOnset,0,12,12
+hornpipe,4/4,166,fig:quarters,figuras x___,0.0938,0.1594,0.3125
+hornpipe,4/4,166,chromatic,chromatic,0,0,0.0342
+hornpipe,4/4,166,fig:eighths,figuras x_x_,0.4375,0.8125,0.8906
+hornpipe,4/4,166,arpeggio,arpeggio,0.2778,0.4123,0.5872
+hornpipe,4/4,166,fig:dotted,figuras x__x,0,0,0
+hornpipe,4/4,166,threeQuarterEnd,threeQuarterEnd,0,1,1
+hornpipe,4/4,166,fig:snap,figuras xx__,0,0,0
+hornpipe,4/4,166,fig:quickQuick,figuras x_xx xxx_,0,0,0
+hornpipe,4/4,166,downbeatLong,downbeatLong,0,0,0
+hornpipe,4/4,166,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0.5882,0.875,0.9375
+hornpipe,4/4,166,beat2Long,beat2Long,0,0,0
+hornpipe,4/4,166,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+hornpipe,4/4,166,finalBeat,finalBeat,2,2,2
+hornpipe,4/4,166,fig:habanera,figuras x__x no tempo 1,0,0,0
+hornpipe,4/4,166,fig:sincopa,figuras xx_x,0,0,0
+hornpipe,4/4,166,fig:long,figuras x___ ____,0.0938,0.1618,0.3125
+hornpipe,4/4,166,fig:quartersEighths,figuras x___ x_x_,0.6957,1,1
+hornpipe,4/4,166,fig:sixteenths,figuras xxxx,0,0,0
+hornpipe,4/4,166,sequences,sequences,0,0,0.0714
+hornpipe,4/4,166,offbeatEnds,offbeatEnds,0,0.5,0.75
+jig,6/8,219,stepDown,stepDown,0.3784,0.5217,0.6739
+jig,6/8,219,inertia,inertia,0.5,0.65,0.8125
+jig,6/8,219,leaps,leaps,0.0588,0.1136,0.1951
+jig,6/8,219,recovery,recovery,0,0.2,0.5
+jig,6/8,219,leapChain,leapChain,0,0,0.0112
+jig,6/8,219,dissonant,dissonant,0,0,0.0222
+jig,6/8,219,range,range,14,17,21
+jig,6/8,219,climaxCount,climaxCount,1,2,7
+jig,6/8,219,arch,arch,0,0.3333,0.75
+jig,6/8,219,endLow,endLow,0.25,0.75,1
+jig,6/8,219,finalLength,finalLength,0.9896,1.4792,1.9167
+jig,6/8,219,motifs,motifs,0.6667,0.8,0.8824
+jig,6/8,219,longOnBeat,longOnBeat,1,1,1
+jig,6/8,219,syncBar,syncBar,0,0,0
+jig,6/8,219,density,density,2.4316,2.7917,2.9688
+jig,6/8,219,steps,steps,0.3103,0.473,0.6421
+jig,6/8,219,repeats,repeats,0.0444,0.1259,0.2234
+jig,6/8,219,restShare,restShare,0,0,0.0104
+jig,6/8,219,pentatonic,pentatonic,0.7458,0.8333,0.9271
+jig,6/8,219,bigLeaps,bigLeaps,0,0.0231,0.0682
+jig,6/8,219,dirChanges,dirChanges,0.3778,0.4727,0.5568
+jig,6/8,219,phraseDescent,phraseDescent,0.25,0.5,1
+jig,6/8,219,fig:rocking,figuras x___x_ x_____,0.0313,0.1563,0.4194
+jig,6/8,219,firstOnset,firstOnset,0,10,10
+jig,6/8,219,chromatic,chromatic,0,0,0.044
+jig,6/8,219,arpeggio,arpeggio,0.2101,0.3656,0.5083
+jig,6/8,219,fig:threeEighths,figuras x_x_x_,0.4375,0.7813,0.9375
+jig,6/8,219,fig:longShort,figuras x___x_,0.0303,0.125,0.35
+jig,6/8,219,downbeatLong,downbeatLong,0,0,0
+jig,6/8,219,beat2Long,beat2Long,0,0,0
+jig,6/8,219,finalBeat,finalBeat,1,1,1
+jig,6/8,219,fig:siciliana,figuras x__xx_,0,0,0.0625
+jig,6/8,219,sequences,sequences,0,0,0
+jig,6/8,219,fig:jigging,figuras x___x_ x_x_x_,0.75,0.9375,0.9787
+jig,6/8,219,offbeatEnds,offbeatEnds,0,0.5,1
+slipJig,9/8,138,stepDown,stepDown,0.3333,0.48,0.6316
+slipJig,9/8,138,inertia,inertia,0.4615,0.7,0.8462
+slipJig,9/8,138,leaps,leaps,0.0614,0.1262,0.2373
+slipJig,9/8,138,recovery,recovery,0,0.1818,0.5
+slipJig,9/8,138,leapChain,leapChain,0,0,0.0175
+slipJig,9/8,138,dissonant,dissonant,0,0,0.03
+slipJig,9/8,138,range,range,12,17,21
+slipJig,9/8,138,climaxCount,climaxCount,1,3,8
+slipJig,9/8,138,arch,arch,0,0.5,1
+slipJig,9/8,138,endLow,endLow,0,1,1
+slipJig,9/8,138,finalLength,finalLength,0.8194,1,1.9236
+slipJig,9/8,138,motifs,motifs,0.4286,0.6364,0.8571
+slipJig,9/8,138,longOnBeat,longOnBeat,1,1,1
+slipJig,9/8,138,syncBar,syncBar,0,0,0
+slipJig,9/8,138,density,density,2.2708,2.6389,2.9
+slipJig,9/8,138,steps,steps,0.3261,0.5,0.6438
+slipJig,9/8,138,repeats,repeats,0.0335,0.097,0.1683
+slipJig,9/8,138,restShare,restShare,0,0,0
+slipJig,9/8,138,pentatonic,pentatonic,0.7431,0.8287,0.9167
+slipJig,9/8,138,bigLeaps,bigLeaps,0,0.0313,0.0949
+slipJig,9/8,138,dirChanges,dirChanges,0.3701,0.4912,0.6061
+slipJig,9/8,138,phraseDescent,phraseDescent,0,0.6667,1
+slipJig,9/8,138,fig:rocking,figuras x___x_ x_____,0.1,0.2917,0.625
+slipJig,9/8,138,firstOnset,firstOnset,0,0,16
+slipJig,9/8,138,chromatic,chromatic,0,0,0.0316
+slipJig,9/8,138,arpeggio,arpeggio,0.2299,0.3687,0.5303
+slipJig,9/8,138,fig:threeEighths,figuras x_x_x_,0.2917,0.5833,0.8333
+slipJig,9/8,138,fig:longShort,figuras x___x_,0.08,0.2917,0.5833
+slipJig,9/8,138,downbeatLong,downbeatLong,0,0,0
+slipJig,9/8,138,beat2Long,beat2Long,0,0,0
+slipJig,9/8,138,finalBeat,finalBeat,2,2,2
+slipJig,9/8,138,fig:siciliana,figuras x__xx_,0,0,0.0278
+slipJig,9/8,138,sequences,sequences,0,0,0
+slipJig,9/8,138,fig:jigging,figuras x___x_ x_x_x_,0.7037,0.9167,1
+slipJig,9/8,138,offbeatEnds,offbeatEnds,0,1,1
+chorale,3/4,36,stepDown,stepDown,0.3878,0.5,0.6875
+chorale,3/4,36,inertia,inertia,0.5385,0.7143,0.8182
+chorale,3/4,36,leaps,leaps,0.0278,0.0645,0.25
+chorale,3/4,36,recovery,recovery,0,0.25,0.6667
+chorale,3/4,36,leapChain,leapChain,0,0,0
+chorale,3/4,36,dissonant,dissonant,0,0,0.0126
+chorale,3/4,36,range,range,8,12,15
+chorale,3/4,36,climaxCount,climaxCount,1,2,5
+chorale,3/4,36,arch,arch,0,0.25,0.6
+chorale,3/4,36,endLow,endLow,0.25,0.6,0.8
+chorale,3/4,36,finalLength,finalLength,0.9083,1.3333,1.8679
+chorale,3/4,36,motifs,motifs,0.65,0.8,0.8919
+chorale,3/4,36,longOnBeat,longOnBeat,1,1,1
+chorale,3/4,36,syncBar,syncBar,0,0,0
+chorale,3/4,36,density,density,0.6389,0.7222,0.8519
+chorale,3/4,36,steps,steps,0.3448,0.6452,0.7632
+chorale,3/4,36,repeats,repeats,0.0526,0.1379,0.2813
+chorale,3/4,36,restShare,restShare,0,0,0
+chorale,3/4,36,pentatonic,pentatonic,0.75,0.8056,0.8725
+chorale,3/4,36,bigLeaps,bigLeaps,0,0,0.0741
+chorale,3/4,36,dirChanges,dirChanges,0.3214,0.4286,0.6329
+chorale,3/4,36,phraseDescent,phraseDescent,0.25,0.4,0.6
+chorale,3/4,36,firstOnset,firstOnset,0,0,8
+chorale,3/4,36,fig:quarters,figuras x___,0.5464,0.6667,0.746
+chorale,3/4,36,chromatic,chromatic,0,0.0119,0.06
+chorale,3/4,36,fig:eighths,figuras x_x_,0,0,0.0833
+chorale,3/4,36,arpeggio,arpeggio,0.0625,0.1613,0.3333
+chorale,3/4,36,fig:dotted,figuras x__x,0,0,0
+chorale,3/4,36,fig:snap,figuras xx__,0,0,0
+chorale,3/4,36,fig:quickQuick,figuras x_xx xxx_,0,0,0
+chorale,3/4,36,downbeatLong,downbeatLong,0.3077,0.625,0.875
+chorale,3/4,36,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0,0,0.0556
+chorale,3/4,36,beat2Long,beat2Long,0,0.0417,0.1667
+chorale,3/4,36,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+chorale,3/4,36,finalBeat,finalBeat,0,0,2
+chorale,3/4,36,fig:habanera,figuras x__x no tempo 1,0,0,0
+chorale,3/4,36,fig:sincopa,figuras xx_x,0,0,0
+chorale,3/4,36,fig:long,figuras x___ ____,0.7179,0.963,1
+chorale,3/4,36,fig:quartersEighths,figuras x___ x_x_,0.5833,0.6875,0.8205
+chorale,3/4,36,fig:sixteenths,figuras xxxx,0,0,0
+chorale,3/4,36,sequences,sequences,0,0.125,0.2857
+chorale,3/4,36,offbeatEnds,offbeatEnds,0,0,0.1429
+chorale,4/4,264,stepDown,stepDown,0.4138,0.5641,0.6786
+chorale,4/4,264,inertia,inertia,0.5676,0.697,0.8235
+chorale,4/4,264,leaps,leaps,0.0222,0.0784,0.1569
+chorale,4/4,264,recovery,recovery,0,0.4286,0.75
+chorale,4/4,264,leapChain,leapChain,0,0,0
+chorale,4/4,264,dissonant,dissonant,0,0,0
+chorale,4/4,264,range,range,9,12,16
+chorale,4/4,264,climaxCount,climaxCount,1,2,6
+chorale,4/4,264,arch,arch,0,0.3333,0.6
+chorale,4/4,264,endLow,endLow,0.4,0.7143,0.875
+chorale,4/4,264,finalLength,finalLength,1.0179,1.2694,1.6667
+chorale,4/4,264,motifs,motifs,0.2857,0.5385,0.7692
+chorale,4/4,264,longOnBeat,longOnBeat,1,1,1
+chorale,4/4,264,syncBar,syncBar,0,0,0
+chorale,4/4,264,density,density,0.8056,1,1.1538
+chorale,4/4,264,steps,steps,0.5135,0.7054,0.8235
+chorale,4/4,264,repeats,repeats,0.0476,0.129,0.25
+chorale,4/4,264,restShare,restShare,0,0,0.0463
+chorale,4/4,264,pentatonic,pentatonic,0.6932,0.7937,0.8625
+chorale,4/4,264,bigLeaps,bigLeaps,0,0,0.0317
+chorale,4/4,264,dirChanges,dirChanges,0.3333,0.4333,0.5556
+chorale,4/4,264,phraseDescent,phraseDescent,0.3,0.5,0.75
+chorale,4/4,264,firstOnset,firstOnset,0,12,12
+chorale,4/4,264,fig:quarters,figuras x___,0.6563,0.7794,0.8906
+chorale,4/4,264,chromatic,chromatic,0,0.0143,0.0784
+chorale,4/4,264,fig:eighths,figuras x_x_,0,0.075,0.1765
+chorale,4/4,264,arpeggio,arpeggio,0.075,0.1429,0.2667
+chorale,4/4,264,fig:dotted,figuras x__x,0,0,0
+chorale,4/4,264,threeQuarterEnd,threeQuarterEnd,0,0,1
+chorale,4/4,264,fig:snap,figuras xx__,0,0,0
+chorale,4/4,264,fig:quickQuick,figuras x_xx xxx_,0,0,0.0192
+chorale,4/4,264,downbeatLong,downbeatLong,0,0.1111,0.4
+chorale,4/4,264,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0,0.0714,0.25
+chorale,4/4,264,beat2Long,beat2Long,0,0,0
+chorale,4/4,264,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+chorale,4/4,264,finalBeat,finalBeat,0,2,2
+chorale,4/4,264,fig:habanera,figuras x__x no tempo 1,0,0,0
+chorale,4/4,264,fig:sincopa,figuras xx_x,0,0,0
+chorale,4/4,264,fig:long,figuras x___ ____,0.7755,0.8929,0.9756
+chorale,4/4,264,fig:quartersEighths,figuras x___ x_x_,0.7397,0.8654,0.9688
+chorale,4/4,264,fig:sixteenths,figuras xxxx,0,0,0
+chorale,4/4,264,sequences,sequences,0,0,0
+chorale,4/4,264,offbeatEnds,offbeatEnds,0,0,0.2
+folk,2/4,2133,stepDown,stepDown,0.4,0.5833,0.8182
+folk,2/4,2133,inertia,inertia,0.25,0.6327,0.9091
+folk,2/4,2133,leaps,leaps,0.039,0.1224,0.2593
+folk,2/4,2133,recovery,recovery,0,0.1538,0.5
+folk,2/4,2133,leapChain,leapChain,0,0,0.0108
+folk,2/4,2133,dissonant,dissonant,0,0,0.0326
+folk,2/4,2133,range,range,9,12,17
+folk,2/4,2133,climaxCount,climaxCount,1,2,8
+folk,2/4,2133,arch,arch,0,0.3333,0.75
+folk,2/4,2133,endLow,endLow,0.3333,0.6667,1
+folk,2/4,2133,finalLength,finalLength,1.0208,1.5208,2.35
+folk,2/4,2133,motifs,motifs,0.3125,0.6,0.8065
+folk,2/4,2133,longOnBeat,longOnBeat,0.8,1,1
+folk,2/4,2133,syncBar,syncBar,0,0,0.1176
+folk,2/4,2133,density,density,1.375,1.7419,2.1905
+folk,2/4,2133,steps,steps,0.2449,0.425,0.6304
+folk,2/4,2133,repeats,repeats,0.069,0.2,0.4118
+folk,2/4,2133,restShare,restShare,0,0.0169,0.0652
+folk,2/4,2133,pentatonic,pentatonic,0.7679,0.8833,1
+folk,2/4,2133,bigLeaps,bigLeaps,0,0.0154,0.0779
+folk,2/4,2133,dirChanges,dirChanges,0.36,0.5122,0.7
+folk,2/4,2133,phraseDescent,phraseDescent,0,0.5,1
+folk,2/4,2133,firstOnset,firstOnset,0,0,6
+folk,2/4,2133,fig:quarters,figuras x___,0.1,0.25,0.45
+folk,2/4,2133,chromatic,chromatic,0,0,0.0323
+folk,2/4,2133,fig:eighths,figuras x_x_,0.1795,0.4444,0.6875
+folk,2/4,2133,arpeggio,arpeggio,0.1579,0.3214,0.4944
+folk,2/4,2133,fig:dotted,figuras x__x,0,0,0.1667
+folk,2/4,2133,fig:snap,figuras xx__,0,0,0
+folk,2/4,2133,fig:quickQuick,figuras x_xx xxx_,0,0.0385,0.25
+folk,2/4,2133,downbeatLong,downbeatLong,0,0,0.1818
+folk,2/4,2133,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0.2857,0.625,0.8571
+folk,2/4,2133,beat2Long,beat2Long,0,0,0
+folk,2/4,2133,fig:polonaise,figuras x_xx no tempo 1,0,0,0.25
+folk,2/4,2133,finalBeat,finalBeat,0,0,1
+folk,2/4,2133,fig:habanera,figuras x__x no tempo 1,0,0,0.2727
+folk,2/4,2133,fig:sincopa,figuras xx_x,0,0,0
+folk,2/4,2133,fig:long,figuras x___ ____,0.1154,0.2778,0.5
+folk,2/4,2133,fig:quartersEighths,figuras x___ x_x_,0.4063,0.75,0.9333
+folk,2/4,2133,fig:sixteenths,figuras xxxx,0,0,0.125
+folk,2/4,2133,sequences,sequences,0,0,0.0714
+folk,2/4,2133,offbeatEnds,offbeatEnds,0,0,0.6667
+folk,3/4,1342,stepDown,stepDown,0.4,0.6136,0.8462
+folk,3/4,1342,inertia,inertia,0.5,0.7143,1
+folk,3/4,1342,leaps,leaps,0.0278,0.1071,0.2195
+folk,3/4,1342,recovery,recovery,0,0.2222,0.6667
+folk,3/4,1342,leapChain,leapChain,0,0,0
+folk,3/4,1342,dissonant,dissonant,0,0,0.0333
+folk,3/4,1342,range,range,9,13,17
+folk,3/4,1342,climaxCount,climaxCount,1,2,6
+folk,3/4,1342,arch,arch,0,0.5,1
+folk,3/4,1342,endLow,endLow,0.3333,0.6667,1
+folk,3/4,1342,finalLength,finalLength,1.1141,1.5553,2.2778
+folk,3/4,1342,motifs,motifs,0.2857,0.6,0.8
+folk,3/4,1342,longOnBeat,longOnBeat,1,1,1
+folk,3/4,1342,syncBar,syncBar,0,0,0
+folk,3/4,1342,density,density,0.8085,1.25,1.625
+folk,3/4,1342,steps,steps,0.303,0.4898,0.6923
+folk,3/4,1342,repeats,repeats,0.0566,0.1837,0.3433
+folk,3/4,1342,restShare,restShare,0,0.0213,0.069
+folk,3/4,1342,pentatonic,pentatonic,0.7381,0.8452,0.9205
+folk,3/4,1342,bigLeaps,bigLeaps,0,0,0.0725
+folk,3/4,1342,dirChanges,dirChanges,0.3333,0.4762,0.6522
+folk,3/4,1342,phraseDescent,phraseDescent,0,0.4,0.75
+folk,3/4,1342,firstOnset,firstOnset,0,8,10
+folk,3/4,1342,fig:quarters,figuras x___,0.2857,0.5385,0.7708
+folk,3/4,1342,chromatic,chromatic,0,0,0.04
+folk,3/4,1342,fig:eighths,figuras x_x_,0,0.2292,0.5161
+folk,3/4,1342,arpeggio,arpeggio,0.1389,0.2881,0.4722
+folk,3/4,1342,fig:dotted,figuras x__x,0,0,0.1316
+folk,3/4,1342,fig:snap,figuras xx__,0,0,0
+folk,3/4,1342,fig:quickQuick,figuras x_xx xxx_,0,0,0.0333
+folk,3/4,1342,downbeatLong,downbeatLong,0,0.0625,0.4737
+folk,3/4,1342,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0,0.1667,0.8
+folk,3/4,1342,beat2Long,beat2Long,0,0,0.25
+folk,3/4,1342,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+folk,3/4,1342,finalBeat,finalBeat,0,0,1
+folk,3/4,1342,fig:habanera,figuras x__x no tempo 1,0,0,0.25
+folk,3/4,1342,fig:sincopa,figuras xx_x,0,0,0
+folk,3/4,1342,fig:long,figuras x___ ____,0.3043,0.5833,0.9398
+folk,3/4,1342,fig:quartersEighths,figuras x___ x_x_,0.6154,0.7917,0.9167
+folk,3/4,1342,fig:sixteenths,figuras xxxx,0,0,0
+folk,3/4,1342,sequences,sequences,0,0,0.1429
+folk,3/4,1342,offbeatEnds,offbeatEnds,0,0,0.3333
+folk,4/4,1867,stepDown,stepDown,0.4286,0.6129,0.8235
+folk,4/4,1867,inertia,inertia,0.5,0.7273,0.9167
+folk,4/4,1867,leaps,leaps,0.0323,0.1061,0.2
+folk,4/4,1867,recovery,recovery,0,0.25,0.625
+folk,4/4,1867,leapChain,leapChain,0,0,0
+folk,4/4,1867,dissonant,dissonant,0,0,0.0238
+folk,4/4,1867,range,range,9,13,17
+folk,4/4,1867,climaxCount,climaxCount,1,2,6
+folk,4/4,1867,arch,arch,0,0.3333,0.75
+folk,4/4,1867,endLow,endLow,0.3636,0.6667,1
+folk,4/4,1867,finalLength,finalLength,1.0667,1.4167,2.0112
+folk,4/4,1867,motifs,motifs,0.1429,0.4545,0.7222
+folk,4/4,1867,longOnBeat,longOnBeat,1,1,1
+folk,4/4,1867,syncBar,syncBar,0,0,0
+folk,4/4,1867,density,density,0.8254,1.1,1.4414
+folk,4/4,1867,steps,steps,0.3265,0.5185,0.7
+folk,4/4,1867,repeats,repeats,0.0645,0.2,0.3571
+folk,4/4,1867,restShare,restShare,0,0.0323,0.0968
+folk,4/4,1867,pentatonic,pentatonic,0.75,0.85,0.9333
+folk,4/4,1867,bigLeaps,bigLeaps,0,0,0.0667
+folk,4/4,1867,dirChanges,dirChanges,0.3333,0.4667,0.619
+folk,4/4,1867,phraseDescent,phraseDescent,0.1667,0.4286,0.75
+folk,4/4,1867,firstOnset,firstOnset,0,12,12
+folk,4/4,1867,fig:quarters,figuras x___,0.3125,0.6129,0.8085
+folk,4/4,1867,chromatic,chromatic,0,0,0.0476
+folk,4/4,1867,fig:eighths,figuras x_x_,0,0.1719,0.4167
+folk,4/4,1867,arpeggio,arpeggio,0.1282,0.2581,0.4151
+folk,4/4,1867,fig:dotted,figuras x__x,0,0,0.0851
+folk,4/4,1867,threeQuarterEnd,threeQuarterEnd,0,0,1
+folk,4/4,1867,fig:snap,figuras xx__,0,0,0
+folk,4/4,1867,fig:quickQuick,figuras x_xx xxx_,0,0,0
+folk,4/4,1867,downbeatLong,downbeatLong,0,0.125,0.4167
+folk,4/4,1867,fig:shortShort,figuras x__x x_x_ x_xx no tempo 1,0,0.0833,0.5
+folk,4/4,1867,beat2Long,beat2Long,0,0,0
+folk,4/4,1867,fig:polonaise,figuras x_xx no tempo 1,0,0,0
+folk,4/4,1867,finalBeat,finalBeat,0,0,2
+folk,4/4,1867,fig:habanera,figuras x__x no tempo 1,0,0,0.1
+folk,4/4,1867,fig:sincopa,figuras xx_x,0,0,0
+folk,4/4,1867,fig:long,figuras x___ ____,0.375,0.6912,0.9362
+folk,4/4,1867,fig:quartersEighths,figuras x___ x_x_,0.625,0.8,0.9149
+folk,4/4,1867,fig:sixteenths,figuras xxxx,0,0,0
+folk,4/4,1867,sequences,sequences,0,0,0
+folk,4/4,1867,offbeatEnds,offbeatEnds,0,0,0.25
+folk,3/8,331,stepDown,stepDown,0.3636,0.575,0.8333
+folk,3/8,331,inertia,inertia,0.3929,0.6667,0.8889
+folk,3/8,331,leaps,leaps,0.0164,0.0938,0.2
+folk,3/8,331,recovery,recovery,0,0.1429,0.5
+folk,3/8,331,leapChain,leapChain,0,0,0
+folk,3/8,331,dissonant,dissonant,0,0,0.0227
+folk,3/8,331,range,range,8,12,16
+folk,3/8,331,climaxCount,climaxCount,1,2,7
+folk,3/8,331,arch,arch,0,0.5,1
+folk,3/8,331,endLow,endLow,0.3333,0.6667,1
+folk,3/8,331,finalLength,finalLength,1.1,1.6239,2.3083
+folk,3/8,331,motifs,motifs,0.5333,0.7333,0.8667
+folk,3/8,331,longOnBeat,longOnBeat,1,1,1
+folk,3/8,331,syncBar,syncBar,0,0,0
+folk,3/8,331,density,density,2.2593,2.75,3.4737
+folk,3/8,331,steps,steps,0.2273,0.4865,0.6977
+folk,3/8,331,repeats,repeats,0.0732,0.2121,0.4154
+folk,3/8,331,restShare,restShare,0,0,0.0638
+folk,3/8,331,pentatonic,pentatonic,0.7284,0.8444,0.9324
+folk,3/8,331,bigLeaps,bigLeaps,0,0,0.0571
+folk,3/8,331,dirChanges,dirChanges,0.3594,0.5152,0.6667
+folk,3/8,331,phraseDescent,phraseDescent,0,0.5,1
+folk,3/8,331,fig:rocking,figuras x___x_ x_____,0,0.1875,0.5
+folk,3/8,331,firstOnset,firstOnset,0,4,4
+folk,3/8,331,chromatic,chromatic,0,0,0.0448
+folk,3/8,331,arpeggio,arpeggio,0.1167,0.26,0.4706
+folk,3/8,331,fig:threeEighths,figuras x_x_x_,0.0625,0.3571,0.625
+folk,3/8,331,fig:longShort,figuras x___x_,0,0.125,0.4375
+folk,3/8,331,downbeatLong,downbeatLong,0,0,0
+folk,3/8,331,beat2Long,beat2Long,0,0,0
+folk,3/8,331,finalBeat,finalBeat,0,0,0
+folk,3/8,331,fig:siciliana,figuras x__xx_,0,0,0.3333
+folk,3/8,331,sequences,sequences,0,0,0.2
+folk,3/8,331,fig:jigging,figuras x___x_ x_x_x_,0.1333,0.5556,0.875
+folk,3/8,331,offbeatEnds,offbeatEnds,0,0.3333,0.6667
+folk,6/8,869,stepDown,stepDown,0.4,0.6,0.8333
+folk,6/8,869,inertia,inertia,0.4545,0.6667,0.9091
+folk,6/8,869,leaps,leaps,0.033,0.1111,0.2188
+folk,6/8,869,recovery,recovery,0,0.2,0.5
+folk,6/8,869,leapChain,leapChain,0,0,0
+folk,6/8,869,dissonant,dissonant,0,0,0.0256
+folk,6/8,869,range,range,9,13,17
+folk,6/8,869,climaxCount,climaxCount,1,2,6
+folk,6/8,869,arch,arch,0,0.5,1
+folk,6/8,869,endLow,endLow,0.3333,0.6667,1
+folk,6/8,869,finalLength,finalLength,1.2173,1.7476,2.5909
+folk,6/8,869,motifs,motifs,0.2222,0.5,0.7273
+folk,6/8,869,longOnBeat,longOnBeat,1,1,1
+folk,6/8,869,syncBar,syncBar,0,0,0
+folk,6/8,869,density,density,1.8261,2.2,2.5833
+folk,6/8,869,steps,steps,0.2958,0.4792,0.7
+folk,6/8,869,repeats,repeats,0.0652,0.2143,0.4103
+folk,6/8,869,restShare,restShare,0,0.0308,0.1087
+folk,6/8,869,pentatonic,pentatonic,0.7273,0.8468,0.9286
+folk,6/8,869,bigLeaps,bigLeaps,0,0.0172,0.0678
+folk,6/8,869,dirChanges,dirChanges,0.3571,0.5,0.6324
+folk,6/8,869,phraseDescent,phraseDescent,0,0.3333,0.6667
+folk,6/8,869,fig:rocking,figuras x___x_ x_____,0.2143,0.5,0.7708
+folk,6/8,869,firstOnset,firstOnset,0,10,10
+folk,6/8,869,chromatic,chromatic,0,0,0.0656
+folk,6/8,869,arpeggio,arpeggio,0.1282,0.26,0.4324
+folk,6/8,869,fig:threeEighths,figuras x_x_x_,0,0.25,0.5
+folk,6/8,869,fig:longShort,figuras x___x_,0.1053,0.375,0.6429
+folk,6/8,869,downbeatLong,downbeatLong,0,0,0
+folk,6/8,869,beat2Long,beat2Long,0,0,0
+folk,6/8,869,finalBeat,finalBeat,0,0,1
+folk,6/8,869,fig:siciliana,figuras x__xx_,0,0,0.25
+folk,6/8,869,sequences,sequences,0,0,0
+folk,6/8,869,fig:jigging,figuras x___x_ x_x_x_,0.3889,0.65,0.85
+folk,6/8,869,offbeatEnds,offbeatEnds,0,0,0.5

@@ -29,6 +29,11 @@
 //             x bars later, possibly transposed, on instruments with their own ranges
 //             (see canon.js). It is part of the fitness from the first generation, and the
 //             initial population is already built voice-aware (operators.js).
+//  idiom      how typical the one-beat blocks are of real melodies of the meter (blocks.js)
+//  heuristics composition heuristics from the literature (heuristics.js, styles.js): general rules
+//             (step declination, leaps outlining chords, phrase-final lengthening, motifs...) and,
+//             with a style, the features of that style (figures, pickup, density...), each scored
+//             against the range of real melodies
 
 import { toEvents } from '../core/score.js';
 import { meterOf, phraseBarsFor, plainDurations } from '../core/meter.js';
@@ -38,6 +43,8 @@ import { soundingLine, smooth, clamp } from '../core/analysis.js';
 import { analyzeEnsemble, intervalMap } from './canon.js';
 import { createBlockModel } from '../ga/blocks.js';
 import blocksData from '../data/blocks-data.js';
+import { melodyFeatures, scoreRules } from './heuristics.js';
+import { resolveRules, STYLES } from './styles.js';
 
 let blockModels = null;
 /** The building-block model of a meter learned from real melodies (shared, built on first use). */
@@ -54,6 +61,10 @@ export const FORMS = {
   "ABA'C": ['A', 'B', 'A', 'C'],
   'ABAB': ['A', 'B', 'A', 'B'],
   'AABA': ['A', 'A', 'B', 'A'],
+  // dance tunes: two strains, each played twice (results/estilos/literatura.csv, E01)
+  'AABB': ['A', 'A', 'B', 'B'],
+  // the 12-bar blues: a line, its repetition and the answer (E22)
+  'AAB': ['A', 'A', 'B'],
 };
 
 // Influence of an attractor on a note at distance d (semitones) for a basin of width s.
@@ -72,7 +83,7 @@ export const BASIN_SHAPES = {
 
 export const DEFAULT_WEIGHTS = {
   key: 3, attractor: 3, proximity: 2, regression: 1, forces: 1.5, metric: 2, cadence: 2.5,
-  rhythm: 3, form: 2, tension: 1, variety: 2, canon: 0, idiom: 0,
+  rhythm: 3, form: 2, tension: 1, variety: 2, canon: 0, idiom: 0, heuristics: 0,
 };
 
 export const FIELD_DEFAULTS = {
@@ -94,6 +105,7 @@ export const FIELD_DEFAULTS = {
   circular: false,
   weights: DEFAULT_WEIGHTS,
   seed: 1,
+  style: null, // composition style of the heuristics (styles.js); null = the general rules only
 };
 
 export function createAttractorFitness(options = {}) {
@@ -139,6 +151,13 @@ export function createAttractorFitness(options = {}) {
 
   const blocks = o.blocks || weights.idiom ? getBlockModel(meter) : null;
   const caps = ruleCapsFor(meter);
+  // composition heuristics: the rules of the style (and the general ones) with their ranges for
+  // this meter; a style with a pickup starts its phrases that much before the downbeat
+  const style = o.style && STYLES[o.style] ? o.style : null;
+  const heuristicRules = resolveRules(style, meter);
+  const pickup = style ? STYLES[style].pickup ?? 0 : 0;
+  const heuristicCtx = { meter, key, phraseBars, phraseStart: pickup ? bpb - pickup : 0, sectionBars: 8 };
+  const heuristicsOf = (line) => scoreRules(melodyFeatures(line, heuristicCtx), heuristicRules);
   const minProf = Math.min(...key.profile.filter((_, pc) => key.diatonic[pc]));
   const maxProf = Math.max(...key.profile);
 
@@ -398,6 +417,9 @@ export function createAttractorFitness(options = {}) {
     // idiom: how typical the blocks (beats) are of real melodies, up to the corpus median ------
     parts.idiom = weights.idiom && blocks ? blocks.idiomPart(genes, key) : 0;
 
+    // composition heuristics (general rules and the style's), each within the range of real music
+    parts.heuristics = weights.heuristics ? heuristicsOf(line).score : 0;
+
     // "do not maximise": each rule counts up to its typical value in real music of this meter
     if (o.caps) for (const [k, cap] of Object.entries(caps)) if (parts[k] > cap) parts[k] = cap;
 
@@ -421,6 +443,10 @@ export function createAttractorFitness(options = {}) {
       blocks: o.blocks || weights.idiom ? blocks : null,
     },
     components: (genes) => components(genes).parts,
+    style,
+    heuristicRules,
+    /** Every heuristic rule on a melody: {score, rules: [{id, value, s, w}]} (for the page). */
+    heuristics: (genes) => heuristicsOf(soundingLine(genes)),
     evaluate(genes) {
       const { parts } = components(genes);
       let score = 0;

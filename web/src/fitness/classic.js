@@ -29,6 +29,8 @@
 //        code of a prolongation (74) or a rest (0) there as if it were a pitch;
 //  * `cadence` (weight 0 in the original) completes the ending rule with the ways real melodies
 //    end (src/fitness/cadence.js); `balanceMin`/`balanceMax` expose the hard-coded [7, 40] %.
+//  * `heuristics` (weight 0 in the original): the composition heuristics of the attractor field
+//    (heuristics.js, styles.js), in 4/4, as a sum over the beats like the other rules.
 
 import { REST as PAUSE, HOLD as PROL, GENE_A4, HIGHEST_NOTE_GENE, STEPS_PER_BAR } from '../core/score.js';
 import { SCALE_TABLE } from '../core/theory.js';
@@ -36,6 +38,10 @@ import { classicSine } from '../core/waves.js';
 import { MAJOR_TONICS } from '../core/theory.js';
 import { cadenceModel, cadenceScore } from './cadence.js';
 import cadenceData from '../data/cadence-data.js';
+import { soundingLine } from '../core/analysis.js';
+import { makeKey } from '../core/theory.js';
+import { melodyFeatures, scoreRules } from './heuristics.js';
+import { resolveRules, STYLES } from './styles.js';
 
 let cadence = null;
 const cadenceModelOnce = () => (cadence ||= cadenceModel(cadenceData));
@@ -53,12 +59,12 @@ export const CLASSIC_DEFAULTS = {
   g1: {
     rhythmicPatterns: 10, selfHarm1: 1, selfHarm2: 4, aba: 0.5, leitmotif: 12, wave1: 3, wave2: 2,
     range: 42, scale: 12, pauseProlongation: 4.5, reduceRepetitions: 2, intervals: 12,
-    niceRepetitions: 10, ending: 2, balance: 5, cadence: 0,
+    niceRepetitions: 10, ending: 2, balance: 5, cadence: 0, heuristics: 0,
   },
   g2: {
     rhythmicPatterns: 7.02, selfHarm1: 2, selfHarm2: 4, aba: 0.5, leitmotif: 16, wave1: 3.1, wave2: 2.15,
     range: 42, scale: 16, pauseProlongation: 4, reduceRepetitions: 2, intervals: 14,
-    niceRepetitions: 10.05, ending: 2, balance: 15, cadence: 0,
+    niceRepetitions: 10.05, ending: 2, balance: 15, cadence: 0, heuristics: 0,
   },
   waves: [
     { threshold: 3, periodsPerBar: 0.5, amplitude: 12, mean: GENE_A4, shift: 0 },
@@ -336,6 +342,13 @@ export function createClassicFitness(options = {}) {
   const selfHarm = o.selfHarmDistances ?? [1, 2];
 
   const needCadence = !strict && ((g1.cadence ?? 0) !== 0 || (g2.cadence ?? 0) !== 0 || o.alwaysCadence);
+  // composition heuristics (not in the original): the attractor field's rules and styles, in 4/4
+  const needHeuristics = !strict && ((g1.heuristics ?? 0) !== 0 || (g2.heuristics ?? 0) !== 0);
+  const style = o.style && STYLES[o.style] && STYLES[o.style].meters.includes('4/4') ? o.style : null;
+  const heuristicRules = resolveRules(style, '4/4');
+  const pickup = style ? STYLES[style].pickup ?? 0 : 0;
+  const heuristicCtx = { meter: '4/4', key: makeKey(tonic, mode), phraseBars: 2, phraseStart: pickup ? m - pickup : 0, sectionBars: 8 };
+  const heuristicsOf = (seq) => scoreRules(melodyFeatures(soundingLine(seq), heuristicCtx), heuristicRules);
   function components(seq, evaluationCount) {
     return {
       rhythmicPatterns: evaluateInterestingRhythmicPatterns(seq, m, strict, fix),
@@ -355,6 +368,8 @@ export function createClassicFitness(options = {}) {
       balance: scoreBalance(seq, o.balanceMin, o.balanceMax, fix),
       // not in the original (weight 0 there): computed only when weighted, it costs a little
       cadence: needCadence ? cadenceScore(seq, cadenceModelOnce(), tonic, mode) : 0,
+      // a mean in [-1, 1] turned into a sum over the beats, the scale of the other rules
+      heuristics: needHeuristics ? (heuristicsOf(seq).score * seq.length) / 4 : 0,
     };
   }
 
@@ -363,6 +378,9 @@ export function createClassicFitness(options = {}) {
     length,
     waves: waves.map((w) => Float64Array.from(w, (g) => g + 32)), // MIDI, for display
     components,
+    style,
+    heuristicRules,
+    heuristics: heuristicsOf,
     evaluate(seq, ctx = {}) {
       const phase1 = (ctx.generation ?? 0) < o.phase1Fraction * (ctx.maxGenerations ?? 1);
       const w = phase1 ? g1 : g2;

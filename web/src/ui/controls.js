@@ -1,6 +1,7 @@
-// "Compor" controls bound to the configuration object: voices, wave editor, weights, GA.
+// "Compor" controls bound to the configuration object: voices, wave editor, weights, style, GA.
 // Every edit mutates the config and calls onChange(kind) — kind = 'waves' | 'voices' |
-// 'piece' | 'weights' | 'ga' — so the page can refresh the preview and the chips.
+// 'piece' | 'weights' | 'ga' | 'style' — so the page can refresh the preview and the chips.
+// Every text comes from src/i18n/texts.js (t), so renderAll() redraws them in another language.
 
 import { midiName } from '../core/score.js';
 import { SCALE_LABELS } from '../core/theory.js';
@@ -11,46 +12,19 @@ import { FORMS } from '../fitness/attractor.js';
 import { WAVE_PRESETS } from '../fitness/presets.js';
 import { hz } from '../analysis/wavefit.js';
 import { METER_IDS, METER_LABELS, METERS, phraseBarsFor } from '../core/meter.js';
-import { activeVoices, playableRange, presetWaves, defaultClassicWaves, WEIGHT_PRESETS, CLASSIC_PRESETS, applyClassicPreset } from './config.js';
+import { activeVoices, playableRange, presetWaves, defaultClassicWaves, WEIGHT_PRESETS, CLASSIC_PRESETS, applyClassicPreset, applyStyle, ensureHeuristics, activeStyle, STYLE_WEIGHT } from './config.js';
+import { STYLES, STYLE_FAMILIES, stylesOf, resolveRules } from '../fitness/styles.js';
+import { DEFAULT_WEIGHTS } from '../fitness/attractor.js';
+import { CLASSIC_DEFAULTS } from '../fitness/classic.js';
+import { t, labelTable } from '../i18n/i18n.js';
 
 const $ = (id) => document.getElementById(id);
 
-export const FIELD_LABELS = {
-  key: 'Tonalidade (perfil K-K)',
-  attractor: 'Bacias das ondas',
-  proximity: 'Proximidade (Temperley)',
-  regression: 'Retorno após salto',
-  forces: 'Forças melódicas',
-  metric: 'Hierarquia métrica',
-  cadence: 'Cadências',
-  rhythm: 'Ritmo e pausas',
-  form: 'Forma',
-  tension: 'Onda de tensão',
-  variety: 'Variedade',
-  canon: 'Contraponto entre as vozes',
-  idiom: 'Idioma do corpus (blocos)',
-};
+/** Names of the rules of the attractor field and of the classic mode, in the current language. */
+export const FIELD_LABELS = labelTable(Object.keys(DEFAULT_WEIGHTS), 'weight');
+export const CLASSIC_LABELS = labelTable(Object.keys(CLASSIC_DEFAULTS.g1), 'classic');
 
-export const CLASSIC_LABELS = {
-  rhythmicPatterns: 'Padrões rítmicos',
-  selfHarm1: 'Auto-harmonização (2.ª voz)',
-  selfHarm2: 'Auto-harmonização (3.ª voz)',
-  aba: 'Repetição a 4 compassos',
-  leitmotif: 'Leitmotiv rítmico',
-  wave1: 'Onda 1',
-  wave2: 'Onda 2',
-  range: 'Âmbito',
-  scale: 'Escala',
-  pauseProlongation: 'Pausas e prolongamentos',
-  reduceRepetitions: 'Repetições excessivas',
-  intervals: 'Intervalos',
-  niceRepetitions: 'Repetições interessantes',
-  ending: 'Final (nota longa)',
-  balance: 'Equilíbrio notas/pausas',
-  cadence: 'Fórmulas de final (corpus)',
-};
-
-const BASIN_LABELS = { gaussian: 'Gaussiana', gravity: 'Gravitacional 1/(1+d²)', step: 'Degraus (C#)' };
+const BASIN_LABELS = labelTable(['gaussian', 'gravity', 'step'], 'basin');
 const noteLabel = (m) => {
   const r = Math.round(m);
   const name = Math.abs(m - r) <= 0.25 ? midiName(r) : `${midiName(Math.floor(m))}–${midiName(Math.ceil(m))}`;
@@ -79,11 +53,11 @@ function options(sel, entries, value) {
 }
 
 function instrumentSelect(id, value, onChange) {
-  const sel = el('select', { id, 'aria-label': 'Instrumento' });
+  const sel = el('select', { id, 'aria-label': t('voice.instrumentAria') });
   const byFamily = {};
   for (const [k, v] of Object.entries(INSTRUMENTS)) (byFamily[v.family] ||= []).push([k, v.label]);
   for (const [fam, list] of Object.entries(byFamily)) {
-    const g = el('optgroup', { label: fam });
+    const g = el('optgroup', { label: t(`family.${fam}`) });
     for (const [k, label] of list) {
       const o = el('option', { value: k, text: label });
       if (k === value) o.selected = true;
@@ -104,7 +78,7 @@ export function createControls(getConfig, onChange) {
     const bars = cfg().bars;
     const el2 = $('barsHint');
     el2.hidden = bars <= 16;
-    if (bars > 16) el2.textContent = `Com ${bars} compassos cada geração demora cerca de ${Math.round(bars / 8)}× mais do que com 8 (${bars === 64 ? '1 a 2 minutos' : 'meio minuto a um minuto'} com os valores por omissão). A partitura divide-se em linhas e em páginas; no piano roll os compassos ficam estreitos.`;
+    if (bars > 16) el2.textContent = t('bars.hint', { bars, x: Math.round(bars / 8), time: t(bars === 64 ? 'bars.hint.time64' : 'bars.hint.time32') });
   }
 
   /** What the meter changes: the beat, and the figures learned from real melodies in that meter. */
@@ -113,14 +87,14 @@ export function createControls(getConfig, onChange) {
     const m = METERS[c.meter ?? '4/4'];
     const el2 = $('meterHint');
     if (c.mode === 'classic') {
-      el2.textContent = 'O modelo clássico reproduz o programa original, que só escreve em 4/4.';
+      el2.textContent = t('meter.hint.classic');
       return;
     }
     const beats = c.bars * m.beats;
-    const length = beats < 24 ? ` ${c.bars} compassos de ${m.id} são só ${beats} tempos (8 de 4/4 são 32): aumente os compassos para uma melodia mais longa.` : '';
+    const length = beats < 24 ? t('meter.hint.short', { bars: c.bars, meter: m.id, beats }) : '';
     el2.textContent = (m.compound
-      ? `Compasso composto: cada tempo é uma semínima com ponto, dividida em três colcheias. Figuras e ligações aprendidas em melodias reais em ${m.id === '12/8' ? '6/8 (há poucas em 12/8)' : m.id} (results/meters).`
-      : `Compasso simples: cada tempo é uma semínima, dividida em duas colcheias. Figuras e ligações aprendidas em melodias reais em ${m.id}${m.id === '4/4' ? ' e 2/2' : ''} (results/meters).`) + length;
+      ? t('meter.hint.compound', { meter: m.id === '12/8' ? t('meter.hint.from68') : m.id })
+      : t('meter.hint.simple', { meter: m.id === '4/4' ? t('meter.hint.and22', { meter: m.id }) : m.id })) + length;
   }
 
   function renderPiece() {
@@ -134,7 +108,7 @@ export function createControls(getConfig, onChange) {
     meterHint();
     $('bars').value = String(c.bars);
     barsHint();
-    options($('form'), Object.keys(FORMS).map((k) => [k, k === 'none' ? 'Livre' : k.replace(/'/g, '′')]), c.form);
+    options($('form'), Object.keys(FORMS).map((k) => [k, k === 'none' ? t('form.free') : k.replace(/'/g, '′')]), c.form);
     $('phraseBars').value = String(c.phraseBars);
     const classic = c.mode === 'classic';
     $('wavesSection').hidden = classic;
@@ -146,14 +120,14 @@ export function createControls(getConfig, onChange) {
   // ---------------------------------------------------------------- voices
   function renderVoices() {
     const c = cfg();
-    options($('ensemble'), [...Object.entries(ENSEMBLES).map(([k, e]) => [k, e.label]), ['custom', 'Personalizado']], c.ensemble);
+    options($('ensemble'), [...Object.entries(ENSEMBLES).map(([k, e]) => [k, e.label]), ['custom', t('ensemble.custom')]], c.ensemble);
     const box = $('voiceRows');
     box.innerHTML = '';
-    const entryOptions = Array.from({ length: 8 }, (_, i) => [i + 1, `entra no c. ${i + 2}`]);
+    const entryOptions = Array.from({ length: 8 }, (_, i) => [i + 1, t('voice.entry', { bar: i + 2 })]);
     const intervalOptions = Object.entries(INTERVALS).map(([k, v]) => [k, v.label]);
     c.voices.forEach((v, i) => {
       const colour = ['var(--note)', 'var(--follower)', 'var(--voice-3)'][i];
-      const name = el('span', { class: 'vname' }, [el('span', { class: 'swatch', style: `background:${colour}` }), i === 0 ? 'Voz 1 (melodia)' : `Voz ${i + 1}`]);
+      const name = el('span', { class: 'vname' }, [el('span', { class: 'swatch', style: `background:${colour}` }), i === 0 ? t('voice.melody') : t('voice.n', { n: i + 1 })]);
       const inst = instrumentSelect(`voice${i}-inst`, v.instrument, (val) => {
         v.instrument = val;
         c.ensemble = 'custom';
@@ -171,14 +145,14 @@ export function createControls(getConfig, onChange) {
           renderVoices();
           onChange('voices');
         });
-        const delay = el('select', { id: `voice${i}-delay`, 'aria-label': `Entrada da voz ${i + 1}` });
+        const delay = el('select', { id: `voice${i}-delay`, 'aria-label': t('voice.entryAria', { n: i + 1 }) });
         options(delay, entryOptions, v.delayBars);
         delay.addEventListener('change', () => {
           v.delayBars = Number(delay.value);
           c.ensemble = 'custom';
           onChange('voices');
         });
-        const interval = el('select', { id: `voice${i}-interval`, 'aria-label': `Intervalo da voz ${i + 1}` });
+        const interval = el('select', { id: `voice${i}-interval`, 'aria-label': t('voice.intervalAria', { n: i + 1 }) });
         options(interval, intervalOptions, v.interval);
         interval.addEventListener('change', () => {
           v.interval = interval.value;
@@ -186,7 +160,7 @@ export function createControls(getConfig, onChange) {
           onChange('voices');
         });
         delay.disabled = interval.disabled = inst.disabled = !v.enabled;
-        row.append(el('div', { class: 'vsub' }, [el('label', { for: on.id }, [on, ' tocar']), delay, interval]));
+        row.append(el('div', { class: 'vsub' }, [el('label', { for: on.id }, [on, t('voice.play')]), delay, interval]));
       }
       box.append(row);
     });
@@ -198,12 +172,12 @@ export function createControls(getConfig, onChange) {
     const c = cfg();
     const voices = activeVoices(c);
     const [lo, hi] = playableRange(c);
-    let txt = `Registo possível para a melodia com estes instrumentos: ${midiName(lo)}–${midiName(hi)}.`;
+    let txt = t('voices.hint.range', { lo: midiName(lo), hi: midiName(hi) });
     if (voices.length >= 2) {
-      txt += ' O contraponto entre as vozes entra na aptidão e na população inicial desde a 1.ª geração.';
+      txt += t('voices.hint.canon');
       const d = voices.slice(1).map((v) => v.delayBars);
-      if (new Set(d).size < d.length) txt += ' Atenção: duas vozes entram no mesmo compasso (dobram-se).';
-      if (Math.max(...d) >= c.bars) txt += ' Atenção: há uma voz que entra depois de a melodia acabar; aumente o número de compassos.';
+      if (new Set(d).size < d.length) txt += t('voices.hint.double');
+      if (Math.max(...d) >= c.bars) txt += t('voices.hint.late');
     }
     $('voicesHint').textContent = txt;
   }
@@ -211,7 +185,7 @@ export function createControls(getConfig, onChange) {
   // ---------------------------------------------------------------- waves
   function renderWaves() {
     const c = cfg();
-    options($('preset'), [...Object.entries(WAVE_PRESETS).map(([k, p]) => [k, p.label]), ['custom', 'Personalizado']], c.wavePreset);
+    options($('preset'), [...Object.entries(WAVE_PRESETS).map(([k, p]) => [k, p.label]), ['custom', t('preset.custom')]], c.wavePreset);
     $('waveDef').value = c.waveDef;
     const box = $('waveCards');
     box.innerHTML = '';
@@ -237,24 +211,24 @@ export function createControls(getConfig, onChange) {
       onChange('waves');
       wavesHint();
     };
-    const type = el('select', { id: `w${i}-type`, 'aria-label': `Tipo da onda ${i + 1}` });
+    const type = el('select', { id: `w${i}-type`, 'aria-label': t('wave.typeAria', { n: i + 1 }) });
     options(type, Object.entries(WAVE_TYPES), w.type);
     type.addEventListener('change', () => {
       w.type = type.value;
       renderWaves();
       changed();
     });
-    const remove = el('button', { class: 'x', type: 'button', title: 'Remover onda', 'aria-label': `Remover onda ${i + 1}`, text: '×' });
+    const remove = el('button', { class: 'x', type: 'button', title: t('wave.remove'), 'aria-label': t('wave.removeAria', { n: i + 1 }), text: '×' });
     remove.disabled = c.waves.length <= 1;
     remove.addEventListener('click', () => {
       c.waves.splice(i, 1);
       renderWaves();
       changed();
     });
-    const head = el('div', { class: 'wave-head' }, [el('span', { class: 'wave-tag', style: `background:var(--wave-${(i % 4) + 1})` }), el('strong', { text: `Onda ${i + 1}` }), type, remove]);
+    const head = el('div', { class: 'wave-head' }, [el('span', { class: 'wave-tag', style: `background:var(--wave-${(i % 4) + 1})` }), el('strong', { text: t('wave.n', { n: i + 1 }) }), type, remove]);
 
     const cycles = el('small');
-    const setCycles = () => (cycles.textContent = w.type === 'flat' ? 'sem oscilação' : `1 ciclo em ${(1 / w.freq).toFixed(2)} c.`);
+    const setCycles = () => (cycles.textContent = w.type === 'flat' ? t('wave.flat') : t('wave.cycle', { bars: (1 / w.freq).toFixed(2) }));
     setCycles();
     const freq = numberInput(`w${i}-freq`, w.freq, 0.05, (v) => {
       w.freq = Math.max(0.01, v);
@@ -289,8 +263,8 @@ export function createControls(getConfig, onChange) {
         changed();
       });
       heightFields = [
-        el('label', { for: lo.id }, ['Mínimo (MIDI)', lo, minHint]),
-        el('label', { for: hi.id }, ['Máximo (MIDI)', hi, maxHint]),
+        el('label', { for: lo.id }, [t('wave.min'), lo, minHint]),
+        el('label', { for: hi.id }, [t('wave.max'), hi, maxHint]),
       ];
     } else {
       const meanHint = noteHint(w.mean);
@@ -304,8 +278,8 @@ export function createControls(getConfig, onChange) {
         changed();
       }, { min: '0' });
       heightFields = [
-        el('label', { for: mean.id }, ['Valor médio (MIDI)', mean, meanHint]),
-        el('label', { for: amp.id }, ['Amplitude (± semitons)', amp, el('small', { text: 'metade da variação' })]),
+        el('label', { for: mean.id }, [t('wave.mean'), mean, meanHint]),
+        el('label', { for: amp.id }, [t('wave.amp'), amp, el('small', { text: t('wave.ampHint') })]),
       ];
     }
     const basin = numberInput(`w${i}-basin`, w.basin ?? 3, 0.5, (v) => {
@@ -319,11 +293,11 @@ export function createControls(getConfig, onChange) {
       changed();
     });
     const grid = el('div', { class: 'wave-grid' }, [
-      el('label', { for: freq.id }, ['Frequência (ciclos/compasso)', freq, cycles]),
-      el('label', { for: phase.id }, ['Desfasamento (tempos)', phase, el('small', { text: randomPhase ? 'início aleatório (atrator)' : 'desloca a onda no tempo' })]),
+      el('label', { for: freq.id }, [t('wave.freq'), freq, cycles]),
+      el('label', { for: phase.id }, [t('wave.phase'), phase, el('small', { text: t(randomPhase ? 'wave.phaseRandom' : 'wave.phaseHint') })]),
       ...heightFields,
-      el('label', { for: basin.id }, ['Bacia σ (semitons)', basin, el('small', { text: 'alcance da atração' })]),
-      el('label', { for: shape.id }, ['Forma da bacia', shape, el('small', { text: 'como a atração decai' })]),
+      el('label', { for: basin.id }, [t('wave.basin'), basin, el('small', { text: t('wave.basinHint') })]),
+      el('label', { for: shape.id }, [t('wave.shape'), shape, el('small', { text: t('wave.shapeHint') })]),
     ]);
     return el('div', { class: 'wave-card' }, [head, grid]);
   }
@@ -334,9 +308,7 @@ export function createControls(getConfig, onChange) {
     const out = c.waves.filter((w) => w.mean - w.amplitude < lo - 2 || w.mean + w.amplitude > hi + 2);
     const el2 = $('wavesHint');
     el2.className = out.length ? 'hint warn-text' : 'hint';
-    el2.textContent = out.length
-      ? `Onda fora do registo possível (${midiName(lo)}–${midiName(hi)}): as notas vão ser puxadas para fora do alcance dos instrumentos.`
-      : `As ondas cabem no registo possível (${midiName(lo)}–${midiName(hi)}). A linha tracejada na partitura mostra-as antes de gerar.`;
+    el2.textContent = t(out.length ? 'waves.hint.out' : 'waves.hint.ok', { lo: midiName(lo), hi: midiName(hi) });
   }
 
   // ---------------------------------------------------------------- classic waves (C# form)
@@ -359,13 +331,13 @@ export function createControls(getConfig, onChange) {
         onChange('waves');
       };
       const periodHint = el('small');
-      const setPeriod = () => (periodHint.textContent = `1 ciclo em ${(1 / Math.max(0.01, w.periods)).toFixed(2)} c.`);
+      const setPeriod = () => (periodHint.textContent = t('wave.cycle', { bars: (1 / Math.max(0.01, w.periods)).toFixed(2) }));
       setPeriod();
       const meanHint = el('small');
       const setMean = () => (meanHint.textContent = noteLabel(69 + Math.round(w.meanA4)));
       setMean();
       const shiftHint = el('small');
-      const setShift = () => (shiftHint.textContent = `fase de ${Math.round((Math.round(w.shift) / 16) * 360)}°`);
+      const setShift = () => (shiftHint.textContent = t('cwave.phase', { deg: Math.round((Math.round(w.shift) / 16) * 360) }));
       setShift();
       const periods = numberInput(`cw${i}-periods`, w.periods, 0.25, (v) => {
         w.periods = Math.max(0.01, v);
@@ -390,13 +362,13 @@ export function createControls(getConfig, onChange) {
         setShift();
         changed();
       });
-      const head = el('div', { class: 'wave-head' }, [el('span', { class: 'wave-tag', style: `background:var(--wave-${i + 1})` }), el('strong', { text: `Onda ${i + 1} (W${i + 1})` })]);
+      const head = el('div', { class: 'wave-head' }, [el('span', { class: 'wave-tag', style: `background:var(--wave-${i + 1})` }), el('strong', { text: t('cwave.title', { n: i + 1 }) })]);
       const grid = el('div', { class: 'wave-grid' }, [
-        el('label', { for: periods.id }, ['Períodos por compasso', periods, periodHint]),
-        el('label', { for: mean.id }, ['Valor médio (meios-tons, Lá4 = 0)', mean, meanHint]),
-        el('label', { for: amp.id }, ['Amplitude (meios-tons)', amp, el('small', { text: 'a onda vai de −A a +A' })]),
-        el('label', { for: basin.id }, ['Bacia de atração (meios-tons)', basin, el('small', { text: 'nota a ≤ ½: +3, ≤ 1: +1, ≤ 1½: −4,1, além: −6,2' })]),
-        el('label', { for: shift.id }, ['Desfasamento horizontal', shift, shiftHint]),
+        el('label', { for: periods.id }, [t('cwave.periods'), periods, periodHint]),
+        el('label', { for: mean.id }, [t('cwave.mean'), mean, meanHint]),
+        el('label', { for: amp.id }, [t('cwave.amp'), amp, el('small', { text: t('cwave.ampHint') })]),
+        el('label', { for: basin.id }, [t('cwave.basin'), basin, el('small', { text: t('cwave.basinHint') })]),
+        el('label', { for: shift.id }, [t('cwave.shift'), shift, shiftHint]),
       ]);
       box.append(el('div', { class: 'wave-card' }, [head, grid]));
     });
@@ -412,9 +384,9 @@ export function createControls(getConfig, onChange) {
       }, opts);
       consts.append(el('label', { for: id }, [label, inp, el('small', { text: hint })]));
     };
-    constInput('classicRange', 'Âmbito atrator (± meios-tons à volta do Lá4)', 'classicRange', 'original: 15 (+10 nas primeiras avaliações)', { min: '1' });
-    constInput('classicBalMin', 'Pausas + prolongamentos: mínimo (%)', 'classicBalanceMin', 'original: 7', { min: '0', max: '99' });
-    constInput('classicBalMax', 'Pausas + prolongamentos: máximo (%)', 'classicBalanceMax', 'original: 40 (real: 55–80 nas canções)', { min: '1', max: '100' });
+    constInput('classicRange', t('consts.range'), 'classicRange', t('consts.rangeHint'), { min: '1' });
+    constInput('classicBalMin', t('consts.balMin'), 'classicBalanceMin', t('consts.balMinHint'), { min: '0', max: '99' });
+    constInput('classicBalMax', t('consts.balMax'), 'classicBalanceMax', t('consts.balMaxHint'), { min: '1', max: '100' });
   }
 
   function markClassicCustom() {
@@ -441,7 +413,7 @@ export function createControls(getConfig, onChange) {
       row.append(b);
     }
     const cur = CLASSIC_PRESETS.find((p) => p.id === c.classicPreset);
-    $('classicPresetHint').textContent = cur ? cur.hint : 'Valores alterados à mão.';
+    $('classicPresetHint').textContent = cur ? cur.hint : t('classic.presetCustom');
     $('classicOps').value = c.ga.operators === 'musical' ? 'musical' : 'binary';
   }
 
@@ -455,9 +427,78 @@ export function createControls(getConfig, onChange) {
     renderGA();
   }
 
+  // ---------------------------------------------------------------- style (composition heuristics)
+  function renderStyle() {
+    const c = cfg();
+    const sel = $('style');
+    sel.innerHTML = '';
+    sel.append(el('option', { value: 'none', text: t('style.none') }));
+    const classic = c.mode === 'classic';
+    for (const fam of STYLE_FAMILIES) {
+      const g = el('optgroup', { label: t(`style.family.${fam}`) });
+      for (const id of stylesOf(fam)) {
+        // the classic mode writes only in 4/4
+        const ok = !classic || STYLES[id].meters.includes('4/4');
+        const o = el('option', { value: id, text: ok ? t(`style.${id}`) : t('style.onlyField', { name: t(`style.${id}`) }) });
+        if (!ok) o.disabled = true;
+        g.append(o);
+      }
+      sel.append(g);
+    }
+    sel.value = STYLES[c.style] ? c.style : 'none';
+    styleHint();
+  }
+
+  /** What the style is, its meters and rules, and what choosing it changed. */
+  function styleHint(changed = null) {
+    const c = cfg();
+    const s = STYLES[c.style];
+    const box = $('styleHint');
+    if (!s) {
+      box.textContent = t('style.hint.none');
+      return;
+    }
+    const parts = [t(`style.${c.style}.desc`), t('style.hint.meters', { meters: s.meters.join(', ') })];
+    if (s.mode) parts.push(t(`style.hint.mode.${s.mode}`));
+    if (c.mode === 'classic' && !s.meters.includes('4/4')) parts.push(t('style.hint.classic'));
+    else {
+      const rules = resolveRules(activeStyle(c), c.mode === 'classic' ? '4/4' : c.meter ?? '4/4');
+      const own = rules.filter((r) => s.rules.some((x) => x.id === r.id)).length;
+      parts.push(t('style.hint.rules', { n: rules.length, own, cal: rules.filter((r) => r.calibrated).length }));
+    }
+    if (changed?.length) parts.push(t('style.hint.changed', { list: changed.join(', ') }));
+    parts.push(t('style.hint.forced'));
+    box.textContent = parts.join(' ');
+  }
+
   // ---------------------------------------------------------------- weights & GA
+  // descriptions left open ("?"), kept when the weights are drawn again (another language...)
+  const openHelp = new Set();
+
+  /** A weight: its name, its input, a "?" button, and the description the button shows. */
+  function weightRow(box, labelText, input, descKey, forced = false) {
+    const id = input.id;
+    const desc = el('p', { class: 'wdesc', id: `${id}-desc`, text: t(descKey) });
+    const open = openHelp.has(id);
+    desc.hidden = !open;
+    const help = el('button', {
+      type: 'button', class: 'whelp', text: t('weights.help'), title: t('weights.helpTitle'),
+      'aria-label': `${t('weights.helpTitle')}: ${labelText}`, 'aria-expanded': String(open), 'aria-controls': desc.id,
+    });
+    help.addEventListener('click', () => {
+      const show = desc.hidden;
+      desc.hidden = !show;
+      help.setAttribute('aria-expanded', String(show));
+      if (show) openHelp.add(id);
+      else openHelp.delete(id);
+    });
+    box.append(el('label', { for: id, text: labelText, class: forced ? 'wlabel forced' : 'wlabel', title: forced ? t('style.hint.forced') : '' }), input, help, desc);
+  }
+
   function renderWeights() {
     const c = cfg();
+    ensureHeuristics(c);
+    $('weightsIntro').textContent = t(c.mode === 'classic' ? 'classic.weights.intro' : 'weights.intro');
     const presets = $('weightPresets');
     presets.innerHTML = '';
     if (c.mode !== 'classic') {
@@ -470,6 +511,7 @@ export function createControls(getConfig, onChange) {
           c.canonWeight = w.canon || 6;
           delete w.canon;
           c.weights = w;
+          ensureHeuristics(c);
           renderWeights();
           onChange('weights');
         });
@@ -478,21 +520,36 @@ export function createControls(getConfig, onChange) {
     }
     const box = $('weights');
     box.innerHTML = '';
-    const add = (label, obj, k, id) => {
-      const inp = el('input', { type: 'number', step: '0.5', id, value: String(obj[k]) });
+    const styled = !!STYLES[c.style];
+    const add = (labelText, obj, k, id, descKey) => {
+      // with a style the heuristics always count: their weight cannot go down to 0
+      const forced = styled && k === 'heuristics' && (c.mode !== 'classic' || !!activeStyle(c));
+      const inp = el('input', { type: 'number', step: '0.5', id, value: String(obj[k] ?? 0) });
+      if (forced) inp.min = '0.5';
       inp.addEventListener('input', () => {
-        obj[k] = Number(inp.value);
+        const v = Number(inp.value);
+        if (forced && !(v > 0)) return; // put back on 'change'
+        obj[k] = v;
         if (obj === c.weights) c.weightsPreset = 'custom';
         if (obj === c.classicG1 || obj === c.classicG2) markClassicCustom();
         onChange('weights');
       });
-      box.append(el('label', { for: id, text: label }), inp);
+      if (forced) {
+        inp.addEventListener('change', () => {
+          if (Number(inp.value) > 0) return;
+          obj[k] = c.mode === 'classic' ? STYLE_WEIGHT.classic : STYLE_WEIGHT.field;
+          inp.value = String(obj[k]);
+          onChange('weights');
+        });
+      }
+      weightRow(box, labelText, inp, descKey, forced);
     };
     if (c.mode === 'classic') {
-      box.append(el('span', { class: 'hint', text: 'Grupo 1 (primeiros 25 % das gerações)' }), el('span'));
-      for (const k of Object.keys(CLASSIC_LABELS)) add(CLASSIC_LABELS[k], c.classicG1, k, `w1-${k}`);
-      box.append(el('span', { class: 'hint', text: 'Grupo 2 (resto)' }), el('span'));
-      for (const k of Object.keys(CLASSIC_LABELS)) add(CLASSIC_LABELS[k], c.classicG2, k, `w2-${k}`);
+      box.append(el('p', { class: 'hint wsub', text: t('classic.groups.desc') }));
+      box.append(el('span', { class: 'hint wsub', text: t('weights.group1', { pct: Math.round((c.classicPhase1 ?? 0.25) * 100) }) }));
+      for (const k of Object.keys(CLASSIC_LABELS)) add(CLASSIC_LABELS[k], c.classicG1, k, `w1-${k}`, `classic.${k}.desc`);
+      box.append(el('span', { class: 'hint wsub', text: t('weights.group2') }));
+      for (const k of Object.keys(CLASSIC_LABELS)) add(CLASSIC_LABELS[k], c.classicG2, k, `w2-${k}`, `classic.${k}.desc`);
     } else {
       for (const k of Object.keys(FIELD_LABELS)) {
         if (k === 'canon') {
@@ -501,8 +558,8 @@ export function createControls(getConfig, onChange) {
             c.canonWeight = Number(inp.value);
             onChange('weights');
           });
-          box.append(el('label', { for: 'w-canon', text: `${FIELD_LABELS.canon} (com 2+ vozes)` }), inp);
-        } else add(FIELD_LABELS[k], c.weights, k, `w-${k}`);
+          weightRow(box, `${FIELD_LABELS.canon}${t('weights.canonSuffix')}`, inp, 'weight.canon.desc');
+        } else add(FIELD_LABELS[k], c.weights, k, `w-${k}`, `weight.${k}.desc`);
       }
     }
   }
@@ -523,6 +580,7 @@ export function createControls(getConfig, onChange) {
 
   function renderAll() {
     renderPiece();
+    renderStyle();
     renderVoices();
     renderWaves();
     renderClassicWaves();
@@ -563,6 +621,17 @@ export function createControls(getConfig, onChange) {
       $('phraseBars').value = String(c.phraseBars);
       meterHint();
       onChange('piece');
+    });
+    $('style').addEventListener('change', () => {
+      const c = cfg();
+      const res = applyStyle(c, $('style').value);
+      const value = (k) => (k === 'meter' ? c.meter : k === 'form' ? c.form.replace(/'/g, '′') : k === 'phraseBars' ? c.phraseBars : c.bars);
+      const changed = res.changed.map((k) => t(`style.changed.${k}`, { v: value(k) }));
+      if (res.settings?.bpm) changed.push(t('style.changed.bpm', { v: res.settings.bpm }));
+      renderPiece();
+      renderWeights();
+      styleHint(changed);
+      onChange('style', res);
     });
     $('bars').addEventListener('change', () => {
       cfg().bars = Number($('bars').value);
@@ -658,5 +727,5 @@ export function createControls(getConfig, onChange) {
     }
   }
 
-  return { renderAll, renderVoices, renderWaves, renderClassicWaves, renderWeights, renderGA, bind };
+  return { renderAll, renderVoices, renderWaves, renderClassicWaves, renderWeights, renderStyle, renderGA, bind };
 }

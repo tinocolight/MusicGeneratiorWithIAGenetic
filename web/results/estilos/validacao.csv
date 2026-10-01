@@ -1,0 +1,121 @@
+﻿teste,grupo,medida,valor
+reais_vs_baralhadas,todas,pontuação média (reais),0.9133
+reais_vs_baralhadas,todas,pontuação média (notas baralhadas),0.7149
+reais_vs_baralhadas,todas,pares em que a real pontua mais,0.8984
+regra_cumprida,stepDown,reais,0.8034
+regra_cumprida,stepDown,baralhadas,0.7863
+regra_cumprida,inertia,reais,0.8387
+regra_cumprida,inertia,baralhadas,0.4726
+regra_cumprida,leaps,reais,0.8012
+regra_cumprida,leaps,baralhadas,0.1244
+regra_cumprida,recovery,reais,0.9098
+regra_cumprida,recovery,baralhadas,0.9988
+regra_cumprida,leapChain,reais,0.9427
+regra_cumprida,leapChain,baralhadas,0.5578
+regra_cumprida,dissonant,reais,0.9089
+regra_cumprida,dissonant,baralhadas,0.3721
+regra_cumprida,range,reais,0.8656
+regra_cumprida,range,baralhadas,0.8656
+regra_cumprida,climaxCount,reais,0.9148
+regra_cumprida,climaxCount,baralhadas,0.9148
+regra_cumprida,arch,reais,0.9563
+regra_cumprida,arch,baralhadas,0.9931
+regra_cumprida,endLow,reais,0.924
+regra_cumprida,endLow,baralhadas,0.7498
+regra_cumprida,finalLength,reais,0.7981
+regra_cumprida,finalLength,baralhadas,0.7981
+regra_cumprida,motifs,reais,0.8315
+regra_cumprida,motifs,baralhadas,0.8315
+regra_cumprida,longOnBeat,reais,0.9524
+regra_cumprida,longOnBeat,baralhadas,0.9524
+regra_cumprida,syncBar,reais,0.9399
+regra_cumprida,syncBar,baralhadas,0.9399
+reconhecimento,chorale 3/4,melodias (estilos concorrentes: 12),36
+reconhecimento,chorale 3/4,o próprio estilo pontua mais alto,0.4606
+reconhecimento,chorale 3/4,"o mesmo, ao acaso",0.0833
+reconhecimento,chorale 3/4,pontuação média no próprio estilo,0.8553
+reconhecimento,chorale 3/4,pontuação média nos outros estilos,0.6991
+reconhecimento,chorale 3/4,confundido sobretudo com,waltz (6); hymn (5); classical (5)
+reconhecimento,chorale 4/4,melodias (estilos concorrentes: 19),264
+reconhecimento,chorale 4/4,o próprio estilo pontua mais alto,0.2008
+reconhecimento,chorale 4/4,"o mesmo, ao acaso",0.0526
+reconhecimento,chorale 4/4,pontuação média no próprio estilo,0.9014
+reconhecimento,chorale 4/4,pontuação média nos outros estilos,0.67
+reconhecimento,chorale 4/4,confundido sobretudo com,hymn (76); folk (55); palestrina (47)
+reconhecimento,folk 2/4,melodias (estilos concorrentes: 9),2133
+reconhecimento,folk 2/4,o próprio estilo pontua mais alto,0.6006
+reconhecimento,folk 2/4,"o mesmo, ao acaso",0.1111
+reconhecimento,folk 2/4,pontuação média no próprio estilo,0.9
+reconhecimento,folk 2/4,pontuação média nos outros estilos,0.7332
+reconhecimento,folk 2/4,confundido sobretudo com,fado (276); pentatonic (231); children (101)
+reconhecimento,folk 3/4,melodias (estilos concorrentes: 12),1342
+reconhecimento,folk 3/4,o próprio estilo pontua mais alto,0.5723
+reconhecimento,folk 3/4,"o mesmo, ao acaso",0.0833
+reconhecimento,folk 3/4,pontuação média no próprio estilo,0.9244
+reconhecimento,folk 3/4,pontuação média nos outros estilos,0.6925
+reconhecimento,folk 3/4,confundido sobretudo com,hymn (151); waltz (102); minuet (73)
+reconhecimento,folk 3/8,melodias (estilos concorrentes: 3),331
+reconhecimento,folk 3/8,o próprio estilo pontua mais alto,0.8439
+reconhecimento,folk 3/8,"o mesmo, ao acaso",0.3333
+reconhecimento,folk 3/8,pontuação média no próprio estilo,0.9058
+reconhecimento,folk 3/8,pontuação média nos outros estilos,0.6802
+reconhecimento,folk 3/8,confundido sobretudo com,passepied (46); tarantella (6)
+reconhecimento,folk 4/4,melodias (estilos concorrentes: 19),1867
+reconhecimento,folk 4/4,o próprio estilo pontua mais alto,0.562
+reconhecimento,folk 4/4,"o mesmo, ao acaso",0.0526
+reconhecimento,folk 4/4,pontuação média no próprio estilo,0.9254
+reconhecimento,folk 4/4,pontuação média nos outros estilos,0.6553
+reconhecimento,folk 4/4,confundido sobretudo com,fado (215); hymn (215); bourree (82)
+reconhecimento,folk 6/8,melodias (estilos concorrentes: 10),869
+reconhecimento,folk 6/8,o próprio estilo pontua mais alto,0.7551
+reconhecimento,folk 6/8,"o mesmo, ao acaso",0.1
+reconhecimento,folk 6/8,pontuação média no próprio estilo,0.9206
+reconhecimento,folk 6/8,pontuação média nos outros estilos,0.6691
+reconhecimento,folk 6/8,confundido sobretudo com,singleJig (73); vira (48); siciliana (36)
+reconhecimento,hornpipe 4/4,melodias (estilos concorrentes: 19),166
+reconhecimento,hornpipe 4/4,o próprio estilo pontua mais alto,0.3434
+reconhecimento,hornpipe 4/4,"o mesmo, ao acaso",0.0526
+reconhecimento,hornpipe 4/4,pontuação média no próprio estilo,0.883
+reconhecimento,hornpipe 4/4,pontuação média nos outros estilos,0.6697
+reconhecimento,hornpipe 4/4,confundido sobretudo com,reel (59); bourree (25); jazz (9)
+reconhecimento,jig 6/8,melodias (estilos concorrentes: 10),219
+reconhecimento,jig 6/8,o próprio estilo pontua mais alto,0.2766
+reconhecimento,jig 6/8,"o mesmo, ao acaso",0.1
+reconhecimento,jig 6/8,pontuação média no próprio estilo,0.9142
+reconhecimento,jig 6/8,pontuação média nos outros estilos,0.7625
+reconhecimento,jig 6/8,confundido sobretudo com,tarantella (71); gigue (34); vira (19)
+reconhecimento,march 2/4,melodias (estilos concorrentes: 9),36
+reconhecimento,march 2/4,o próprio estilo pontua mais alto,0.5
+reconhecimento,march 2/4,"o mesmo, ao acaso",0.1111
+reconhecimento,march 2/4,pontuação média no próprio estilo,0.9261
+reconhecimento,march 2/4,pontuação média nos outros estilos,0.778
+reconhecimento,march 2/4,confundido sobretudo com,folk (10); fado (3); classical (3)
+reconhecimento,march 4/4,melodias (estilos concorrentes: 19),43
+reconhecimento,march 4/4,o próprio estilo pontua mais alto,0.3256
+reconhecimento,march 4/4,"o mesmo, ao acaso",0.0526
+reconhecimento,march 4/4,pontuação média no próprio estilo,0.8885
+reconhecimento,march 4/4,pontuação média nos outros estilos,0.6683
+reconhecimento,march 4/4,confundido sobretudo com,folk (9); fado (8); bourree (5)
+reconhecimento,march 6/8,melodias (estilos concorrentes: 10),42
+reconhecimento,march 6/8,o próprio estilo pontua mais alto,0.0476
+reconhecimento,march 6/8,"o mesmo, ao acaso",0.1
+reconhecimento,march 6/8,pontuação média no próprio estilo,0.8838
+reconhecimento,march 6/8,pontuação média nos outros estilos,0.7909
+reconhecimento,march 6/8,confundido sobretudo com,vira (12); gigue (11); jig (5)
+reconhecimento,reel 4/4,melodias (estilos concorrentes: 19),264
+reconhecimento,reel 4/4,o próprio estilo pontua mais alto,0.7443
+reconhecimento,reel 4/4,"o mesmo, ao acaso",0.0526
+reconhecimento,reel 4/4,pontuação média no próprio estilo,0.9093
+reconhecimento,reel 4/4,pontuação média nos outros estilos,0.6268
+reconhecimento,reel 4/4,confundido sobretudo com,bourree (21); march (13); strathspey (11)
+reconhecimento,slipJig 9/8,melodias (estilos concorrentes: 1),138
+reconhecimento,slipJig 9/8,o próprio estilo pontua mais alto,1
+reconhecimento,slipJig 9/8,"o mesmo, ao acaso",1
+reconhecimento,slipJig 9/8,pontuação média no próprio estilo,0.9089
+reconhecimento,slipJig 9/8,pontuação média nos outros estilos,0
+reconhecimento,strathspey 4/4,melodias (estilos concorrentes: 19),70
+reconhecimento,strathspey 4/4,o próprio estilo pontua mais alto,0.6929
+reconhecimento,strathspey 4/4,"o mesmo, ao acaso",0.0526
+reconhecimento,strathspey 4/4,pontuação média no próprio estilo,0.8877
+reconhecimento,strathspey 4/4,pontuação média nos outros estilos,0.5513
+reconhecimento,strathspey 4/4,confundido sobretudo com,fado (9); jazz (5); pentatonic (4)

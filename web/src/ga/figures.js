@@ -16,6 +16,7 @@
 
 import { REST, HOLD, isNote, geneToMidi } from '../core/score.js';
 import { meterOf, beatClass } from '../core/meter.js';
+import { t } from '../i18n/i18n.js';
 
 const MAJOR = [0, 2, 4, 5, 7, 9, 11];
 const MINOR = [0, 2, 3, 5, 7, 8, 10];
@@ -131,7 +132,9 @@ export function compactToLine(events) {
 
 // ------------------------------------------------------------------ readable names
 
-const VALUE = { 1: 'sc', 2: '♪', 3: '♪.', 4: '♩', 5: '♩~sc', 6: '♩.' };
+// symbols of the values; the sixteenth has no symbol here and uses an abbreviation from the texts
+const VALUE_SYMBOL = { 2: '♪', 3: '♪.', 4: '♩', 6: '♩.' };
+const valueName = (len) => VALUE_SYMBOL[len] ?? (len === 1 ? t('fig.sixteenth') : len === 5 ? `♩~${t('fig.sixteenth')}` : String(len));
 const WORD = { 1: 'semicolcheia', 2: 'colcheia', 3: 'colcheia pontuada', 4: 'semínima', 5: 'semínima ligada a semicolcheia', 6: 'semínima pontuada' };
 // Takadimi (Hoffman, Pelto & White 1996): one syllable per position inside the beat
 const SYLLABLES = { 4: ['ta', 'ka', 'di', 'mi'], 6: ['ta', 'va', 'ki', 'di', 'da', 'ma'] };
@@ -150,9 +153,9 @@ function runs(cell) {
   return out;
 }
 
-/** "♪ ♪", "♩ ♪", "pausa ♪ · ♪", "(lig.) ♪ ♪"... */
+/** "♪ ♪", "♩ ♪", "pausa ♪ · ♪", "(lig.) ♪ ♪"... (words in the current language) */
 export function figureName(cell) {
-  return runs(cell).map((r) => (r.kind === 'rest' ? `pausa ${VALUE[r.len] ?? r.len}` : r.kind === 'tie' ? `(lig.) ${VALUE[r.len] ?? r.len}` : VALUE[r.len] ?? String(r.len))).join(' ');
+  return runs(cell).map((r) => (r.kind === 'rest' ? `${t('fig.rest')} ${valueName(r.len)}` : r.kind === 'tie' ? `(${t('fig.tie')}) ${valueName(r.len)}` : valueName(r.len))).join(' ');
 }
 
 /** "colcheia + colcheia", "semínima + colcheia"... */
@@ -164,7 +167,7 @@ export function figureWords(cell) {
 export function figureSyllables(cell) {
   const syl = SYLLABLES[cell.length];
   if (!syl) return '';
-  const head = cell[0] === '.' ? '(pausa) ' : cell[0] === '_' ? '(lig.) ' : '';
+  const head = cell[0] === '.' ? `(${t('fig.rest')}) ` : cell[0] === '_' ? `(${t('fig.tie')}) ` : '';
   const on = [...cell].map((c, i) => (c === 'x' ? syl[i] : null)).filter(Boolean);
   return (head + (on.length ? on.join(' ') : head ? '' : '—')).trim();
 }

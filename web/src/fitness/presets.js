@@ -2,9 +2,10 @@
 // amplitude (the wave spans mean ± amplitude), basin width (sigma, semitones) and basin shape. `offset` means are relative to the
 // tonic of the chosen key (tonic placed between F#4 and F5), `mean` values are absolute MIDI.
 
-export const WAVE_PRESETS = {
+import { withLabels } from '../i18n/i18n.js';
+
+export const WAVE_PRESETS = withLabels({
   original: {
-    label: 'Original (2 senos do C#)',
     waves: [
       { type: 'sine', freq: 0.5, mean: 69, amplitude: 12, basin: 3, shape: 'step' },
       // amplitude 4: Form1's constructor copies the ConfigurationValues default over its "5"
@@ -12,34 +13,28 @@ export const WAVE_PRESETS = {
     ],
   },
   arch: {
-    label: 'Arco de frase (Huron)',
     waves: [{ type: 'arch', freq: 0.5, offset: 3.4, amplitude: 3.9, basin: 3 }],
   },
   pink: {
-    label: 'Flutuação 1/f (Voss & Clarke)',
     waves: [{ type: 'pink', freq: 4, offset: 4, amplitude: 7, basin: 3 }],
   },
   rossler: {
-    label: 'Atrator de Rössler',
     waves: [{ type: 'rossler', freq: 0.35, offset: 4, amplitude: 7, basin: 3 }],
   },
   lorenz: {
-    label: 'Atrator de Lorenz (2 registos)',
     waves: [{ type: 'lorenz', freq: 0.5, offset: 4, amplitude: 8, basin: 3 }],
   },
   compound: {
-    label: 'Melodia composta (2 vozes, cf. Bach)',
     waves: [
       { type: 'arch', freq: 0.5, offset: 7.8, amplitude: 2.8, basin: 2.5 },
       { type: 'rossler', freq: 0.35, offset: -3, amplitude: 4, basin: 2.5 },
     ],
   },
   canon: {
-    label: 'Cânone: seno com período = nº de vozes × entrada',
     // the voices of the canon sit on different phases of the wave, hence in different registers
     waves: [{ type: 'sine', freq: 0.5, offset: 4, amplitude: 6, basin: 3, canonPeriod: true }],
   },
-};
+}, 'wpre');
 
 /** MIDI of the tonic placed in the octave F#4..F5 (66..77). */
 export function tonicMidi(tonic) {

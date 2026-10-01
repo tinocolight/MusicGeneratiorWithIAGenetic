@@ -1,0 +1,21 @@
+﻿achado,regra_da_literatura,regra_existente_campo_de_atratores,regra_existente_classico,estado_antes,melodias_do_AG_antes,o_que_se_acrescentou
+G01,"Proximidade de altura: intervalos pequenos","proximity (Temperley 2008)","intervals (tabela de intervalos)",coberta,"quase sem saltos (saltos de 4.ª ou mais 0–3 %; reais P10–P90 3–20 %): a regra é maximizada","heurística «leaps»: nem de menos nem de mais saltos (P10–P90 da música real)"
+G02,"Declinação por grau: mais graus a descer",—,—,nova,"0,40 dos graus descem em 4/4 (reais 0,43–0,82)","heurística «stepDown»"
+G03,"Inércia do grau (prática comum sim, pop não)",—,—,nova,"0,69–0,79 (dentro do intervalo real)","heurística «inertia»; o estilo Pop inverte-a (0,3–0,6)"
+G04,"Regressão / retorno após salto","regression","—",coberta,"todos os saltos compensados em 3/4 (1,0; reais 0–0,6): a regra é maximizada","heurística «recovery» com o intervalo real (limita o excesso) e compensação por grau"
+G05,"Arco melódico por frase","ondas (arco), tension",wave1/wave2 (senos),parcial,"todas as frases em arco (1,0; reais 0–0,83)","heurística «arch» (limita o arco a todas as frases)"
+G06,"Implicação-realização: intervalo grande seguido de um menor que muda de sentido","proximity + regression",intervals,parcial,—,"coberta pelas heurísticas «recovery» e «leapChain»"
+G07,"Alongamento final da frase","cadence (nota final longa)",ending (só a última nota da peça),parcial,"1,14 em 4/4 e 0,96 em 6/8 (reais 1,03–2,2 e 1,22–2,59)","heurística «finalLength» (em todas as frases, relativa às notas da frase)"
+G08,"Fim de frase descendente","cadence (tónica/estável)",—,parcial,"1,0 (no limite real)","heurística «endLow»"
+G09,"Motivos repetidos (universais; dança)","form (A A′ B A′)","leitmotif, aba",parcial,"0,14–0,20 dos compassos repetem um ritmo (reais 0,29–0,82)","heurística «motifs» (repetição do ritmo de compassos anteriores)"
+G10,"Cantus firmus: um clímax, saltos compensados, nunca dois saltos no mesmo sentido sem acorde, 2–1 ou 7–1 no fim","variety (clímax), regression, cadence","intervals (arpejos +5)",parcial,"sem saltos seguidos (0)","heurísticas «climaxCount», «leapChain», «range»"
+G11,"Palestrina: sem 7.as, trítono nem 6.as descendentes; notas rápidas por grau","proximity (penaliza saltos grandes)","intervals (−0,3 a −1 nos dissonantes)",parcial,0,"heurística «dissonant»; estilo Palestrina"
+G12,"Frase e período clássicos (repetição da ideia básica, meia cadência a meio)","form, cadence (meia cadência)",aba,parcial,—,"estilo Tema clássico (motifs, sequences, finalLength)"
+G13,"Cadência melódica por graus descendentes","cadence (grau descendente 2–1)","cadence (corpus: 3–2–1…)",coberta,—,—
+G14,"Frases de 4 compassos, repousos conclusivos e inconclusivos","cadence (frases de phraseBars)",—,coberta,—,"os estilos sugerem o comprimento da frase"
+G15,"Repetição com variação; um pico e descida para a cadência","form (penaliza cópias literais), variety, tension",—,coberta,—,—
+G16,"Notas longas nos tempos fortes (MPR 5a)","metric (penaliza notas longas em semicolcheias fracas), rhythm",rhythmicPatterns,coberta,"1,0","heurísticas «longOnBeat» e «syncBar»"
+G17,"Síncopa na música popular americana (1,2–1,8 por compasso)","metric (penaliza síncopas)",—,contrária,"0 síncopas","estilos Blues, Jazz, Pop e Habanera pedem síncopas"
+G18,"Síncopa de antecipação no rock",metric,—,contrária,0,"estilo Pop"
+G19,"Escala pentatónica / ♭3 e ♭7 no rock","key (penaliza notas fora da escala)",scale,parcial,"0,86–0,94 de notas pentatónicas","heurística «pentatonic» nos estilos Pop, Blues, Infantil, Pentatónica; ♭3/♭7 só pelo modo menor"
+E01–E47,"Características de cada estilo (compasso, figuras, anacrusa, densidade, forma, andamento)","nenhuma regra por estilo (só o modelo de blocos por compasso)",nenhuma,nova,—,"36 estilos em src/fitness/styles.js; regras e alvos em regras.csv"

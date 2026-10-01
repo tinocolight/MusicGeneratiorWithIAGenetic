@@ -9,6 +9,7 @@
 // voice starts from the beginning), repeat signs for a round and a legend of the voices.
 // VexFlow (MIT) is vendored in web/vendor/ and loaded the first time the score is shown.
 
+import { t } from '../i18n/i18n.js';
 import { spell, vexKey, VEX_DURATION, tempoMark } from '../io/notation.js';
 import { createPdf, A4 } from '../io/pdf.js';
 
@@ -20,10 +21,10 @@ export function loadVexFlow() {
     loading = new Promise((resolve, reject) => {
       const s = document.createElement('script');
       s.src = 'vendor/vexflow-gonville.js';
-      s.onload = () => (window.Vex?.Flow ? resolve(window.Vex) : reject(new Error('VexFlow não inicializou')));
+      s.onload = () => (window.Vex?.Flow ? resolve(window.Vex) : reject(new Error(t('score.vexInit'))));
       s.onerror = () => {
         loading = null;
-        reject(new Error('não foi possível carregar vendor/vexflow-gonville.js'));
+        reject(new Error(t('score.vexLoad')));
       };
       document.head.appendChild(s);
     });
@@ -396,7 +397,7 @@ export function pdfScale(model) {
 }
 
 /** The score as a PDF (Uint8Array), on A4 pages. */
-export function scorePdf(model, { VF = window.Vex.Flow, footer = 'Ondas Atratoras · algoritmo genético', scale } = {}) {
+export function scorePdf(model, { VF = window.Vex.Flow, footer = t('score.footer'), scale } = {}) {
   const doc = createPdf({ title: model.title });
   const s = scale ?? pdfScale(model);
   const { lay, usable, pages } = paginate(model, s);

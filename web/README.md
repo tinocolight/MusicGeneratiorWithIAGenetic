@@ -13,6 +13,8 @@ geração e uma **análise inversa** que passa música real pelas regras.
 - [Guia de utilização](#guia-de-utilização)
 - [O que se encontrou no código original](#o-que-se-encontrou-no-código-original)
 - [Da literatura para o código](#da-literatura-para-o-código)
+- [Heurísticas de composição e estilos](#heurísticas-de-composição-e-estilos)
+- [Línguas (português e inglês)](#línguas-português-e-inglês)
 - [Avaliação e resultados](#avaliação-e-resultados)
 - [O trabalho original à luz da literatura](#o-trabalho-original-à-luz-da-literatura)
 - [Estrutura e comandos](#estrutura-e-comandos)
@@ -514,6 +516,43 @@ foram repetidas com 24 sementes (`node tools/solo_defaults.mjs 24`,
   a 5.ª). Com a mesma semente a população inicial é a mesma, por isso definições parecidas dão inícios
   parecidos; «Do zero (semente nova)» evita-o.
 
+## Heurísticas de composição e estilos
+
+Pedido: procurar na literatura regras de composição por estilo e compasso, registá-las num CSV com as fontes, confrontá-las com as regras que já existiam, acrescentar as novas à aptidão num campo «Heurísticas de composição» e criar uma entrada «Estilo» que obriga esse peso a ser diferente de zero. O relatório completo está em [`results/estilos.md`](results/estilos.md) e as tabelas em [`results/estilos/`](results/estilos/).
+
+- **Pesquisa**: 66 achados com fonte em [`literatura.csv`](results/estilos/literatura.csv). São 19 regras gerais (Huron, Chiu & Temperley, von Hippel & Huron, Narmour, Tierney et al., Savage et al., Fux, Jeppesen, Caplin, Koch, Schoenberg, Lerdahl & Jackendoff, Huron & Ommen, Temperley) e 47 achados sobre estilos: danças irlandesas e escocesas, danças barrocas, tópicos de Ratner, embalar, infantil, coral, hino, blues, jazz, pop, tango, fado, vira e corridinho, canção chinesa.
+- **Confronto** ([`confronto.csv`](results/estilos/confronto.csv)): as regras antigas cobriam a proximidade, a regressão, a cadência e a forma, mas eram maximizadas. As melodias do AG tinham quase nenhum salto (0–3 %; reais 3–20 %), desciam por grau menos do que as reais (0,40; reais 0,43–0,82), repetiam pouco os ritmos dos compassos (0,14–0,20; reais 0,29–0,82), alongavam pouco a nota final da frase e faziam um arco em todas as frases. Não havia nenhuma regra de estilo.
+- **Codificação** (`src/fitness/heuristics.js`, `src/fitness/styles.js`):
+  - cada regra mede uma característica e compara-a com um intervalo-alvo: vale 1 dentro e desce até −1 fora, sem nada a maximizar;
+  - os alvos são o P10–P90 das melodias reais onde o corpus as tem (`tools/build_styles.mjs`); nas regras gerais, todas as melodias do compasso; nos estilos com corpus (canção popular, coral, reel, jig, slip jig, hornpipe, strathspey, marcha), as melodias desse estilo;
+  - nos outros estilos, os alvos vêm da literatura;
+  - os estilos são dados: regras com os ids das fontes, mais o compasso, a frase, a forma, o comprimento, a anacrusa, o andamento e o modo sugeridos;
+  - todas as regras, com o alvo e a origem, estão em [`regras.csv`](results/estilos/regras.csv).
+- **Na página**:
+  - «Estilo», na secção «Peça», escolhe um de 36 estilos. Ajusta o compasso, a frase, a forma, o comprimento e o andamento, e põe o peso «Heurísticas de composição» acima de 0; enquanto houver estilo, esse peso não pode voltar a 0.
+  - Sem estilo, o peso (a 0 por omissão) aplica só as regras gerais.
+  - No modo clássico há o mesmo peso nos dois grupos, somado por tempo; só aí funcionam os estilos em 4/4.
+  - Depois de gerar, um indicador («heurísticas 15/17») e uma tabela mostram cada regra: o valor, o alvo, a origem e as fontes.
+- **Validação** (validação cruzada em 5 dobras):
+  - as regras gerais põem a melodia real acima das mesmas notas baralhadas em 90 % dos pares;
+  - reels e strathspeys são reconhecidos entre 19 estilos em 69–74 % dos casos (ao acaso: 5 %);
+  - estilos descritos de forma parecida confundem-se (jig com tarantela, coral com hino).
+- **No AG** ([`results/estilos-ga.md`](results/estilos-ga.md), 37 casos × 4 sementes):
+  - com o peso a 4, a pontuação do estilo passa de 0,60 para 0,95 e as regras dentro do intervalo de 65 % para 93 %;
+  - o AG aprende a anacrusa da gavota, o final feminino da polonesa, as três colcheias da jig e os pontuados do hornpipe;
+  - o crítico sobe ou mantém-se nos estilos próximos do seu corpus (bourrée 0,68 → 0,94, marcha 0,78 → 0,87) e desce nos que estão longe dele (jazz 0,88 → 0,61, valsa 0,80 → 0,63);
+  - por isso o peso fica a 0 sem estilo.
+- **Descrições dos pesos**: em «Pesos das regras», cada peso tem um botão «?» que explica o que a regra mede e como muda a melodia. No modo clássico, a descrição interpreta também o que os autores pretendiam, a partir do código e dos seus comentários.
+- **Lapso novo no original**: ao escrever essas descrições encontrou-se outro lapso. `ScoreTerminationQualifyers` dá a pontuação máxima a uma nota final de só duas semicolcheias: os testes aninhados usam `!=`, embora o comentário diga «terminação com notas mais longas». Fica como no original, porque as combinações calibradas contam com ele.
+
+## Línguas (português e inglês)
+
+A página existe em português e em inglês. O menu fica no cabeçalho; a escolha fica guardada no navegador e, da primeira vez, segue a língua do navegador.
+
+Todos os textos estão num só ficheiro, [`src/i18n/texts.js`](src/i18n/texts.js), com uma entrada por texto e um campo por língua (`'piece.title': { pt: 'Peça', en: 'Piece' }`). O `index.html` só tem marcadores (`data-i18n`, `data-i18n-html`, `data-i18n-title`, `data-i18n-aria-label`), e os scripts pedem os textos com `t('chave', {valor})`.
+
+Para acrescentar uma língua basta juntá-la a `LANGUAGES` e dar às entradas um campo com o seu código; o que faltar aparece em português. Os testes (`test/i18n.test.mjs`) verificam três coisas: que cada marcador tem texto, que cada entrada existe em todas as línguas com os mesmos `{marcadores}`, e que os textos pedidos pelos scripts existem.
+
 ## Estudo do algoritmo original: combinações de partida
 
 Pedido: estudar o algoritmo original com música real e oferecer pelo menos três combinações de
@@ -910,6 +949,9 @@ web/
   src/fitness/classic.js         regras do C# original (com a correção opcional dos lapsos)
   src/fitness/cadence.js         fórmulas de final aprendidas do corpus
   src/fitness/attractor.js       campo de atratores
+  src/fitness/heuristics.js      heurísticas de composição: medidas da melodia e pontuação por intervalo-alvo
+  src/fitness/styles.js          regras gerais e 36 estilos (dados, com as fontes do CSV)
+  src/i18n/                      texts.js: todos os textos da página (pt, en); i18n.js: t(), troca de língua
   src/fitness/canon.js           contraponto entre as vozes (pares, tríades, registo, intervalos diatónicos)
   src/ga/                        AG, operadores, MAP-Elites
   src/variation/dabby.js         variações caóticas
@@ -926,6 +968,7 @@ web/
   src/ga/blocks.js               blocos do corpus por compasso: modelo, escrita por blocos, mutação, regra «idioma»
   data/corpus-meters.json        9644 melodias reais com o seu compasso (sem as 480 do crítico)
   data/corpus-large.json         6758 melodias em x/4 do estudo do algoritmo original
+  results/estilos/               pesquisa (literatura.csv), confronto, regras, calibração, validação, estudo no AG
   results/meters/                a análise por compasso em CSV e Excel (auditável)
   src/data/classic-presets.js    combinações de partida do modo clássico (gerado pelo estudo)
   vendor/                        VexFlow 4.2.5 com a fonte Gonville (MIT, LICENSE-vexflow.txt)
@@ -938,7 +981,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 77 testes
+npm test                              # 89 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
@@ -958,6 +1001,9 @@ python3 tools/build_pdf_fonts.py      # larguras das fontes-padrão do PDF → s
 node tools/classic_study.mjs          # estudo do algoritmo original (~1 h, 4 processos) →
                                       #   results/classic-study.md, src/data/classic-presets.js
 node tools/make_examples.mjs          # exemplo mostrado ao abrir a página
+node tools/build_styles.mjs           # heurísticas: calibração no corpus, validação, regras →
+                                      #   src/data/style-calibration.js, results/estilos/*.csv
+node tools/styles_ga_study.mjs 4 400  # os estilos no AG (~20 min) → results/estilos-ga.md, results/estilos/ga.csv
 node tools/build_single.mjs           # dist/ondas-atratoras.html (usa esbuild via npx)
 
 # paridade com o C# original (precisa do .NET 8 SDK)
