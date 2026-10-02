@@ -73,6 +73,7 @@
           <h3 data-i18n="quick.title"></h3>
           <p class="hint" data-i18n="quick.hint"></p>
           <div class="row">
+            <button class="btn primary" id="qsBtn" type="button" data-i18n="qs.open" data-i18n-title="qs.open.title" aria-haspopup="dialog"></button>
             <button class="btn" id="autoBtn" type="button" data-i18n="quick.auto" data-i18n-title="quick.auto.title"></button>
             <button class="btn" id="surpriseBtn" type="button" data-i18n="quick.surprise" data-i18n-title="quick.surprise.title"></button>
             <button class="btn" id="resetBtn" type="button" data-i18n="quick.reset"></button>
@@ -91,7 +92,7 @@
         <p class="hint" id="styleHint"></p>
         <div class="field"><span data-i18n="piece.meter"></span><select id="meter"></select></div>
         <p class="hint" id="meterHint"></p>
-        <div class="field"><span data-i18n="piece.bars"></span><select id="bars"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option><option>32</option><option>64</option></select></div>
+        <div class="field"><span data-i18n="piece.bars"></span><select id="bars"><option>4</option><option>6</option><option selected>8</option><option>10</option><option>12</option><option>16</option><option>20</option><option>24</option><option>32</option><option>48</option><option>64</option></select></div>
         <p class="hint" id="barsHint" hidden></p>
         <div class="field" id="formRow"><span data-i18n="piece.form"></span><select id="form"></select></div>
         <div class="field" id="phraseRow"><span data-i18n="piece.phrase"></span><select id="phraseBars"><option>1</option><option selected>2</option><option>4</option><option>8</option></select></div>
@@ -303,6 +304,26 @@
     <div class="box prose" id="aboutBox"></div>
   </section>
 </div>
+  <!-- INÍCIO RÁPIDO / QUICK START: six questions in a floating window (src/ui/quickstart.js) -->
+  <dialog id="qsDialog" class="qs" aria-labelledby="qsTitle">
+    <header class="qs-head">
+      <div class="qs-headline">
+        <span class="qs-kicker"><span data-i18n="qs.heading"></span> · <span id="qsStep"></span></span>
+        <button type="button" class="qs-close" id="qsClose" data-i18n-aria-label="qs.close" data-i18n-title="qs.close">×</button>
+      </div>
+      <h2 id="qsTitle"></h2>
+      <nav class="qs-dots" id="qsDots"></nav>
+    </header>
+    <div class="qs-body" id="qsBody"></div>
+    <footer class="qs-foot">
+      <button type="button" class="btn" id="qsBack" data-i18n="qs.back"></button>
+      <span class="qs-live status" id="qsLive" aria-live="polite"></span>
+      <button type="button" class="btn primary" id="qsNext" data-i18n="qs.next"></button>
+      <button type="button" class="btn" id="qsApply" data-i18n="qs.apply" hidden></button>
+      <button type="button" class="btn primary" id="qsRun" data-i18n="qs.applyRun" hidden></button>
+    </footer>
+  </dialog>
+
 <script type="module" src="src/ui/app.js"></script>
 </body>
 </html>

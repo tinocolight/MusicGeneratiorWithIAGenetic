@@ -88,14 +88,26 @@ onde o 2.º violino pára com o 1.º; uma ronda circular dá duas voltas.
 O painel está organizado de cima para baixo, do mais geral para o mais técnico. Só é preciso mexer
 no que interessa: tudo o resto tem valores sensatos.
 
-1. **Configuração rápida** (opcional): **Auto-configurar** escolhe, a partir das vozes, ondas que
+1. **Configuração rápida** (opcional): **Início rápido** abre uma janela com seis perguntas, uma de
+   cada vez, com o número da pergunta no cabeçalho e botões Anterior/Seguinte: (1) **cânone ou
+   melodia simples** — o cânone vem primeiro, porque é o centro do projeto; (2) **estilo** (os 36
+   estilos, ou nenhum); (3) **tipo de música**, isto é, o compasso (os do estilo) e o carácter
+   (lento, moderado, vivo), que dá o andamento; (4) **duração média total**, de 15 s a 3 min: o
+   número de compassos é calculado a partir dela, do compasso e do andamento (num cânone conta o
+   tempo que as vozes que entram depois levam a acabar, numa ronda a melodia ouve-se duas vezes,
+   e um cânone nunca fica curto demais para a última entrada), e o andamento é acertado até 20 %
+   para chegar perto da duração pedida; (5) **ondas atratoras** — uma escolhida pelo programa, uma
+   caótica, duas (melodia composta), três, ou as duas do programa original; (6) **tonalidade e
+   modo** (o modo habitual do estilo por omissão), com o resumo do que vai ser aplicado e os botões
+   **Só aplicar** e **Aplicar e gerar**. As respostas ficam lembradas no navegador
+   (`src/ui/quickstart.js`). **Auto-configurar** escolhe, a partir das vozes, ondas que
    cabem no registo comum dos instrumentos (um arco de frase para uma melodia; um seno com
    período = n.º de vozes × entrada para um cânone), a forma (livre em cânone), o número de
    compassos (espaço para a última entrada), pesos e algoritmo. **Surpreende-me** sorteia
    tonalidade, conjunto, ondas e forma dentro de valores sensatos. **Repor** volta ao início.
 2. **Peça**: modelo (campo de atratores ou clássico), tonalidade, maior/menor, **compasso** (2/4,
    3/4 e 4/4 simples; 3/8, 6/8, 9/8 e 12/8 compostos, em que cada tempo são três colcheias; o
-   modelo clássico fica em 4/4, como o original), número de compassos (4 a 16, 32 ou 64), forma
+   modelo clássico fica em 4/4, como o original), número de compassos (4 a 64), forma
    musical (A A′ B A′, A B A′ C, …) e duração da frase (mudar o compasso ajusta-a para cerca de oito
    tempos: 2 compassos de 4/4, 4 de 3/4 ou 6/8, 8 de 3/8). Cada geração custa
    proporcionalmente ao comprimento: com 64 compassos, uma corrida completa demora 1 a 2 minutos
@@ -981,7 +993,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 89 testes
+npm test                              # 93 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória

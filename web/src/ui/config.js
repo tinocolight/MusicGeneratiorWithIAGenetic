@@ -322,7 +322,7 @@ export function autoWaves(c) {
 }
 
 /** Lengths offered in the page (bars of 4/4). */
-export const BAR_OPTIONS = [4, 6, 8, 10, 12, 16, 32, 64];
+export const BAR_OPTIONS = [4, 6, 8, 10, 12, 16, 20, 24, 32, 48, 64];
 
 /** Everything from general criteria: waves, form, length, weights and GA settings. */
 export function autoConfigure(c) {

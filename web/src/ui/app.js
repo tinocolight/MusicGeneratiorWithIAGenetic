@@ -36,6 +36,7 @@ import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves, meterOfConfig,
   presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf, adaptToVoices, activeStyle,
 } from './config.js';
+import { createQuickStart } from './quickstart.js';
 import { createControls, FIELD_LABELS, CLASSIC_LABELS } from './controls.js';
 
 const $ = (id) => document.getElementById(id);
@@ -162,6 +163,18 @@ function initControls() {
     state.running = null;
     state.batch = false;
   });
+  // the quick start: six questions, then the configuration (and the tempo) they lead to
+  const quick = createQuickStart({
+    onApply: (res, run) => {
+      state.config = res.config;
+      $('bpm').value = String(res.bpm);
+      $('bpmVal').textContent = $('bpm').value;
+      configReplaced(t('qs.applied', { desc: describe(state.config) }));
+      if (run) runGA(cloneConfig(state.config));
+    },
+  });
+  $('qsBtn').addEventListener('click', () => quick.open());
+  onLangChange(() => quick.refresh());
   $('autoBtn').addEventListener('click', () => {
     autoConfigure(state.config);
     configReplaced(t('status.auto'));
