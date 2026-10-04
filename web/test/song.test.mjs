@@ -196,3 +196,31 @@ test('files attached to a PDF are read back', async () => {
   assert.equal(again[0].name, 'x.mid');
   assert.deepEqual(again[0].data, midi);
 });
+
+test('the player a QR code opens reads every voice of the MIDI file, and its page has its texts', async () => {
+  const { songOfMidiFile, instrumentOfProgram } = await import('../src/player/player.js');
+  const { TEXTS } = await import('../src/i18n/texts.js');
+  const { readFileSync } = await import('node:fs');
+  const lead = [{ pitch: 67, start: 0, dur: 4 }, { pitch: 69, start: 4, dur: 2 }, { pitch: 71, start: 6, dur: 10 }];
+  const voices = [
+    { events: lead, program: 40, name: 'Violino 1' },
+    { events: lead.map((e) => ({ ...e, start: e.start + 16, pitch: e.pitch - 12 })), program: 42, name: 'Violoncelo 2' },
+  ];
+  const song = { title: 'Ronda', genes: [40, 74, 74, 74], barLen: 16, meter: '3/4' };
+  const midi = writeMidi(voices, { bpm: 100, numerator: 3, denominator: 4, text: songText(song), compact: true });
+  const s = songOfMidiFile(midi);
+  assert.equal(s.title, 'Ronda');
+  assert.equal(Math.round(s.bpm), 100);
+  assert.deepEqual([s.numerator, s.denominator, s.barLen], [3, 4, 12]);
+  assert.deepEqual(s.voices.map((v) => v.instrument), ['violin', 'cello']);
+  assert.deepEqual(s.voices[1].events, voices[1].events);
+  assert.equal(s.length, 32);
+  // programs shared by several of the page's instruments: the range decides
+  assert.equal(instrumentOfProgram(52, [43, 45, 47]), 'bassVoice');
+  assert.equal(instrumentOfProgram(52, [72, 74]), 'soprano');
+  assert.equal(instrumentOfProgram(99), 'piano');
+  const html = readFileSync(new URL('../tocar.html', import.meta.url), 'utf8');
+  const keys = [...html.matchAll(/data-i18n(?:-html|-title|-aria-label)?="([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(keys.length >= 8);
+  for (const k of keys) assert.ok(TEXTS[k], `tocar.html uses ${k}`);
+});

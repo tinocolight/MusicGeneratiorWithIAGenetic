@@ -1,6 +1,7 @@
 // Builds a single self-contained HTML file (all modules, data and CSS inlined), which opens
 // directly from disk (file://) without a local server.
-//   node tools/build_single.mjs            -> dist/ondas-atratoras.html
+//   node tools/build_single.mjs            -> dist/ondas-atratoras.html and dist/tocar.html (the light
+//                                             player that QR codes open)
 //   node tools/build_single.mjs --fragment -> page body only (for hosts that add <html>/<head>)
 // Needs esbuild (fetched on demand with npx).
 
@@ -28,3 +29,15 @@ const page = fragment
 mkdirSync(out.slice(0, out.lastIndexOf('/')), { recursive: true });
 writeFileSync(out, page);
 console.log(`wrote ${out} (${(page.length / 1024).toFixed(0)} KB)`);
+
+// the player a QR code opens (tocar.html): its own small bundle, without the composing engine
+if (!fragment && !process.argv.some((a) => a.startsWith('--out='))) {
+  const pjs = execFileSync('npx', ['--yes', 'esbuild@0.24.0', `${root}src/player/player.js`, '--bundle', '--format=iife', '--minify', '--target=es2020'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).replace(/<\/script/gi, '<\\/script');
+  const phtml = readFileSync(`${root}tocar.html`, 'utf8');
+  const ptitle = phtml.match(/<title>[\s\S]*?<\/title>/)[0];
+  const pbody = phtml.slice(phtml.indexOf('<body'), phtml.indexOf('</body>')).replace(/<script type="module"[^>]*><\/script>/, '');
+  const player = `<!doctype html>\n<html lang="pt">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n${ptitle}\n<style>\n${css}\n</style>\n</head>\n${pbody}\n<script>\n${pjs}\n</script>\n</body>\n</html>\n`;
+  const pout = `${root}dist/tocar.html`;
+  writeFileSync(pout, player);
+  console.log(`wrote ${pout} (${(player.length / 1024).toFixed(0)} KB)`);
+}
