@@ -45,6 +45,23 @@ Não foi preciso nenhum dos recursos que o pedido previa para o caso de não ser
 a peça, como um QR cinzento claro em todos os PDF: os metadados (o anexo) já o fazem. O QR fica
 como opção.
 
+## Correção: o QR não abria no telemóvel
+
+O repositório é público, mas o GitHub Pages não está ativo (`has_pages: false`), por isso o
+endereço github.io que o QR trazia dava 404 (Q19). Além disso, o QR abria a aplicação inteira
+(1,7 MB). Agora:
+
+- **Leitor leve.** O QR abre o leitor `tocar.html`, uma página de 200 kB sem o motor de composição.
+  - Lê o MIDI do endereço e toca todas as vozes no navegador, com o mesmo sintetizador.
+  - Mostra as notas e deixa descarregar o `.mid`. O Android toca-o no leitor de música; o iPhone
+    precisa de uma app, porque o Safari não toca MIDI (Q18).
+  - Daí abre-se a peça na aplicação completa.
+- **Sem GitHub Pages.** O leitor é servido por omissão pelo raw.githack.com, que serve os ficheiros
+  de um repositório público como páginas, sem configurar nada (Q15). Não serviam o jsDelivr, que
+  devolve o HTML como texto (Q16), nem um endereço `data:` com a página inteira, que o Chrome e as
+  câmaras bloqueiam (Q17).
+- **O PDF continua a bastar**, com ou sem rede: «Abrir PDF ou MIDI…» lê o MIDI anexado.
+
 ## Medições (teste no navegador: PDF renderizado pelo pdf.js e QR lido pelo jsQR)
 
 | Peça | Dados no QR | Versão | Módulos |
@@ -61,8 +78,9 @@ codificador de QR foi verificado com o jsQR em todas as versões, níveis e más
 
 ## Limitações
 
-- **Endereço:** a ligação abre a página publicada. O GitHub Pages tem de estar ativo no
-  repositório, ou dá-se outro endereço no campo junto à opção.
+- **Endereço:** o leitor tem de estar no `main` para o raw.githack.com o servir. O raw.githack.com
+  é um serviço externo, gratuito e sem garantias. Com o GitHub Pages ativo, ou noutro alojamento,
+  dá-se esse endereço no campo junto à opção.
 - **Tamanho:** um QR versão 30–40 precisa de boa impressão e de ser lido de perto (10–15 cm).
 - **Peças muito longas:** quando nem a melodia com o registo cabe, o PDF diz que não leva QR. O
   MIDI continua anexado.

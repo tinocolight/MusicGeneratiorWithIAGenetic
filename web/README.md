@@ -578,7 +578,9 @@ Pesquisa e decisões, com as fontes: [`results/qr/pesquisa.csv`](results/qr/pesq
   - os dígitos são o MIDI comprimido com DEFLATE, 12 bytes em 29 dígitos;
   - o endereço vai em modo byte e os dígitos em modo numérico, o mais denso do QR (3,33 bits por
     dígito; aproveita 99 % dos bits, contra 75 % do Base64);
-  - a câmara do telemóvel abre a página, que mostra a peça e a toca ao carregar em ▶ Tocar;
+  - a câmara do telemóvel abre no navegador o **leitor** `tocar.html`, uma página leve (200 kB, sem o
+    motor de composição) que toca a música com o mesmo sintetizador, mostra as notas de cada voz,
+    deixa descarregar o `.mid` e abre a peça na aplicação completa;
   - o fragmento (depois de `#`) não sai do telemóvel, e nada é enviado a um servidor.
 
   O QR fica no canto inferior direito da última página, num espaço que a paginação reserva para
@@ -586,10 +588,17 @@ Pesquisa e decisões, com as fontes: [`results/qr/pesquisa.csv`](results/qr/pesq
   máximo e o símbolo 60 mm no máximo (versão 40: 0,32 mm, legível de perto numa impressão
   laser). Se o cânone inteiro não couber no maior QR (2953 bytes), vai só a melodia com o registo
   e a página refaz as vozes. O codificador de QR é desta página (`src/io/qr.js`, sem bibliotecas).
-- **Endereço.** Por omissão o QR abre esta página, se ela estiver na web, ou senão a página
-  publicada no GitHub Pages (`https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/`,
-  que é preciso ativar em Settings → Pages). Pode dar-se outro endereço no campo que aparece ao
-  marcar a opção.
+- **Endereço do leitor.** Por omissão:
+  - se a página estiver na web, o QR abre o `tocar.html` ao lado dela;
+  - senão, abre a cópia do repositório servida pelo [raw.githack.com](https://raw.githack.com):
+    `https://raw.githack.com/tinocolight/MusicGeneratiorWithIAGenetic/main/web/dist/tocar.html`.
+    Esse serviço serve como páginas os ficheiros de um repositório público, sem configurar nada:
+    **não é preciso ativar o GitHub Pages**, mas o ficheiro tem de estar no `main`.
+
+  Pode dar-se outro endereço no campo que aparece ao marcar a opção. Por exemplo, com o GitHub
+  Pages ativo: `https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/dist/tocar.html`.
+- **Sem rede nenhuma**, o PDF basta: «Abrir PDF ou MIDI…» lê o MIDI anexado e recupera a peça,
+  qualquer que seja o endereço do QR.
 
 ## Línguas (português e inglês)
 
@@ -991,6 +1000,7 @@ Guo et al. 2020, [tension VAE](https://arxiv.org/abs/2010.06230);
 web/
   index.html, styles.css         página (módulos ES, sem compilação)
   dist/ondas-atratoras.html      a mesma página num único ficheiro
+  tocar.html, dist/tocar.html    leitor leve que os QR codes abrem (toca o MIDI do endereço)
   src/core/                      representação, teoria (perfis K-K, espaço de Lerdahl), ondas, instrumentos, RNG
   src/fitness/classic.js         regras do C# original (com a correção opcional dos lapsos)
   src/fitness/cadence.js         fórmulas de final aprendidas do corpus
@@ -1005,6 +1015,7 @@ web/
   src/eval/                      características, modelo de expectativa, crítico, modelos nulos
   src/io/midi.js                 escrita/leitura de MIDI (com o registo da peça num evento de texto)
   src/io/song.js                 registo da peça, ligação #M<dígitos> (DEFLATE, modo numérico do QR)
+  src/player/player.js           leitor: lê o MIDI de todas as vozes, toca, desenha, descarrega
   src/io/qr.js                   codificador de QR code (segmentos byte/numérico/alfanumérico, versões 1–40)
   src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond,
                                  cânone numa só linha com as entradas
@@ -1030,7 +1041,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 98 testes
+npm test                              # 99 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
@@ -1053,7 +1064,7 @@ node tools/make_examples.mjs          # exemplo mostrado ao abrir a página
 node tools/build_styles.mjs           # heurísticas: calibração no corpus, validação, regras →
                                       #   src/data/style-calibration.js, results/estilos/*.csv
 node tools/styles_ga_study.mjs 4 400  # os estilos no AG (~20 min) → results/estilos-ga.md, results/estilos/ga.csv
-node tools/build_single.mjs           # dist/ondas-atratoras.html (usa esbuild via npx)
+node tools/build_single.mjs           # dist/ondas-atratoras.html e dist/tocar.html (usa esbuild via npx)
 
 # paridade com o C# original (precisa do .NET 8 SDK)
 cd tools/parity-csharp

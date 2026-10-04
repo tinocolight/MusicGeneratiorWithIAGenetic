@@ -69,12 +69,11 @@ export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4, te
 }
 
 /**
- * Read a MIDI file and return a monophonic line as compact events [[midi|-1, dur16], ...]
- * quantised to 16ths. Polyphony is reduced to the highest sounding note ("skyline").
- * Returns {compact, barLen, tracks: [{index, name, notes}], numerator, denominator, texts (the text
- * events), bpm}; `track` selects one track (-1 = all).
+ * Parse a Standard MIDI File: {division (ticks per quarter), numerator, denominator, bpm (of the
+ * first tempo), texts (the text events), tracks: [{index, name, program, notes: [{pitch, on, off,
+ * channel, velocity}], drums}]} with every track that has notes.
  */
-export function readMidi(bytes, { track = -1 } = {}) {
+export function parseMidi(bytes) {
   const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   let p = 0;
   const readStr = (n) => String.fromCharCode(...bytes.slice(p, (p += n)));
@@ -106,6 +105,7 @@ export function readMidi(bytes, { track = -1 } = {}) {
     const end = p + len;
     let tick = 0;
     let status = 0;
+    let program = null;
     const open = new Map();
     const notes = [];
     let name = `Track ${t + 1}`;
@@ -134,18 +134,35 @@ export function readMidi(bytes, { track = -1 } = {}) {
         const key = bytes[p++];
         const vel = bytes[p++];
         const k = `${status & 15}:${key}`;
-        if (type === 0x90 && vel > 0) open.set(k, tick);
+        if (type === 0x90 && vel > 0) open.set(k, { tick, vel });
         else if (open.has(k)) {
-          notes.push({ pitch: key, on: open.get(k), off: tick, channel: status & 15 });
+          const o = open.get(k);
+          notes.push({ pitch: key, on: o.tick, off: tick, channel: status & 15, velocity: o.vel });
           open.delete(k);
         }
-      } else if (type === 0xc0 || type === 0xd0) p += 1;
+      } else if (type === 0xc0) {
+        if (program === null) program = bytes[p];
+        p += 1;
+      } else if (type === 0xd0) p += 1;
       else p += 2;
     }
     p = end;
-    const drums = notes.length && notes.every((n) => n.channel === 9);
-    if (notes.length && !drums) tracks.push({ index: t, name, notes });
+    const drums = notes.length > 0 && notes.every((n) => n.channel === 9);
+    if (notes.length) tracks.push({ index: t, name, program, notes, drums });
   }
+  return { division, numerator, denominator, bpm, texts, tracks };
+}
+
+/**
+ * Read a MIDI file and return a monophonic line as compact events [[midi|-1, dur16], ...]
+ * quantised to 16ths. Polyphony is reduced to the highest sounding note ("skyline").
+ * Returns {compact, barLen, tracks: [{index, name, notes}], numerator, denominator, texts (the text
+ * events), bpm}; `track` selects one track (-1 = all). Drum tracks are left out.
+ */
+export function readMidi(bytes, { track = -1 } = {}) {
+  const midi = parseMidi(bytes);
+  const { division, numerator, denominator, texts, bpm } = midi;
+  const tracks = midi.tracks.filter((x) => !x.drums).map(({ index, name, notes }) => ({ index, name, notes }));
   const chosen = track < 0 ? tracks.flatMap((t) => t.notes) : (tracks.find((t) => t.index === track)?.notes ?? []);
   const q = division / 4;
   const barLen = Math.round((numerator * 16) / denominator);

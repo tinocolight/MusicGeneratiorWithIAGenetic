@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ondas Atratoras · Tocar</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="player-page">
+<!-- The light page a QR code opens: it plays the MIDI file carried in the address (#M…), with no
+     composing engine. Its texts live in src/i18n/texts.js (keys player.*). -->
+<main class="player">
+  <header class="player-head">
+    <p class="player-brand" data-i18n="app.title"></p>
+    <label class="lang" for="langSelect"><span data-i18n="lang.label"></span> <select id="langSelect"></select></label>
+  </header>
+  <h1 id="plTitle" data-i18n="player.loading"></h1>
+  <p class="player-meta" id="plMeta"></p>
+  <canvas id="plRoll" data-i18n-aria-label="player.roll"></canvas>
+  <div class="player-bar" aria-hidden="true"><span id="plProgress"></span></div>
+  <div class="player-controls">
+    <button class="btn primary player-play" id="plPlay" type="button" data-i18n="play.play" disabled></button>
+    <label for="plBpm"><span data-i18n="transport.tempo"></span> <input type="range" id="plBpm" min="40" max="240" value="84"><span id="plBpmVal" class="status">84</span></label>
+  </div>
+  <ul class="player-voices" id="plVoices"></ul>
+  <div class="player-actions">
+    <button class="btn" id="plMidi" type="button" data-i18n="player.download" disabled></button>
+    <a class="btn" id="plApp" href="#" data-i18n="player.openApp"></a>
+  </div>
+  <p class="hint" id="plStatus"></p>
+  <p class="hint" data-i18n="player.privacy"></p>
+</main>
+<script type="module" src="src/player/player.js"></script>
+</body>
+</html>
