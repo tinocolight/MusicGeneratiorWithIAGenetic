@@ -1291,6 +1291,8 @@ function openSong(rec, how) {
   $('runStatus').textContent = t('song.opened', { title: piece.title, how: t(`song.from.${how}`) });
   $('midiNote').textContent = t('song.play');
   $('playBtn').classList.add('pulse');
+  // on a phone, opened from a QR code: bring the play button into view
+  if (how === 'link') $('playBtn').scrollIntoView({ block: 'center' });
   return true;
 }
 
