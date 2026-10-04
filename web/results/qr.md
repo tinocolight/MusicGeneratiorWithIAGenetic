@@ -56,10 +56,11 @@ endereço github.io que o QR trazia dava 404 (Q19). Além disso, o QR abria a ap
   - Mostra as notas e deixa descarregar o `.mid`. O Android toca-o no leitor de música; o iPhone
     precisa de uma app, porque o Safari não toca MIDI (Q18).
   - Daí abre-se a peça na aplicação completa.
-- **Sem GitHub Pages.** O leitor é servido por omissão pelo raw.githack.com, que serve os ficheiros
-  de um repositório público como páginas, sem configurar nada (Q15). Não serviam o jsDelivr, que
-  devolve o HTML como texto (Q16), nem um endereço `data:` com a página inteira, que o Chrome e as
-  câmaras bloqueiam (Q17).
+- **No GitHub Pages.** Depois de ativado o GitHub Pages, o QR aponta sempre para o leitor publicado
+  lá: `https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/dist/tocar.html`. Sem o
+  Pages, a alternativa é o raw.githack.com, que serve os ficheiros de um repositório público como
+  páginas, sem configurar nada (Q15). Não serviam o jsDelivr, que devolve o HTML como texto (Q16),
+  nem um endereço `data:` com a página inteira, que o Chrome e as câmaras bloqueiam (Q17).
 - **O PDF continua a bastar**, com ou sem rede: «Abrir PDF ou MIDI…» lê o MIDI anexado.
 
 ## Medições (teste no navegador: PDF renderizado pelo pdf.js e QR lido pelo jsQR)
@@ -78,8 +79,7 @@ codificador de QR foi verificado com o jsQR em todas as versões, níveis e más
 
 ## Limitações
 
-- **Endereço:** o leitor tem de estar no `main` para o raw.githack.com o servir. O raw.githack.com
-  é um serviço externo, gratuito e sem garantias. Com o GitHub Pages ativo, ou noutro alojamento,
+- **Endereço:** o leitor tem de estar no `main` e o GitHub Pages ativo. Para outro alojamento,
   dá-se esse endereço no campo junto à opção.
 - **Tamanho:** um QR versão 30–40 precisa de boa impressão e de ser lido de perto (10–15 cm).
 - **Peças muito longas:** quando nem a melodia com o registo cabe, o PDF diz que não leva QR. O

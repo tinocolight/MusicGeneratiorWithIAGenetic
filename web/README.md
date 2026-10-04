@@ -588,15 +588,16 @@ Pesquisa e decisões, com as fontes: [`results/qr/pesquisa.csv`](results/qr/pesq
   máximo e o símbolo 60 mm no máximo (versão 40: 0,32 mm, legível de perto numa impressão
   laser). Se o cânone inteiro não couber no maior QR (2953 bytes), vai só a melodia com o registo
   e a página refaz as vozes. O codificador de QR é desta página (`src/io/qr.js`, sem bibliotecas).
-- **Endereço do leitor.** Por omissão:
-  - se a página estiver na web, o QR abre o `tocar.html` ao lado dela;
-  - senão, abre a cópia do repositório servida pelo [raw.githack.com](https://raw.githack.com):
-    `https://raw.githack.com/tinocolight/MusicGeneratiorWithIAGenetic/main/web/dist/tocar.html`.
-    Esse serviço serve como páginas os ficheiros de um repositório público, sem configurar nada:
-    **não é preciso ativar o GitHub Pages**, mas o ficheiro tem de estar no `main`.
+- **Endereço do leitor.** O QR abre sempre o leitor publicado no GitHub Pages do repositório,
+  venha o PDF de onde vier (da página publicada, de um servidor local ou do ficheiro único no
+  disco): `https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/dist/tocar.html`. O
+  GitHub Pages publica a raiz do `main` (Settings → Pages → Deploy from a branch → `main`,
+  `/ (root)`), e a aplicação fica em `https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/`.
 
-  Pode dar-se outro endereço no campo que aparece ao marcar a opção. Por exemplo, com o GitHub
-  Pages ativo: `https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/dist/tocar.html`.
+  Pode dar-se outro endereço no campo que aparece ao marcar a opção. Uma alternativa sem GitHub
+  Pages é o [raw.githack.com](https://raw.githack.com), que serve como páginas os ficheiros de um
+  repositório público:
+  `https://raw.githack.com/tinocolight/MusicGeneratiorWithIAGenetic/main/web/dist/tocar.html`.
 - **Sem rede nenhuma**, o PDF basta: «Abrir PDF ou MIDI…» lê o MIDI anexado e recupera a peça,
   qualquer que seja o endereço do QR.
 
