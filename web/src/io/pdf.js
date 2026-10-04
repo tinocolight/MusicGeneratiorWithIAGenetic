@@ -6,7 +6,9 @@
 //   const doc = createPdf({ title });
 //   const ctx = doc.addPage();          // A4 portrait, units: points, origin at the top left
 //   ctx.moveTo(...); ctx.fillText(...); // or hand ctx to VexFlow
+//   doc.attach({ name, mime, data });    // a file inside the PDF (embedded file, ISO 32000 7.11.4)
 //   const bytes = doc.toBytes();        // Uint8Array
+//   readPdfAttachments(bytes)           // the attached files back (async)
 
 import FONT_WIDTHS from '../data/pdf-fonts.js';
 
@@ -331,8 +333,16 @@ const fontKey = (name) => `F${FONTS.indexOf(name) + 1}`;
 /** A PDF document; pages are A4 portrait unless given. */
 export function createPdf({ title = '', author = 'Ondas Atratoras', size = A4 } = {}) {
   const pages = [];
+  const files = [];
   return {
     pages,
+    /**
+     * Attach a file (Uint8Array): it is listed in the reader's attachments panel and can be
+     * saved from there; `relationship` as in PDF/A-3 (Source: the file the document was made from).
+     */
+    attach({ name, mime = 'application/octet-stream', data, description = '', relationship = 'Source' }) {
+      files.push({ name, mime, data, description, relationship });
+    },
     /** New page; returns a drawing context in px units scaled by `scale` pt/px, origin top left. */
     addPage({ scale = 1, width = size.width, height = size.height } = {}) {
       const page = { width, height, ops: [], fonts: new Set() };
@@ -360,10 +370,20 @@ export function createPdf({ title = '', author = 'Ondas Atratoras', size = A4 } 
         const contentId = add(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
         pageIds.push(add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${num(pg.width)} ${num(pg.height)}] /Resources << /Font ${fontDict} >> /Contents ${contentId} 0 R >>`));
       }
-      objects[catalogId - 1] = `<< /Type /Catalog /Pages ${pagesId} 0 R >>`;
+      // attached files: an embedded file stream and its file specification, named in the catalog
+      const specs = files.map((f) => {
+        const date = pdfDate(new Date());
+        const sub = f.mime.replace(/\//g, '#2F');
+        const fileId = add(`<< /Type /EmbeddedFile /Subtype /${sub} /Length ${f.data.length} /Params << /Size ${f.data.length} /ModDate ${date} >> >>\nstream\n${latin1(f.data)}\nendstream`);
+        const name = pdfString(winAnsi(f.name));
+        return { name, id: add(`<< /Type /Filespec /F ${name} /UF ${name} /Desc ${pdfString(winAnsi(f.description))} /AFRelationship /${f.relationship} /EF << /F ${fileId} 0 R /UF ${fileId} 0 R >> >>`) };
+      });
+      specs.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0)); // a name tree is sorted
+      const names = specs.length ? ` /Names << /EmbeddedFiles << /Names [${specs.map((x) => `${x.name} ${x.id} 0 R`).join(' ')}] >> >> /AF [${specs.map((x) => `${x.id} 0 R`).join(' ')}]` : '';
+      objects[catalogId - 1] = `<< /Type /Catalog /Pages ${pagesId} 0 R${names} >>`;
       objects[pagesId - 1] = `<< /Type /Pages /Kids [${pageIds.map((i) => `${i} 0 R`).join(' ')}] /Count ${pageIds.length} >>`;
       const infoId = add(`<< /Title ${pdfString(winAnsi(title))} /Author ${pdfString(winAnsi(author))} /Producer (Ondas Atratoras) >>`);
-      let out = '%PDF-1.4\n%\xe2\xe3\xcf\xd3\n';
+      let out = `%PDF-${files.length ? '1.7' : '1.4'}\n%\xe2\xe3\xcf\xd3\n`;
       const offsets = [];
       objects.forEach((body, i) => {
         offsets.push(out.length);
@@ -378,4 +398,65 @@ export function createPdf({ title = '', author = 'Ondas Atratoras', size = A4 } 
       return bytes;
     },
   };
+}
+
+/** Bytes as a string of the same char codes (the PDF is assembled as such a string). */
+function latin1(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 8192) s += String.fromCharCode(...bytes.subarray(i, i + 8192));
+  return s;
+}
+const pdfDate = (d) => `(D:${d.toISOString().replace(/[-:T]/g, '').slice(0, 14)}Z)`;
+
+/**
+ * The files attached to a PDF: [{name, data}]. Reads the embedded file streams of the PDFs this
+ * page writes and of PDFs saved again by other programs (a length given as a reference, the
+ * FlateDecode filter); encrypted PDFs are not read.
+ */
+export async function readPdfAttachments(bytes) {
+  const text = latin1(bytes);
+  const objects = new Map();
+  for (const m of text.matchAll(/(?:^|[\r\n\s])(\d+)\s+\d+\s+obj\b/g)) objects.set(Number(m[1]), m.index + m[0].length);
+  const bodyOf = (n) => {
+    const at = objects.get(n);
+    if (at === undefined) return '';
+    const end = text.indexOf('endobj', at);
+    return text.slice(at, end < 0 ? undefined : end);
+  };
+  // file specifications name the embedded file streams (/EF << /F n 0 R >>)
+  const names = new Map();
+  for (const n of objects.keys()) {
+    const body = bodyOf(n);
+    const ef = /\/EF\s*<<[^>]*?\/(?:UF|F)\s+(\d+)\s+\d+\s+R/.exec(body);
+    if (!ef) continue;
+    const nm = /\/UF\s*\(((?:\\.|[^\\)])*)\)/.exec(body) || /\/F\s*\(((?:\\.|[^\\)])*)\)/.exec(body);
+    names.set(Number(ef[1]), nm ? nm[1].replace(/\\(.)/g, '$1') : `file-${ef[1]}`);
+  }
+  const out = [];
+  for (const [n, at] of objects) {
+    const head = text.slice(at, at + 2000);
+    const st = /stream\r?\n/.exec(head);
+    const dict = st ? head.slice(0, st.index) : '';
+    if (!st || dict.includes('endobj') || !/\/Type\s*\/EmbeddedFile\b/.test(dict)) continue;
+    const start = at + st.index + st[0].length;
+    let len = -1;
+    const ref = /\/Length\s+(\d+)\s+\d+\s+R/.exec(dict);
+    if (ref) {
+      const v = /^\s*(\d+)/.exec(bodyOf(Number(ref[1])));
+      if (v) len = Number(v[1]);
+    } else {
+      const v = /\/Length\s+(\d+)/.exec(dict);
+      if (v) len = Number(v[1]);
+    }
+    if (len < 0) len = Math.max(0, text.indexOf('endstream', start) - start);
+    let data = bytes.slice(start, start + len);
+    if (/\/Filter\s*(?:\[\s*)?\/FlateDecode/.test(dict)) data = await inflateBytes(data);
+    out.push({ name: names.get(n) ?? `file-${n}`, data });
+  }
+  return out;
+}
+
+async function inflateBytes(bytes) {
+  const res = new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate')));
+  return new Uint8Array(await res.arrayBuffer());
 }

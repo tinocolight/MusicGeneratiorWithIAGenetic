@@ -7,7 +7,7 @@ import { toEvents, eventsToCompact, compactToEvents, fromEvents, STEPS_PER_BAR, 
 import { soundingLine } from '../core/analysis.js';
 import { createRng } from '../core/rng.js';
 import { instrument } from '../core/instruments.js';
-import { analyzeCanon, analyzeEnsemble, INTERVALS } from '../fitness/canon.js';
+import { analyzeCanon, analyzeEnsemble, INTERVALS, intervalMap } from '../fitness/canon.js';
 import { createGA } from '../ga/ga.js';
 import { figureName, figureSyllables } from '../ga/blocks.js';
 import { getBlockModel } from '../fitness/attractor.js';
@@ -19,8 +19,11 @@ import { loadCritic } from '../eval/critic.js';
 import { FEATURE_LABELS } from '../eval/metrics.js';
 import { writeMidi, readMidi } from '../io/midi.js';
 import { scoreModel, canonLineModel, toLilyPond } from '../io/notation.js';
-import { estimateKey } from '../core/theory.js';
+import { estimateKey, makeKey } from '../core/theory.js';
 import { makeZip } from '../io/zip.js';
+import { readPdfAttachments } from '../io/pdf.js';
+import { encodeQr, byteSegment, numericSegment } from '../io/qr.js';
+import { songText, parseSongText, configDiff, mergeConfig, midiLink, midiFromLink, LINK_MARK } from '../io/song.js';
 import { REFERENCE_CANONS, referenceEvents, compactToLine } from '../data/references.js';
 import criticData from '../data/critic-data.js';
 import corpus from '../data/corpus-data.js';
@@ -232,6 +235,24 @@ function initControls() {
     }
   });
   $('midiBtn').addEventListener('click', downloadMidi);
+  $('linkBtn').addEventListener('click', copySongLink);
+  $('openFile').addEventListener('change', onOpenFile);
+  $('pdfQr').addEventListener('change', () => {
+    $('qrBase').hidden = !$('pdfQr').checked;
+    try {
+      localStorage.setItem('ondas-pdf-qr', $('pdfQr').checked ? '1' : '0');
+    } catch (e) {
+      /* storage unavailable */
+    }
+  });
+  $('qrBase').addEventListener('change', () => {
+    try {
+      localStorage.setItem('ondas-qr-base', $('qrBase').value.trim());
+    } catch (e) {
+      /* storage unavailable */
+    }
+  });
+  window.addEventListener('hashchange', openFromLink);
   $('canonPlay').addEventListener('change', render);
   $('meRun').addEventListener('click', runMapElites);
   $('meStop').addEventListener('click', () => (state.meRunning = null));
@@ -635,13 +656,22 @@ async function downloadPdf() {
   try {
     await loadVexFlow();
     const layout = scoreLayoutOf(p);
-    const { bytes, pages, scale } = scorePdf(scoreModelFor(p, layout));
+    // the MIDI file (with the record of the piece) goes inside the PDF; the QR code carries it too
+    const midi = midiOf(p);
+    const attachments = [{ name: `${fileStem(p)}.mid`, mime: 'audio/midi', data: midi, description: t('pdf.attachment') }];
+    const qr = $('pdfQr').checked ? await qrOf(p) : null;
+    const { bytes, pages, scale } = scorePdf(scoreModelFor(p, layout), {
+      attachments,
+      qr: qr && qr.qr ? { qr: qr.qr, lines: [t('qr.pdf.title'), t('qr.pdf.text'), t('qr.pdf.attached'), qr.host] } : null,
+      footer: `${t('score.footer')} · ${t('pdf.footer.attached')}`,
+    });
     const what = t(layout === 'line' ? 'pdf.line' : 'pdf.staves');
     // the staff size is fitted to whole pages (score.js): say so when it differs from the usual
     const size = Math.round((scale / 0.6) * 100);
     const fit = size < 100 ? t('pdf.smaller', { size }) : size > 100 ? t('pdf.bigger', { size }) : '';
-    const info = `${tn('pdf.pages', pages)}, ${what}${fit}`;
-    await saveFile(`ondas-atratoras-${Date.now()}.pdf`, bytes, 'application/pdf', t('pdf.saved', { info }));
+    const qrInfo = !qr ? '' : qr.qr ? t('pdf.qr', { v: qr.qr.version, n: qr.qr.size, ecl: qr.qr.ecl, bytes: qr.bytes }) : t('pdf.qrTooBig', { bytes: qr.bytes });
+    const info = `${tn('pdf.pages', pages)}, ${what}${fit}, ${t('pdf.withMidi')}${qrInfo}`;
+    await saveFile(`${fileStem(p)}.pdf`, bytes, 'application/pdf', t('pdf.saved', { info }));
     if ($('midiNote').textContent === preparing) $('midiNote').textContent = t('pdf.done', { info });
   } catch (e) {
     $('midiNote').textContent = t('pdf.error', { msg: e.message });
@@ -1075,6 +1105,7 @@ function renderBatchSummary(b) {
 // ------------------------------------------------------------------ playback & export
 
 function togglePlay() {
+  $('playBtn').classList.remove('pulse');
   if (player.playing) {
     player.stop();
     state.playhead = null;
@@ -1114,15 +1145,206 @@ const TIME_SIGNATURES = { 6: [3, 8], 8: [2, 4], 12: [6, 8], 16: [4, 4], 24: [6, 
 async function downloadMidi() {
   const p = stagePiece();
   if (!p) return;
-  const { voices } = soundingVoices(p);
+  const bytes = midiOf(p);
+  const tracks = soundingVoices(p).voices.length;
+  await saveFile(`${fileStem(p)}.mid`, bytes, 'audio/midi', t('dl.midiSaved', { tracks: tn('dl.tracks', tracks) }));
+}
+
+const fileStem = () => `ondas-atratoras-${Date.now()}`;
+
+// ------------------------------------------------------------------ songs: MIDI, PDF, link and QR code
+
+/** Record of a piece (io/song.js): enough to bring it back with its voices and settings. */
+function songOf(p) {
+  const genes = p.genes ? Array.from(p.genes) : fromEvents(p.events, p.length);
+  return {
+    title: p.title,
+    genes,
+    barLen: p.barLen,
+    meter: p.meter ?? null,
+    key: p.key ? { tonic: p.key.tonic ?? 0, mode: p.key.mode ?? 'major' } : null,
+    bpm: Number($('bpm').value),
+    allVoices: $('canonPlay').checked,
+    config: p.config ? configDiff(p.config, defaultConfig()) : null,
+    voices: p.config ? null : (p.voices ?? []).map((v) => ({ instrument: v.instrument, delay: v.delay ?? 0, interval: v.interval ?? 'unison' })),
+    circular: p.circular || null,
+    end: p.end ?? null,
+  };
+}
+
+/**
+ * MIDI file of a piece as it sounds, with the record of the piece in a text event (players skip
+ * it, this page reads it back). `compact` writes it smaller (running status), for links and QR
+ * codes; `voices: false` keeps only the melody (the page rebuilds the canon from the record).
+ */
+function midiOf(p, { compact = false, voices: all = $('canonPlay').checked } = {}) {
+  const { voices } = soundingVoices(p, all);
   const tracks = voices.map((v, i) => ({
     events: v.events,
     name: `${instrument(v.instrument).label} ${i + 1}`,
     program: instrument(v.instrument).program,
   }));
   const [num, den] = p.meter && METERS[p.meter] ? [METERS[p.meter].num, METERS[p.meter].den] : TIME_SIGNATURES[p.barLen] ?? [4, 4];
-  const bytes = writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den });
-  await saveFile(`ondas-atratoras-${Date.now()}.mid`, bytes, 'audio/midi', t('dl.midiSaved', { tracks: tn('dl.tracks', tracks.length) }));
+  return writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den, text: songText(songOf(p)), compact });
+}
+
+// The page the links and QR codes open: this one when it is on the web, else the published one
+// (GitHub Pages of the repository), unless another address is given next to the QR option.
+const PUBLISHED_PAGE = 'https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/';
+function pageAddress() {
+  const own = $('qrBase').value.trim();
+  if (own) return own;
+  const { protocol, hostname, origin, pathname } = window.location;
+  const local = !/^https?:$/.test(protocol) || /^(localhost|127\.|\[::1\])/.test(hostname) || /claude|anthropic/.test(hostname);
+  return local ? PUBLISHED_PAGE : origin + pathname.replace(/[^/]*\.html?$/, (f) => (/^index\.html?$/.test(f) ? '' : f));
+}
+
+/**
+ * Link and QR code of a piece: the MIDI file in the address (io/song.js) and the address in a
+ * QR code, byte mode for the page and numeric mode for the music. When the whole canon does not
+ * fit the largest symbol, the melody alone goes (the page rebuilds the voices from the record).
+ */
+async function qrOf(p) {
+  const base = pageAddress();
+  let last = null;
+  for (const voices of [$('canonPlay').checked, false]) {
+    const link = await midiLink(base, midiOf(p, { compact: true, voices }));
+    const bytes = Math.ceil((link.digits.length * Math.log2(10)) / 8);
+    last = { link, bytes, host: base.replace(/^https?:\/\//, '').replace(/\/$/, ''), qr: null };
+    try {
+      last.qr = encodeQr([byteSegment(link.prefix), numericSegment(link.digits)], { ecl: 'L' });
+      return last;
+    } catch (e) {
+      /* too big: try the melody alone */
+    }
+  }
+  return last;
+}
+
+async function copySongLink() {
+  const p = stagePiece();
+  if (!p) return;
+  const { url } = await midiLink(pageAddress(), midiOf(p, { compact: true }));
+  try {
+    await navigator.clipboard.writeText(url);
+    $('midiNote').textContent = t('link.copied', { n: url.length });
+  } catch (e) {
+    window.prompt(t('link.prompt'), url);
+  }
+}
+
+/** A piece from its record: with its settings when it has them, else with its voices. */
+function pieceFromSong(rec) {
+  const titleOf = () => rec.title || t('song.untitled');
+  if (rec.config) {
+    const cfg = mergeConfig(defaultConfig(), rec.config);
+    const built = buildFitness(cfg);
+    if (built.fit.length === rec.genes.length) {
+      const res = built.fit.evaluate(rec.genes, { generation: cfg.ga.generations, maxGenerations: cfg.ga.generations, evaluationCount: 0 });
+      return { cfg, piece: pieceFromGenes(rec.genes, built, cfg, { fitness: res.score, parts: res.parts, weights: built.mode === 'classic' ? cfg.classicG2 : built.fit.weights, title: titleOf(), titleOf }) };
+    }
+  }
+  const key = makeKey(rec.key?.tonic ?? 0, rec.key?.mode ?? 'major');
+  const specs = rec.voices?.length ? rec.voices : rec.config ? voiceSpecs(mergeConfig(defaultConfig(), rec.config), rec.barLen) : [{ instrument: 'violin', delay: 0, interval: 'unison' }];
+  const voices = specs.map((v, i) => ({
+    instrument: v.instrument,
+    delay: i ? v.delay : 0,
+    delayBars: i ? v.delay / rec.barLen : 0,
+    interval: i ? v.interval : 'unison',
+    map: i ? intervalMap(v.interval, key) : (x) => x,
+    range: instrument(v.instrument).range,
+  }));
+  const piece = {
+    events: toEvents(rec.genes), genes: rec.genes, length: rec.genes.length, barLen: rec.barLen, meter: rec.meter ?? null,
+    key, voices, circular: !!rec.circular, end: rec.end ?? undefined, waves: [], config: null, ensemble: null, evaluation: null,
+    heuristics: undefined, fitness: undefined, parts: null, title: titleOf(), titleOf, baseTitle: null,
+  };
+  return { cfg: null, piece };
+}
+
+/** Bring back a piece from its record (from a MIDI file, a PDF or a link). */
+function openSong(rec, how) {
+  if (state.running) {
+    $('midiNote').textContent = t('song.busy');
+    return false;
+  }
+  if (player.playing) player.stop();
+  state.playhead = null;
+  $('playBtn').textContent = t('play.play');
+  const { cfg, piece } = pieceFromSong(rec);
+  if (cfg) {
+    state.config = cfg;
+    controls.renderAll();
+  }
+  if (rec.bpm) {
+    $('bpm').value = String(Math.max(Number($('bpm').min), Math.min(Number($('bpm').max), Math.round(rec.bpm))));
+    $('bpmVal').textContent = $('bpm').value;
+  }
+  if (typeof rec.allVoices === 'boolean') $('canonPlay').checked = rec.allVoices;
+  state.history = [];
+  state.analysisPiece = null;
+  if (state.tab !== 'compose') selectTab('compose');
+  setPiece(piece);
+  updatePreview();
+  updateStartHint();
+  drawHistory();
+  $('runStatus').textContent = t('song.opened', { title: piece.title, how: t(`song.from.${how}`) });
+  $('midiNote').textContent = t('song.play');
+  $('playBtn').classList.add('pulse');
+  return true;
+}
+
+/** The record inside a MIDI file, or null. */
+function songOfMidi(bytes) {
+  const res = readMidi(bytes);
+  for (const text of res.texts) {
+    const rec = parseSongText(text);
+    if (rec) return { rec, midi: res };
+  }
+  return { rec: null, midi: res };
+}
+
+/** "Open": a PDF of this page (its attached MIDI file) or a MIDI file. */
+async function onOpenFile() {
+  const f = $('openFile').files[0];
+  $('openFile').value = '';
+  if (!f) return;
+  try {
+    let bytes = new Uint8Array(await f.arrayBuffer());
+    const pdf = String.fromCharCode(...bytes.subarray(0, 5)) === '%PDF-';
+    if (pdf) {
+      const files = await readPdfAttachments(bytes);
+      const mid = files.find((x) => String.fromCharCode(...x.data.subarray(0, 4)) === 'MThd');
+      if (!mid) throw new Error(t('open.noMidi'));
+      bytes = mid.data;
+    }
+    const { rec, midi } = songOfMidi(bytes);
+    if (rec) {
+      openSong(rec, pdf ? 'pdf' : 'midi');
+      return;
+    }
+    // a MIDI file from elsewhere: the analyser reads its melody
+    state.midiUpload = { compact: midi.compact, barLen: midi.barLen, meter: meterFromSignature(midi.numerator, midi.denominator)?.id ?? null, title: f.name, key: null };
+    $('anSource').value = 'midi';
+    $('anCorpusRow').hidden = true;
+    selectTab('analyze');
+    $('anStatus').textContent = t('open.foreign', { name: f.name });
+  } catch (e) {
+    $('midiNote').textContent = t('open.error', { msg: e.message });
+  }
+}
+
+/** A link with a piece (#M…): open it. */
+async function openFromLink() {
+  if (!window.location.hash.startsWith(LINK_MARK)) return;
+  try {
+    const midi = await midiFromLink(window.location.hash);
+    const { rec } = songOfMidi(midi);
+    if (!rec) throw new Error(t('open.noRecord'));
+    openSong(rec, 'link');
+  } catch (e) {
+    $('runStatus').textContent = t('link.error', { msg: e.message });
+  }
 }
 
 /** Download a file; inside the claude.ai viewer it goes through the downloads capability, in a ZIP. */
@@ -1536,6 +1758,8 @@ function start() {
   try {
     if (localStorage.getItem('ondas-view') === 'score') state.view = 'score';
     if (localStorage.getItem('ondas-score-layout') === 'line') $('scoreLayout').value = 'line';
+    if (localStorage.getItem('ondas-pdf-qr') === '1') $('pdfQr').checked = true;
+    $('qrBase').value = localStorage.getItem('ondas-qr-base') ?? '';
   } catch (e) {
     /* storage unavailable */
   }
@@ -1552,6 +1776,9 @@ function start() {
   drawHistory();
   $('runStatus').textContent = t('status.readyDesc', { desc: describe(state.config) });
   if (state.view === 'score') setView('score');
+  $('qrBase').hidden = !$('pdfQr').checked;
+  $('qrBase').placeholder = pageAddress();
+  openFromLink();
 }
 
 start();

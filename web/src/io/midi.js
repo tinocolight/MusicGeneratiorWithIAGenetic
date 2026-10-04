@@ -13,13 +13,18 @@ const str = (s) => [...s].map((c) => c.charCodeAt(0));
 const u32 = (n) => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
 const u16 = (n) => [(n >>> 8) & 255, n & 255];
 
-function trackChunk(events) {
+function trackChunk(events, compact = false) {
   // events: [{tick, bytes}] sorted
   events.sort((a, b) => a.tick - b.tick || a.order - b.order);
   const data = [];
   let last = 0;
+  let status = 0;
   for (const e of events) {
-    data.push(...vlq(e.tick - last), ...e.bytes);
+    data.push(...vlq(e.tick - last));
+    // running status: a channel message with the status of the one before leaves it out
+    if (compact && e.bytes[0] < 0xf0 && e.bytes[0] === status) data.push(...e.bytes.slice(1));
+    else data.push(...e.bytes);
+    status = e.bytes[0] < 0xf0 ? e.bytes[0] : 0;
     last = e.tick;
   }
   data.push(0, 0xff, 0x2f, 0x00);
@@ -28,14 +33,20 @@ function trackChunk(events) {
 
 /**
  * @param voices [{events: [{pitch|null, start, dur}], offset (16ths), program, channel, name}]
- * @param opts {bpm, numerator, denominator}
+ * @param opts {bpm, numerator, denominator, text (a text event in the first track), compact
+ *   (running status, and note-off written as note-on at velocity 0, so that every note after
+ *   the first in a track takes 3 bytes less: the files are smaller, for links and QR codes)}
  */
-export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4 } = {}) {
+export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4, text = '', compact = false } = {}) {
   const tempo = Math.round(60000000 / bpm);
   const meta = [
     { tick: 0, order: 0, bytes: [0xff, 0x51, 0x03, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255] },
     { tick: 0, order: 0, bytes: [0xff, 0x58, 0x04, numerator, Math.log2(denominator), 24, 8] },
   ];
+  if (text) {
+    const t = [...new TextEncoder().encode(text)];
+    meta.push({ tick: 0, order: 1, bytes: [0xff, 0x01, ...vlq(t.length), ...t] });
+  }
   const tracks = [trackChunk(meta)];
   voices.forEach((v, i) => {
     const ch = (v.channel ?? i) & 15;
@@ -49,9 +60,9 @@ export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4 } =
       const on = (e.start + (v.offset || 0)) * q;
       const off = on + e.dur * q;
       evs.push({ tick: on, order: 3, bytes: [0x90 | ch, e.pitch, v.velocity ?? 88] });
-      evs.push({ tick: off, order: 2, bytes: [0x80 | ch, e.pitch, 0] });
+      evs.push({ tick: off, order: 2, bytes: compact ? [0x90 | ch, e.pitch, 0] : [0x80 | ch, e.pitch, 0] });
     }
-    tracks.push(trackChunk(evs));
+    tracks.push(trackChunk(evs, compact));
   });
   const header = [...str('MThd'), ...u32(6), ...u16(1), ...u16(tracks.length), ...u16(TICKS)];
   return new Uint8Array([...header, ...tracks.flat()]);
@@ -60,7 +71,8 @@ export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4 } =
 /**
  * Read a MIDI file and return a monophonic line as compact events [[midi|-1, dur16], ...]
  * quantised to 16ths. Polyphony is reduced to the highest sounding note ("skyline").
- * Returns {compact, barLen, tracks: [{index, name, notes}]}; `track` selects one track (-1 = all).
+ * Returns {compact, barLen, tracks: [{index, name, notes}], numerator, denominator, texts (the text
+ * events), bpm}; `track` selects one track (-1 = all).
  */
 export function readMidi(bytes, { track = -1 } = {}) {
   const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -84,7 +96,9 @@ export function readMidi(bytes, { track = -1 } = {}) {
   if (division & 0x8000) throw new Error('SMPTE time division is not supported');
   let numerator = 4;
   let denominator = 4;
+  let bpm = null;
   const tracks = [];
+  const texts = [];
   for (let t = 0; t < ntracks && p < bytes.length; t++) {
     if (readStr(4) !== 'MTrk') break;
     const len = dv.getUint32(p);
@@ -111,6 +125,8 @@ export function readMidi(bytes, { track = -1 } = {}) {
           denominator = 2 ** bytes[p + 1];
         }
         if (mt === 0x03) name = String.fromCharCode(...bytes.slice(p, p + ml));
+        if (mt === 0x01) texts.push(new TextDecoder().decode(bytes.slice(p, p + ml)));
+        if (mt === 0x51 && bpm === null) bpm = 60000000 / ((bytes[p] << 16) | (bytes[p + 1] << 8) | bytes[p + 2]);
         p += ml;
       } else if (status === 0xf0 || status === 0xf7) {
         p += readVlq();
@@ -133,7 +149,7 @@ export function readMidi(bytes, { track = -1 } = {}) {
   const chosen = track < 0 ? tracks.flatMap((t) => t.notes) : (tracks.find((t) => t.index === track)?.notes ?? []);
   const q = division / 4;
   const barLen = Math.round((numerator * 16) / denominator);
-  if (!chosen.length) return { compact: [], barLen, tracks };
+  if (!chosen.length) return { compact: [], barLen, tracks, numerator, denominator, texts, bpm };
   const first = Math.min(...chosen.map((n) => n.on));
   const startStep = Math.floor(first / q / barLen) * barLen; // keep bar alignment
   const lastStep = Math.max(...chosen.map((n) => Math.round(n.off / q)));
@@ -160,5 +176,5 @@ export function readMidi(bytes, { track = -1 } = {}) {
   }
   // a leading rest is kept so that the bar lines stay where they are in the file
   while (compact.length && compact[compact.length - 1][0] === -1) compact.pop();
-  return { compact, barLen, tracks, numerator, denominator };
+  return { compact, barLen, tracks, numerator, denominator, texts, bpm };
 }
