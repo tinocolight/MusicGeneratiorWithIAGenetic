@@ -63,7 +63,10 @@ atual enquanto ainda não foram usadas para gerar. Por baixo:
   duas, escolhe-se a que fica mais perto do tamanho habitual, e uma peça de uma só página com
   espaço de sobra fica como está. Depois, as linhas repartem-se por igual entre as páginas e
   espaçam-se até ao fundo de cada uma, como faz o LilyPond. A mensagem junto ao botão diz quando
-  a pauta foi reduzida ou ampliada.
+  a pauta foi reduzida ou ampliada. O PDF leva sempre o **MIDI anexado** (ver abaixo).
+- **QR no PDF**: desenha no fim da partitura um QR code denso com a música (ver abaixo).
+- **Copiar ligação**: copia uma ligação com a música dentro do próprio endereço, a mesma do QR code.
+- **Abrir PDF ou MIDI…**: recupera uma peça de um PDF ou de um MIDI feitos por esta página.
 - **LilyPond (.ly)**: descarrega esse ficheiro, para gravar a partitura com o próprio LilyPond
   (`lilypond peca.ly` produz o PDF e um MIDI). A ortografia segue a tonalidade (sensível elevada
   no modo menor, bequadros antes de sustenidos ou bemóis), as figuras são divididas nos tempos e nas
@@ -73,7 +76,8 @@ atual enquanto ainda não foram usadas para gerar. Por baixo:
   ajustável; cada voz tem a sua posição no panorama.
 - **Tocar com todas as vozes**: desligado, ouve-se só a melodia.
 - **Descarregar MIDI**: uma pista por voz, cada uma com o programa General MIDI do seu instrumento
-  e já transposta. Dentro do visualizador do claude.ai o MIDI vem dentro de um `.zip` (é a única
+  e já transposta. Leva também os dados da peça num evento de texto, que os leitores de MIDI
+  ignoram, por isso a página volta a abri-la tal como era. Dentro do visualizador do claude.ai o MIDI vem dentro de um `.zip` (é a única
   forma de o visualizador aceitar o ficheiro).
 - As fichas no topo resumem a peça: aptidão, **crítico** (probabilidade de ser uma melodia real),
   características **típicas** (de 26), **pausas** e, com várias vozes, a **consonância** nos tempos
@@ -557,6 +561,36 @@ Pedido: procurar na literatura regras de composição por estilo e compasso, reg
 - **Descrições dos pesos**: em «Pesos das regras», cada peso tem um botão «?» que explica o que a regra mede e como muda a melodia. No modo clássico, a descrição interpreta também o que os autores pretendiam, a partir do código e dos seus comentários.
 - **Lapso novo no original**: ao escrever essas descrições encontrou-se outro lapso. `ScoreTerminationQualifyers` dá a pontuação máxima a uma nota final de só duas semicolcheias: os testes aninhados usam `!=`, embora o comentário diga «terminação com notas mais longas». Fica como no original, porque as combinações calibradas contam com ele.
 
+## Ouvir no telemóvel: QR code, ligação e PDF com o MIDI
+
+Pesquisa e decisões, com as fontes: [`results/qr/pesquisa.csv`](results/qr/pesquisa.csv) e
+[`results/qr.md`](results/qr.md).
+
+- **O ficheiro MIDI é o transporte.** Além das notas, leva num evento de texto o registo da peça:
+  os genes, as definições que diferem das de omissão, o andamento e o título (`src/io/song.js`).
+  Qualquer leitor de MIDI toca o ficheiro, e esta página reconstrói a peça a partir dele, com as
+  vozes do cânone, as ondas e a avaliação.
+- **PDF.** O MIDI vai sempre anexado ao PDF: é um ficheiro incorporado (ISO 32000, com
+  `/AFRelationship /Source` como no PDF/A-3) e aparece no painel de anexos do leitor de PDF. Em
+  **Abrir PDF ou MIDI…** a página lê o anexo e recupera a peça. Um MIDI feito por outro programa
+  vai para o separador Analisar.
+- **QR code** (opção **QR no PDF**). O QR traz um endereço `https://…/web/#M<dígitos>`:
+  - os dígitos são o MIDI comprimido com DEFLATE, 12 bytes em 29 dígitos;
+  - o endereço vai em modo byte e os dígitos em modo numérico, o mais denso do QR (3,33 bits por
+    dígito; aproveita 99 % dos bits, contra 75 % do Base64);
+  - a câmara do telemóvel abre a página, que mostra a peça e a toca ao carregar em ▶ Tocar;
+  - o fragmento (depois de `#`) não sai do telemóvel, e nada é enviado a um servidor.
+
+  O QR fica no canto inferior direito da última página, num espaço que a paginação reserva para
+  ele, com uma explicação ao lado: não tapa a partitura nem o texto. Os módulos têm 0,55 mm no
+  máximo e o símbolo 60 mm no máximo (versão 40: 0,32 mm, legível de perto numa impressão
+  laser). Se o cânone inteiro não couber no maior QR (2953 bytes), vai só a melodia com o registo
+  e a página refaz as vozes. O codificador de QR é desta página (`src/io/qr.js`, sem bibliotecas).
+- **Endereço.** Por omissão o QR abre esta página, se ela estiver na web, ou senão a página
+  publicada no GitHub Pages (`https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/`,
+  que é preciso ativar em Settings → Pages). Pode dar-se outro endereço no campo que aparece ao
+  marcar a opção.
+
 ## Línguas (português e inglês)
 
 A página existe em português e em inglês. O menu fica no cabeçalho; a escolha fica guardada no navegador e, da primeira vez, segue a língua do navegador.
@@ -969,10 +1003,12 @@ web/
   src/variation/dabby.js         variações caóticas
   src/analysis/wavefit.js        analisador de ondas
   src/eval/                      características, modelo de expectativa, crítico, modelos nulos
-  src/io/midi.js                 escrita/leitura de MIDI
+  src/io/midi.js                 escrita/leitura de MIDI (com o registo da peça num evento de texto)
+  src/io/song.js                 registo da peça, ligação #M<dígitos> (DEFLATE, modo numérico do QR)
+  src/io/qr.js                   codificador de QR code (segmentos byte/numérico/alfanumérico, versões 1–40)
   src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond,
                                  cânone numa só linha com as entradas
-  src/io/pdf.js                  PDF vetorial (A4) e contexto de desenho para o VexFlow
+  src/io/pdf.js                  PDF vetorial (A4), contexto de desenho para o VexFlow, ficheiros anexados
   src/ui/score.js                partitura na página (VexFlow + Gonville)
   src/core/meter.js              compassos simples e compostos (tempo, pesos métricos, frases)
   src/ga/figures.js              leitura por tempos: figura, contorno, entrada, direção
@@ -980,6 +1016,7 @@ web/
   src/ga/blocks.js               blocos do corpus por compasso: modelo, escrita por blocos, mutação, regra «idioma»
   data/corpus-meters.json        9644 melodias reais com o seu compasso (sem as 480 do crítico)
   data/corpus-large.json         6758 melodias em x/4 do estudo do algoritmo original
+  results/qr/                    pesquisa sobre QR code, MIDI e PDF (pesquisa.csv)
   results/estilos/               pesquisa (literatura.csv), confronto, regras, calibração, validação, estudo no AG
   results/meters/                a análise por compasso em CSV e Excel (auditável)
   src/data/classic-presets.js    combinações de partida do modo clássico (gerado pelo estudo)
@@ -993,7 +1030,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 93 testes
+npm test                              # 98 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória

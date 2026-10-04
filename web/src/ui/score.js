@@ -12,6 +12,7 @@
 import { t } from '../i18n/i18n.js';
 import { spell, vexKey, VEX_DURATION, tempoMark } from '../io/notation.js';
 import { createPdf, A4 } from '../io/pdf.js';
+import { qrRuns } from '../io/qr.js';
 
 let loading = null;
 
@@ -334,14 +335,18 @@ const MARGIN_X = 42;
 const MARGIN_TOP = 44;
 const MARGIN_BOTTOM = 38;
 
-/** Line and page breaking of the score on A4 at `s` pt per px. */
-export function paginate(model, s) {
+/**
+ * Line and page breaking of the score on A4 at `s` pt per px; `reserve` pt are kept free at the
+ * foot of the last page (for the QR code).
+ */
+export function paginate(model, s, reserve = 0) {
   const width = (A4.width - 2 * MARGIN_X) / s;
   const usable = (A4.height - MARGIN_TOP - MARGIN_BOTTOM) / s;
   const lay = layoutScore(model, width);
   const k = lay.systems.length;
-  // height of systems a..b-1 on one page (the first page also carries the title block)
-  const heightOf = (a, b) => (a === 0 ? lay.titleH : 0) + (b - a - 1) * lay.sysH + lay.sysFoot;
+  // height of systems a..b-1 on one page (the first page also carries the title block, the last
+  // one the reserved space)
+  const heightOf = (a, b) => (a === 0 ? lay.titleH : 0) + (b - a - 1) * lay.sysH + lay.sysFoot + (b === k ? reserve / s : 0);
   const fits = (a, b) => b - a === 1 || heightOf(a, b) <= usable;
   // the fewest pages, filling each in turn
   let count = 0;
@@ -376,8 +381,8 @@ export function paginate(model, s) {
 }
 
 /** Staff size (pt per px) for the PDF: see above. */
-export function pdfScale(model) {
-  const pagesAt = (s) => paginate(model, s).pages.length;
+export function pdfScale(model, reserve = 0) {
+  const pagesAt = (s) => paginate(model, s, reserve).pages.length;
   const n = pagesAt(PDF_SCALE);
   if (n === 1) return PDF_SCALE;
   let up = PDF_SCALE;
@@ -396,11 +401,32 @@ export function pdfScale(model) {
   return down !== null && Math.log(PDF_SCALE / down) < Math.log(up / PDF_SCALE) ? r(down) : r(up);
 }
 
-/** The score as a PDF (Uint8Array), on A4 pages. */
-export function scorePdf(model, { VF = window.Vex.Flow, footer = t('score.footer'), scale } = {}) {
+// The QR code: modules of 0.55 mm at most, the whole symbol (with its quiet zone of 4 modules)
+// 60 mm at most, so that a version 40 symbol still has modules of 0.32 mm, which a phone camera
+// resolves at 10–15 cm from a laser print.
+const MM = 72 / 25.4;
+const QR_MODULE = 0.55 * MM;
+const QR_SIDE = 60 * MM;
+const QR_GAP = 14; // pt between the music and the QR block
+
+/** Side (pt) of a QR code of `size` modules with its quiet zone, and the module (pt). */
+export function qrBox(size) {
+  const module = Math.min(QR_MODULE, QR_SIDE / (size + 8));
+  return { module, side: module * (size + 8) };
+}
+
+/**
+ * The score as a PDF (Uint8Array), on A4 pages. `attachments` [{name, mime, data, description}]
+ * go inside the PDF; `qr` {qr (io/qr.js), lines: [title, text…]} is drawn at the foot of the
+ * last page, in space kept free for it, with the lines beside it.
+ */
+export function scorePdf(model, { VF = window.Vex.Flow, footer = t('score.footer'), scale, attachments = [], qr = null } = {}) {
   const doc = createPdf({ title: model.title });
-  const s = scale ?? pdfScale(model);
-  const { lay, usable, pages } = paginate(model, s);
+  for (const a of attachments) doc.attach(a);
+  const box = qr ? qrBox(qr.qr.size) : null;
+  const reserve = box ? box.side + QR_GAP : 0;
+  const s = scale ?? pdfScale(model, reserve);
+  const { lay, usable, pages } = paginate(model, s, reserve);
   const several = pages.length > 1;
   // spread the lines down the page when it is mostly full, or to fill every page of a longer piece
   const tops = pages.map(({ first, end, fill }) => {
@@ -432,5 +458,55 @@ export function scorePdf(model, { VF = window.Vex.Flow, footer = t('score.footer
     if (pi === 0 && footer) ctx.fillText(footer, lay.W - ctx.measureText(footer).width, y);
     ctx.restore();
   });
-  return { bytes: doc.toBytes(), pages: pages.length, scale: s };
+  if (qr) drawQrBlock(ctxs[ctxs.length - 1], qr, box, { s, right: lay.W, bottom: usable });
+  return { bytes: doc.toBytes(), pages: pages.length, scale: s, qrSide: box ? box.side : 0 };
+}
+
+/** The QR code at the bottom right of the page, its lines of text to the left of it. */
+function drawQrBlock(ctx, { qr, lines = [] }, { module, side }, { s, right, bottom }) {
+  const m = module / s;
+  const w = side / s;
+  const x0 = right - w;
+  const y0 = bottom - w;
+  ctx.save();
+  // the light quiet zone is the page itself; the dark modules in one path, a rectangle per run
+  ctx.setFillStyle('#000');
+  ctx.beginPath();
+  for (const r of qrRuns(qr)) ctx.rect(x0 + (4 + r.x) * m, y0 + (4 + r.y) * m, r.w * m, m);
+  ctx.fill();
+  // the text, wrapped to the room left of the symbol, aligned with its bottom
+  const width = x0 - 12 / s;
+  const size = (8 * PDF_SCALE) / s;
+  const rows = [];
+  lines.forEach((text, i) => {
+    ctx.setFont('Georgia, serif', i ? size : size * 1.15, i ? 'normal' : 'bold', i ? 'italic' : 'normal');
+    for (const row of wrap(ctx, text, width)) rows.push({ row, font: ctx.getFont(), h: (i ? size : size * 1.15) * 1.35 });
+    rows.push({ row: '', h: size * 0.5 });
+  });
+  rows.pop();
+  let y = bottom - 4 * m - rows.reduce((a, r) => a + r.h, 0) + rows[0].h * 0.8;
+  ctx.setFillStyle('#333');
+  for (const r of rows) {
+    if (r.row) {
+      ctx.setFont(r.font);
+      ctx.fillText(r.row, 0, y);
+    }
+    y += r.h;
+  }
+  ctx.restore();
+}
+
+/** Words of `text` in lines no wider than `width` in the current font. */
+function wrap(ctx, text, width) {
+  const out = [];
+  let line = '';
+  for (const word of String(text).split(/\s+/).filter(Boolean)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && ctx.measureText(next).width > width) {
+      out.push(line);
+      line = word;
+    } else line = next;
+  }
+  if (line) out.push(line);
+  return out;
 }

@@ -153,14 +153,20 @@ button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-v
 .transport { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
 .transport label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; }
 
-button.btn {
+button.btn, label.btn {
   font: 600 13px var(--font-body); border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
   padding: 7px 14px; border-radius: 8px; cursor: pointer;
 }
-button.btn:hover { border-color: var(--accent); }
+button.btn:hover, label.btn:hover { border-color: var(--accent); }
+.transport label.btn { color: var(--ink); font-size: 13px; }
+label.btn:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* a piece opened from a link or a file: the play button asks to be pressed (sound needs a tap) */
+button.btn.pulse { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 35%, transparent); } }
+@media (prefers-reduced-motion: reduce) { button.btn.pulse { animation: none; outline: 3px solid var(--accent); } }
 button.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 button.btn:disabled { opacity: 0.5; cursor: default; }
-select, input[type="number"], input[type="text"] {
+select, input[type="number"], input[type="text"], input[type="url"] {
   font: 13px var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line);
   border-radius: 6px; padding: 5px 7px; max-width: 100%;
 }

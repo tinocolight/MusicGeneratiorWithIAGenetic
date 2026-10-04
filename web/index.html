@@ -60,6 +60,10 @@
         <option value="line" data-i18n="transport.staves.line"></option>
       </select></label>
       <button class="btn" id="pdfBtn" type="button" data-i18n="transport.pdf" data-i18n-title="transport.pdf.title"></button>
+      <label for="pdfQr" data-i18n-title="transport.qr.title"><input type="checkbox" id="pdfQr"> <span data-i18n="transport.qr"></span></label>
+      <input type="url" id="qrBase" size="30" hidden data-i18n-title="transport.qrBase.title" data-i18n-aria-label="transport.qrBase.title">
+      <button class="btn" id="linkBtn" type="button" data-i18n="transport.link" data-i18n-title="transport.link.title"></button>
+      <label class="btn" for="openFile" data-i18n-title="transport.open.title"><span data-i18n="transport.open"></span><input type="file" id="openFile" accept=".pdf,.mid,.midi,application/pdf,audio/midi" hidden></label>
       <button class="btn" id="lilyBtn" type="button" data-i18n="transport.lily" data-i18n-title="transport.lily.title"></button>
       <span class="note-inline" id="midiNote"></span>
     </div>
