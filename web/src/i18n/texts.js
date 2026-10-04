@@ -69,8 +69,8 @@ export const TEXTS = {
     en: 'Draws at the end of the score a dense QR code with the MIDI file: a phone camera opens in the browser a player that plays the piece, with nothing to install',
   },
   'transport.qrBase.title': {
-    pt: 'Endereço do leitor que o QR e a ligação abrem (em branco: o tocar.html ao lado desta página, se estiver na web, ou senão o do repositório servido pelo raw.githack.com)',
-    en: 'Address of the player the QR code and the link open (blank: the tocar.html next to this page when it is on the web, or else the one in the repository served by raw.githack.com)',
+    pt: 'Endereço do leitor que o QR e a ligação abrem (em branco: o leitor publicado no GitHub Pages do repositório)',
+    en: 'Address of the player the QR code and the link open (blank: the player published on the repository’s GitHub Pages)',
   },
   'transport.link': { pt: 'Copiar ligação', en: 'Copy link' },
   'transport.link.title': {

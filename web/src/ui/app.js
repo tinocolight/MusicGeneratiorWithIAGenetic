@@ -1188,18 +1188,12 @@ function midiOf(p, { compact = false, voices: all = $('canonPlay').checked } = {
   return writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den, text: songText(songOf(p)), compact });
 }
 
-// The page the links and QR codes open: the light player (tocar.html), which only plays the MIDI
-// file and opens the full application from there. Next to this page when it is on the web; else
-// the copy in the repository served by raw.githack.com, which serves the files of a public GitHub
-// repository as web pages with no setup (GitHub Pages need not be on); or the address given next
-// to the QR option.
-const PUBLISHED_PLAYER = 'https://raw.githack.com/tinocolight/MusicGeneratiorWithIAGenetic/main/web/dist/tocar.html';
+// The page the links and QR codes open: the light player (tocar.html) published on the repository's
+// GitHub Pages, which only plays the MIDI file and opens the full application from there; or the
+// address given next to the QR option.
+const PUBLISHED_PLAYER = 'https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/dist/tocar.html';
 function pageAddress() {
-  const own = $('qrBase').value.trim();
-  if (own) return own;
-  const { protocol, hostname, href } = window.location;
-  const local = !/^https?:$/.test(protocol) || /^(localhost|127\.|\[::1\])/.test(hostname) || /claude|anthropic/.test(hostname);
-  return local ? PUBLISHED_PLAYER : new URL('tocar.html', href.split('#')[0]).href;
+  return $('qrBase').value.trim() || PUBLISHED_PLAYER;
 }
 
 /**
