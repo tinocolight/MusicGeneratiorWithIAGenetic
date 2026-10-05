@@ -24,6 +24,14 @@ geral,2/4,2451,phraseDescent,phraseDescent,0,0.5,1
 geral,2/4,2451,firstOnset,firstOnset,0,0,6
 geral,2/4,2451,fig:quarters,figuras x___,0.0625,0.2292,0.4375
 geral,2/4,2451,chromatic,chromatic,0,0,0.0333
+geral,2/4,2451,verseFinal,verseFinal,1.1111,1.7778,2.521
+geral,2/4,2451,verseNotes,verseNotes,9.6,17,32
+geral,2/4,2451,verseAnticip,verseAnticip,0,0,0
+geral,2/4,2451,verseEndStep,verseEndStep,0,0.5,1
+geral,2/4,2451,verseTonic,verseTonic,0,0.25,1
+geral,2/4,2451,quickRuns,quickRuns,0,0,0.3125
+geral,2/4,2451,quickRunMax,quickRunMax,0,0,8
+geral,2/4,2451,runsIntoLong,runsIntoLong,0,0,0.2
 geral,2/4,2451,fig:eighths,figuras x_x_,0.1667,0.4444,0.7
 geral,2/4,2451,arpeggio,arpeggio,0.1613,0.3235,0.5
 geral,2/4,2451,fig:dotted,figuras x__x,0,0,0.1667
@@ -66,6 +74,14 @@ geral,3/4,1514,phraseDescent,phraseDescent,0,0.4,0.75
 geral,3/4,1514,firstOnset,firstOnset,0,8,10
 geral,3/4,1514,fig:quarters,figuras x___,0.2778,0.5417,0.766
 geral,3/4,1514,chromatic,chromatic,0,0,0.04
+geral,3/4,1514,verseFinal,verseFinal,1.219,1.6875,2.4352
+geral,3/4,1514,verseNotes,verseNotes,8.5,15.3333,26.5
+geral,3/4,1514,verseAnticip,verseAnticip,0,0,0
+geral,3/4,1514,verseEndStep,verseEndStep,0,0.5,1
+geral,3/4,1514,verseTonic,verseTonic,0,0.25,0.6667
+geral,3/4,1514,quickRuns,quickRuns,0,0,0
+geral,3/4,1514,quickRunMax,quickRunMax,0,0,0
+geral,3/4,1514,runsIntoLong,runsIntoLong,0,0,0.1667
 geral,3/4,1514,fig:eighths,figuras x_x_,0,0.2222,0.5
 geral,3/4,1514,arpeggio,arpeggio,0.1389,0.2813,0.4688
 geral,3/4,1514,fig:dotted,figuras x__x,0,0,0.1379
@@ -108,6 +124,14 @@ geral,4/4,3276,phraseDescent,phraseDescent,0.2,0.5,0.75
 geral,4/4,3276,firstOnset,firstOnset,0,12,14
 geral,4/4,3276,fig:quarters,figuras x___,0.0952,0.4872,0.8
 geral,4/4,3276,chromatic,chromatic,0,0,0.0465
+geral,4/4,3276,verseFinal,verseFinal,1.2222,1.8833,2.6667
+geral,4/4,3276,verseNotes,verseNotes,9,15.3333,31.5
+geral,4/4,3276,verseAnticip,verseAnticip,0,0,0
+geral,4/4,3276,verseEndStep,verseEndStep,0,0.5,1
+geral,4/4,3276,verseTonic,verseTonic,0,0.1818,0.6667
+geral,4/4,3276,quickRuns,quickRuns,0,0,0
+geral,4/4,3276,quickRunMax,quickRunMax,0,0,0
+geral,4/4,3276,runsIntoLong,runsIntoLong,0,0,0
 geral,4/4,3276,fig:eighths,figuras x_x_,0.0139,0.2432,0.8254
 geral,4/4,3276,arpeggio,arpeggio,0.1333,0.2909,0.5078
 geral,4/4,3276,fig:dotted,figuras x__x,0,0,0.1667
@@ -151,6 +175,14 @@ geral,3/8,342,phraseDescent,phraseDescent,0,0.5,1
 geral,3/8,342,fig:rocking,figuras x___x_ x_____,0,0.1818,0.4706
 geral,3/8,342,firstOnset,firstOnset,0,4,4
 geral,3/8,342,chromatic,chromatic,0,0,0.0408
+geral,3/8,342,verseFinal,verseFinal,1.0727,1.8027,2.6974
+geral,3/8,342,verseNotes,verseNotes,10,17,26
+geral,3/8,342,verseAnticip,verseAnticip,0,0,0
+geral,3/8,342,verseEndStep,verseEndStep,0,0.5,1
+geral,3/8,342,verseTonic,verseTonic,0,0,1
+geral,3/8,342,quickRuns,quickRuns,0,0,0.25
+geral,3/8,342,quickRunMax,quickRunMax,0,0,5
+geral,3/8,342,runsIntoLong,runsIntoLong,0,0,0
 geral,3/8,342,arpeggio,arpeggio,0.1176,0.2632,0.4688
 geral,3/8,342,fig:threeEighths,figuras x_x_x_,0.0667,0.3529,0.625
 geral,3/8,342,fig:longShort,figuras x___x_,0,0.125,0.4375
@@ -186,6 +218,14 @@ geral,6/8,1911,phraseDescent,phraseDescent,0,0.5,0.8333
 geral,6/8,1911,fig:rocking,figuras x___x_ x_____,0.0625,0.3333,0.6957
 geral,6/8,1911,firstOnset,firstOnset,0,10,10
 geral,6/8,1911,chromatic,chromatic,0,0,0.0513
+geral,6/8,1911,verseFinal,verseFinal,1.2232,1.964,2.961
+geral,6/8,1911,verseNotes,verseNotes,9.6667,17.25,37.5
+geral,6/8,1911,verseAnticip,verseAnticip,0,0,0
+geral,6/8,1911,verseEndStep,verseEndStep,0,0.5,1
+geral,6/8,1911,verseTonic,verseTonic,0,0.2,1
+geral,6/8,1911,quickRuns,quickRuns,0,0,0
+geral,6/8,1911,quickRunMax,quickRunMax,0,0,0
+geral,6/8,1911,runsIntoLong,runsIntoLong,0,0,0
 geral,6/8,1911,arpeggio,arpeggio,0.1596,0.3125,0.4783
 geral,6/8,1911,fig:threeEighths,figuras x_x_x_,0.087,0.45,0.8438
 geral,6/8,1911,fig:longShort,figuras x___x_,0.0313,0.25,0.5625
@@ -221,6 +261,8 @@ geral,9/8,143,phraseDescent,phraseDescent,0,0.6667,1
 geral,9/8,143,fig:rocking,figuras x___x_ x_____,0.1,0.3191,0.625
 geral,9/8,143,firstOnset,firstOnset,0,0,16
 geral,9/8,143,chromatic,chromatic,0,0,0.0316
+geral,9/8,143,quickRuns,quickRuns,0,0,0
+geral,9/8,143,quickRunMax,quickRunMax,0,0,0
 geral,9/8,143,arpeggio,arpeggio,0.2299,0.3671,0.5229
 geral,9/8,143,fig:threeEighths,figuras x_x_x_,0.2917,0.5833,0.8333
 geral,9/8,143,fig:longShort,figuras x___x_,0.08,0.2917,0.5833
@@ -256,6 +298,9 @@ march,2/4,36,phraseDescent,phraseDescent,0.25,0.7143,1
 march,2/4,36,firstOnset,firstOnset,0,0,6
 march,2/4,36,fig:quarters,figuras x___,0,0.1563,0.2917
 march,2/4,36,chromatic,chromatic,0,0,0.0156
+march,2/4,36,quickRuns,quickRuns,0,0.233,0.375
+march,2/4,36,quickRunMax,quickRunMax,0,5,8
+march,2/4,36,runsIntoLong,runsIntoLong,0,0,0
 march,2/4,36,fig:eighths,figuras x_x_,0.3214,0.5625,0.75
 march,2/4,36,arpeggio,arpeggio,0.1379,0.3095,0.4746
 march,2/4,36,fig:dotted,figuras x__x,0,0,0.1071
@@ -298,6 +343,8 @@ march,4/4,44,phraseDescent,phraseDescent,0.3333,0.5,0.625
 march,4/4,44,firstOnset,firstOnset,0,12,12
 march,4/4,44,fig:quarters,figuras x___,0.1406,0.375,0.5781
 march,4/4,44,chromatic,chromatic,0,0,0.0144
+march,4/4,44,quickRuns,quickRuns,0,0,0.1905
+march,4/4,44,quickRunMax,quickRunMax,0,0,6
 march,4/4,44,fig:eighths,figuras x_x_,0.0208,0.25,0.5385
 march,4/4,44,arpeggio,arpeggio,0.1628,0.2987,0.3981
 march,4/4,44,fig:dotted,figuras x__x,0,0.1563,0.4219
@@ -340,6 +387,8 @@ march,6/8,43,phraseDescent,phraseDescent,0.25,0.5,1
 march,6/8,43,fig:rocking,figuras x___x_ x_____,0.1563,0.375,0.5625
 march,6/8,43,firstOnset,firstOnset,0,10,10
 march,6/8,43,chromatic,chromatic,0,0,0.0161
+march,6/8,43,quickRuns,quickRuns,0,0,0
+march,6/8,43,quickRunMax,quickRunMax,0,0,0
 march,6/8,43,arpeggio,arpeggio,0.1892,0.3588,0.5082
 march,6/8,43,fig:threeEighths,figuras x_x_x_,0.3125,0.5313,0.75
 march,6/8,43,fig:longShort,figuras x___x_,0.0833,0.3125,0.5
@@ -375,6 +424,9 @@ strathspey,4/4,70,phraseDescent,phraseDescent,0.25,0.625,1
 strathspey,4/4,70,firstOnset,firstOnset,0,14,14
 strathspey,4/4,70,fig:quarters,figuras x___,0,0.0625,0.1875
 strathspey,4/4,70,chromatic,chromatic,0,0,0.0079
+strathspey,4/4,70,quickRuns,quickRuns,0,0.1667,0.5
+strathspey,4/4,70,quickRunMax,quickRunMax,0,5,8
+strathspey,4/4,70,runsIntoLong,runsIntoLong,0,0,0
 strathspey,4/4,70,fig:eighths,figuras x_x_,0.0156,0.2083,0.5208
 strathspey,4/4,70,arpeggio,arpeggio,0.301,0.4319,0.6134
 strathspey,4/4,70,fig:dotted,figuras x__x,0.1429,0.3651,0.625
@@ -418,6 +470,12 @@ reel,4/4,264,phraseDescent,phraseDescent,0.25,0.5,1
 reel,4/4,264,firstOnset,firstOnset,0,12,14
 reel,4/4,264,fig:quarters,figuras x___,0.0317,0.1406,0.2813
 reel,4/4,264,chromatic,chromatic,0,0,0.0333
+reel,4/4,264,verseFinal,verseFinal,1.1222,1.7443,1.8882
+reel,4/4,264,verseNotes,verseNotes,18.5,53.5,58.5
+reel,4/4,264,verseAnticip,verseAnticip,0,0,0
+reel,4/4,264,verseEndStep,verseEndStep,0,0,1
+reel,4/4,264,quickRuns,quickRuns,0,0,0
+reel,4/4,264,quickRunMax,quickRunMax,0,0,0
 reel,4/4,264,fig:eighths,figuras x_x_,0.619,0.8125,0.9219
 reel,4/4,264,arpeggio,arpeggio,0.301,0.4627,0.64
 reel,4/4,264,fig:dotted,figuras x__x,0,0,0
@@ -461,6 +519,8 @@ hornpipe,4/4,166,phraseDescent,phraseDescent,0.25,0.5,0.625
 hornpipe,4/4,166,firstOnset,firstOnset,0,12,12
 hornpipe,4/4,166,fig:quarters,figuras x___,0.0938,0.1594,0.3125
 hornpipe,4/4,166,chromatic,chromatic,0,0,0.0342
+hornpipe,4/4,166,quickRuns,quickRuns,0,0,0
+hornpipe,4/4,166,quickRunMax,quickRunMax,0,0,0
 hornpipe,4/4,166,fig:eighths,figuras x_x_,0.4375,0.8125,0.8906
 hornpipe,4/4,166,arpeggio,arpeggio,0.2778,0.4123,0.5872
 hornpipe,4/4,166,fig:dotted,figuras x__x,0,0,0
@@ -504,6 +564,12 @@ jig,6/8,219,phraseDescent,phraseDescent,0.25,0.5,1
 jig,6/8,219,fig:rocking,figuras x___x_ x_____,0.0313,0.1563,0.4194
 jig,6/8,219,firstOnset,firstOnset,0,10,10
 jig,6/8,219,chromatic,chromatic,0,0,0.044
+jig,6/8,219,verseFinal,verseFinal,1.4889,1.8825,2
+jig,6/8,219,verseNotes,verseNotes,23,41,46.5
+jig,6/8,219,verseAnticip,verseAnticip,0,0,0
+jig,6/8,219,verseEndStep,verseEndStep,0,0,0.5
+jig,6/8,219,quickRuns,quickRuns,0,0,0
+jig,6/8,219,quickRunMax,quickRunMax,0,0,0
 jig,6/8,219,arpeggio,arpeggio,0.2101,0.3656,0.5083
 jig,6/8,219,fig:threeEighths,figuras x_x_x_,0.4375,0.7813,0.9375
 jig,6/8,219,fig:longShort,figuras x___x_,0.0303,0.125,0.35
@@ -539,6 +605,8 @@ slipJig,9/8,138,phraseDescent,phraseDescent,0,0.6667,1
 slipJig,9/8,138,fig:rocking,figuras x___x_ x_____,0.1,0.2917,0.625
 slipJig,9/8,138,firstOnset,firstOnset,0,0,16
 slipJig,9/8,138,chromatic,chromatic,0,0,0.0316
+slipJig,9/8,138,quickRuns,quickRuns,0,0,0
+slipJig,9/8,138,quickRunMax,quickRunMax,0,0,0
 slipJig,9/8,138,arpeggio,arpeggio,0.2299,0.3687,0.5303
 slipJig,9/8,138,fig:threeEighths,figuras x_x_x_,0.2917,0.5833,0.8333
 slipJig,9/8,138,fig:longShort,figuras x___x_,0.08,0.2917,0.5833
@@ -574,6 +642,8 @@ chorale,3/4,36,phraseDescent,phraseDescent,0.25,0.4,0.6
 chorale,3/4,36,firstOnset,firstOnset,0,0,8
 chorale,3/4,36,fig:quarters,figuras x___,0.5464,0.6667,0.746
 chorale,3/4,36,chromatic,chromatic,0,0.0119,0.06
+chorale,3/4,36,quickRuns,quickRuns,0,0,0
+chorale,3/4,36,quickRunMax,quickRunMax,0,0,0
 chorale,3/4,36,fig:eighths,figuras x_x_,0,0,0.0833
 chorale,3/4,36,arpeggio,arpeggio,0.0625,0.1613,0.3333
 chorale,3/4,36,fig:dotted,figuras x__x,0,0,0
@@ -616,6 +686,13 @@ chorale,4/4,264,phraseDescent,phraseDescent,0.3,0.5,0.75
 chorale,4/4,264,firstOnset,firstOnset,0,12,12
 chorale,4/4,264,fig:quarters,figuras x___,0.6563,0.7794,0.8906
 chorale,4/4,264,chromatic,chromatic,0,0.0143,0.0784
+chorale,4/4,264,verseFinal,verseFinal,1.547,2.1841,2.904
+chorale,4/4,264,verseNotes,verseNotes,7.5,17,34.5
+chorale,4/4,264,verseAnticip,verseAnticip,0,0,0
+chorale,4/4,264,verseEndStep,verseEndStep,0.1667,0.5,1
+chorale,4/4,264,verseTonic,verseTonic,0,0.127,0.5
+chorale,4/4,264,quickRuns,quickRuns,0,0,0
+chorale,4/4,264,quickRunMax,quickRunMax,0,0,0
 chorale,4/4,264,fig:eighths,figuras x_x_,0,0.075,0.1765
 chorale,4/4,264,arpeggio,arpeggio,0.075,0.1429,0.2667
 chorale,4/4,264,fig:dotted,figuras x__x,0,0,0
@@ -659,6 +736,14 @@ folk,2/4,2133,phraseDescent,phraseDescent,0,0.5,1
 folk,2/4,2133,firstOnset,firstOnset,0,0,6
 folk,2/4,2133,fig:quarters,figuras x___,0.1,0.25,0.45
 folk,2/4,2133,chromatic,chromatic,0,0,0.0323
+folk,2/4,2133,verseFinal,verseFinal,1.1111,1.7786,2.5474
+folk,2/4,2133,verseNotes,verseNotes,9.5,16.5,29.5
+folk,2/4,2133,verseAnticip,verseAnticip,0,0,0
+folk,2/4,2133,verseEndStep,verseEndStep,0,0.5,1
+folk,2/4,2133,verseTonic,verseTonic,0,0.25,1
+folk,2/4,2133,quickRuns,quickRuns,0,0,0.25
+folk,2/4,2133,quickRunMax,quickRunMax,0,0,6
+folk,2/4,2133,runsIntoLong,runsIntoLong,0,0,0.3333
 folk,2/4,2133,fig:eighths,figuras x_x_,0.1795,0.4444,0.6875
 folk,2/4,2133,arpeggio,arpeggio,0.1579,0.3214,0.4944
 folk,2/4,2133,fig:dotted,figuras x__x,0,0,0.1667
@@ -701,6 +786,14 @@ folk,3/4,1342,phraseDescent,phraseDescent,0,0.4,0.75
 folk,3/4,1342,firstOnset,firstOnset,0,8,10
 folk,3/4,1342,fig:quarters,figuras x___,0.2857,0.5385,0.7708
 folk,3/4,1342,chromatic,chromatic,0,0,0.04
+folk,3/4,1342,verseFinal,verseFinal,1.2235,1.6818,2.4352
+folk,3/4,1342,verseNotes,verseNotes,8.5,15.2,26
+folk,3/4,1342,verseAnticip,verseAnticip,0,0,0
+folk,3/4,1342,verseEndStep,verseEndStep,0,0.5,1
+folk,3/4,1342,verseTonic,verseTonic,0,0.25,0.6667
+folk,3/4,1342,quickRuns,quickRuns,0,0,0
+folk,3/4,1342,quickRunMax,quickRunMax,0,0,0
+folk,3/4,1342,runsIntoLong,runsIntoLong,0,0,0
 folk,3/4,1342,fig:eighths,figuras x_x_,0,0.2292,0.5161
 folk,3/4,1342,arpeggio,arpeggio,0.1389,0.2881,0.4722
 folk,3/4,1342,fig:dotted,figuras x__x,0,0,0.1316
@@ -743,6 +836,14 @@ folk,4/4,1867,phraseDescent,phraseDescent,0.1667,0.4286,0.75
 folk,4/4,1867,firstOnset,firstOnset,0,12,12
 folk,4/4,1867,fig:quarters,figuras x___,0.3125,0.6129,0.8085
 folk,4/4,1867,chromatic,chromatic,0,0,0.0476
+folk,4/4,1867,verseFinal,verseFinal,1.2296,1.9167,2.6643
+folk,4/4,1867,verseNotes,verseNotes,9,14.5,25.5
+folk,4/4,1867,verseAnticip,verseAnticip,0,0,0
+folk,4/4,1867,verseEndStep,verseEndStep,0,0.5,1
+folk,4/4,1867,verseTonic,verseTonic,0,0.1818,0.6667
+folk,4/4,1867,quickRuns,quickRuns,0,0,0
+folk,4/4,1867,quickRunMax,quickRunMax,0,0,0
+folk,4/4,1867,runsIntoLong,runsIntoLong,0,0,0.3333
 folk,4/4,1867,fig:eighths,figuras x_x_,0,0.1719,0.4167
 folk,4/4,1867,arpeggio,arpeggio,0.1282,0.2581,0.4151
 folk,4/4,1867,fig:dotted,figuras x__x,0,0,0.0851
@@ -786,6 +887,14 @@ folk,3/8,331,phraseDescent,phraseDescent,0,0.5,1
 folk,3/8,331,fig:rocking,figuras x___x_ x_____,0,0.1875,0.5
 folk,3/8,331,firstOnset,firstOnset,0,4,4
 folk,3/8,331,chromatic,chromatic,0,0,0.0448
+folk,3/8,331,verseFinal,verseFinal,1.0727,1.7895,2.6974
+folk,3/8,331,verseNotes,verseNotes,10,17,26
+folk,3/8,331,verseAnticip,verseAnticip,0,0,0
+folk,3/8,331,verseEndStep,verseEndStep,0,0.5,1
+folk,3/8,331,verseTonic,verseTonic,0,0,1
+folk,3/8,331,quickRuns,quickRuns,0,0,0.25
+folk,3/8,331,quickRunMax,quickRunMax,0,0,5
+folk,3/8,331,runsIntoLong,runsIntoLong,0,0,0
 folk,3/8,331,arpeggio,arpeggio,0.1167,0.26,0.4706
 folk,3/8,331,fig:threeEighths,figuras x_x_x_,0.0625,0.3571,0.625
 folk,3/8,331,fig:longShort,figuras x___x_,0,0.125,0.4375
@@ -821,6 +930,14 @@ folk,6/8,869,phraseDescent,phraseDescent,0,0.3333,0.6667
 folk,6/8,869,fig:rocking,figuras x___x_ x_____,0.2143,0.5,0.7708
 folk,6/8,869,firstOnset,firstOnset,0,10,10
 folk,6/8,869,chromatic,chromatic,0,0,0.0656
+folk,6/8,869,verseFinal,verseFinal,1.2321,2.0638,3.0197
+folk,6/8,869,verseNotes,verseNotes,9.2,16,24
+folk,6/8,869,verseAnticip,verseAnticip,0,0,0
+folk,6/8,869,verseEndStep,verseEndStep,0,0.5,1
+folk,6/8,869,verseTonic,verseTonic,0,0,0.8
+folk,6/8,869,quickRuns,quickRuns,0,0,0
+folk,6/8,869,quickRunMax,quickRunMax,0,0,0
+folk,6/8,869,runsIntoLong,runsIntoLong,0,0,0
 folk,6/8,869,arpeggio,arpeggio,0.1282,0.26,0.4324
 folk,6/8,869,fig:threeEighths,figuras x_x_x_,0,0.25,0.5
 folk,6/8,869,fig:longShort,figuras x___x_,0.1053,0.375,0.6429

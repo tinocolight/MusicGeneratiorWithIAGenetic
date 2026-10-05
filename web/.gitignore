@@ -4,3 +4,4 @@ tools/parity-csharp/obj/
 
 # fado melodies are read from a local clone of fadado/fado-scores (tools/fado_corpus.py), not redistributed
 data/fado-corpus.json
+__pycache__/
