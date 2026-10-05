@@ -142,6 +142,7 @@ const CLEF_BY_INSTRUMENT = {
   tenor: { clef: 'treble', octave: -1 },
   // the guitar is written an octave higher than it sounds (the "8" under the treble clef)
   violaFado: { clef: 'treble', octave: -1 },
+  guitar: { clef: 'treble', octave: -1 },
   guitarra: { clef: 'treble' },
 };
 
@@ -197,7 +198,8 @@ export function toBars(events, nBars, m) {
 /**
  * Score model of a piece: one staff per voice.
  * @param voices [{events (absolute starts, sounding pitches), instrument, name, dynamics (false: no
- *   dynamic marks for this staff, as for an accompaniment)}]
+ *   dynamic marks for this staff, as for an accompaniment), clef (to force one: the piano's left
+ *   hand of an accompaniment is in the bass clef)}]
  * @param chords [{start, dur, name, root, q}] chord symbols over the first staff (accompaniment)
  * @param marks {rit: [steps], fermata: [steps], last} the rubato (core/expression.js): "rit." and
  *   fermatas over the first staff, and with `last` a fermata on the last note of every staff
@@ -225,7 +227,8 @@ export function scoreModel({ voices, total, barLen, meter = null, key, title = '
       const notes = v.events.filter((e) => e.pitch !== null && e.start < nBars * m.barLen);
       const fermata = [...(i === 0 ? marks?.fermata ?? [] : [])];
       if (marks?.last && v.dynamics !== false && notes.length) fermata.push(Math.max(...notes.map((e) => e.start)));
-      return { name: v.name, instrument: v.instrument, ...clefFor(v.instrument, pitches), bars: toBars(v.events, nBars, m), dynamics, fermata };
+      const clef = v.clef ? { clef: v.clef, octave: 0 } : clefFor(v.instrument, pitches);
+      return { name: v.name, instrument: v.instrument, ...clef, bars: toBars(v.events, nBars, m), dynamics, fermata };
     }),
   };
 }
@@ -265,7 +268,7 @@ export function canonLineModel({ lead, entries, length, barLen, meter = null, ke
 // ------------------------------------------------------------------ LilyPond
 
 const LILY_MIDI = {
-  guitarra: 'acoustic guitar (steel)', violaFado: 'acoustic guitar (nylon)',
+  guitarra: 'acoustic guitar (steel)', violaFado: 'acoustic guitar (nylon)', guitar: 'acoustic guitar (nylon)',
   violin: 'violin', viola: 'viola', cello: 'cello', bass: 'contrabass', flute: 'flute', recorder: 'recorder',
   oboe: 'oboe', clarinet: 'clarinet', bassoon: 'bassoon', horn: 'french horn', trumpet: 'trumpet',
   harpsichord: 'harpsichord', piano: 'acoustic grand', organ: 'church organ',

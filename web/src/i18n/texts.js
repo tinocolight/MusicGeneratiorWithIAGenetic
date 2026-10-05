@@ -280,6 +280,7 @@ export const TEXTS = {
   'instrument.tenor': { pt: 'Tenor', en: 'Tenor' },
   'instrument.guitarra': { pt: 'Guitarra portuguesa', en: 'Portuguese guitar' },
   'instrument.violaFado': { pt: 'Viola (guitarra clássica)', en: 'Viola (classical guitar)' },
+  'instrument.guitar': { pt: 'Guitarra clássica', en: 'Classical guitar' },
   'instrument.bassVoice': { pt: 'Baixo', en: 'Bass' },
   'family.strings': { pt: 'Cordas', en: 'Strings' },
   'family.winds': { pt: 'Sopros', en: 'Woodwinds' },
@@ -288,7 +289,7 @@ export const TEXTS = {
   'family.voices': { pt: 'Vozes', en: 'Voices' },
   'family.plucked': { pt: 'Cordas dedilhadas', en: 'Plucked strings' },
   'ensemble.solo': { pt: 'Só a melodia', en: 'Melody only' },
-  'ensemble.accomp': { pt: 'Melodia + acompanhamento: voz, guitarra portuguesa e viola (só fado)', en: 'Melody + accompaniment: voice, Portuguese guitar and viola (fado only)' },
+  'ensemble.accomp': { pt: 'Melodia + acompanhamento: voz e acompanhamento do estilo (fado, valsa, polca, marcha, folk, infantil, blues)', en: 'Melody + accompaniment: voice and the style\'s accompaniment (fado, waltz, polka, march, folk, children\'s, blues)' },
   'ensemble.telemann': { pt: 'Telemann: 2 violinos, 2.º entra no c. 2', en: 'Telemann: 2 violins, the 2nd enters at bar 2' },
   'ensemble.flutes': { pt: 'Telemann: 2 flautas, 2.º entra no c. 2', en: 'Telemann: 2 flutes, the 2nd enters at bar 2' },
   'ensemble.trio': { pt: 'Trio: violino, viola (c. 3), violoncelo 8.ª abaixo (c. 5)', en: 'Trio: violin, viola (bar 3), cello an octave below (bar 5)' },
@@ -1556,11 +1557,11 @@ export const TEXTS = {
   },
   'qs.voices.canon': { pt: 'Cânone (recomendado)', en: 'Canon (recommended)' },
   'qs.voices.single': { pt: 'Melodia simples', en: 'Single melody' },
-  'qs.voices.accomp': { pt: 'Melodia + acompanhamento (só fado)', en: 'Melody + accompaniment (fado only)' },
-  'qs.voices.accomp.title': { pt: 'Voz com guitarra portuguesa e viola', en: 'Voice with Portuguese guitar and viola' },
+  'qs.voices.accomp': { pt: 'Melodia + acompanhamento (fado, valsa, polca, marcha, folk, infantil, blues)', en: 'Melody + accompaniment (fado, waltz, polka, march, folk, children\'s, blues)' },
+  'qs.voices.accomp.title': { pt: 'Voz com o acompanhamento do estilo', en: 'Voice with the style\'s accompaniment' },
   'qs.voices.accomp.desc': {
-    pt: 'A melodia é composta primeiro e as duas guitarras do fado harmonizam-na depois: a viola no baixo e nos acordes, a guitarra portuguesa na introdução e a responder nas respirações da voz. Por agora só existe para o fado: se escolher esta opção, no estilo só aparece o fado.',
-    en: 'The melody is composed first and the two guitars of fado harmonise it afterwards: the viola on the bass and the chords, the Portuguese guitar in the introduction and answering in the voice\'s breaths. For now it only exists for fado: if you choose it, only fado appears among the styles.',
+    pt: 'A melodia é composta primeiro e o acompanhamento do estilo harmoniza-a depois. No fado, as duas guitarras: a viola no baixo e nos acordes, a guitarra portuguesa na introdução e nas respirações da voz. Na valsa, o piano em «um-pá-pá»; na polca e na marcha, em «um-pá»; no folk, a guitarra dedilhada; na canção infantil, acordes plaquê; no blues, os doze compassos com o baixo boogie-woogie. Só existe para estes estilos: se escolher esta opção, só eles aparecem.',
+    en: 'The melody is composed first and the style\'s accompaniment harmonises it afterwards. In fado, the two guitars: the viola on the bass and the chords, the Portuguese guitar in the introduction and in the voice\'s breaths. In the waltz, the piano in "oom-pah-pah"; in the polka and the march, in "oom-pah"; in folk, the picked guitar; in the children\'s song, block chords; in the blues, the twelve bars with the boogie-woogie bass. It only exists for these styles: if you choose it, only they appear.',
   },
   'qs.voices.solo.desc': {
     pt: 'Uma voz só, sem cânone: o algoritmo cuida da frase, da forma e do estilo, mas não do contraponto.',
@@ -1569,8 +1570,8 @@ export const TEXTS = {
 
   'qs.style.title': { pt: 'Que estilo?', en: 'Which style?' },
   'qs.style.accompOnly': {
-    pt: 'Escolheu melodia + acompanhamento, que por agora só existe para o fado: só aparecem os estilos de fado.',
-    en: 'You chose melody + accompaniment, which for now only exists for fado: only the fado styles appear.',
+    pt: 'Escolheu melodia + acompanhamento, que só existe para alguns estilos: só aparecem esses.',
+    en: 'You chose melody + accompaniment, which only exists for some styles: only those appear.',
   },
   'qs.style.hint': {
     pt: 'O estilo junta as regras de composição desse repertório e sugere o compasso, o andamento e o modo habituais. Pode não escolher nenhum: ficam só as regras gerais.',

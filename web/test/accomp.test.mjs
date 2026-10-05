@@ -114,9 +114,14 @@ test('chords in the notation: notes sounding together are one item, written <...
   assert.match(ly, /acordes = \\chordmode \{[^}]*g[0-9.]*:m[^}]*d[0-9.]*:7/, 'chord names: G minor and D7');
 });
 
-test('quick start: "melody + accompaniment" leaves only the fado styles and counts the introduction', () => {
-  assert.deepEqual(ACCOMP_STYLES, ['fado', 'fadoAlegre']);
+test('quick start: "melody + accompaniment" leaves only the styles that have one and counts the introduction', () => {
+  assert.deepEqual(ACCOMP_STYLES, ['fado', 'fadoAlegre', 'folk', 'children', 'polka', 'march', 'waltz', 'blues']);
   assert.equal(styleForVoices('accomp', 'reel'), 'fado');
+  assert.equal(styleForVoices('accomp', 'waltz'), 'waltz');
+  const waltz = deriveQuickStart({ voices: 'accomp', style: 'waltz', seconds: 60, tempo: 'moderate' });
+  assert.equal(waltz.style, 'waltz');
+  assert.equal(waltz.meter, '3/4');
+  assert.equal(waltz.config.accompaniment, true);
   assert.equal(styleForVoices('accomp', 'fadoAlegre'), 'fadoAlegre');
   assert.equal(styleForVoices('telemann', 'reel'), 'reel');
   const res = deriveQuickStart({ voices: 'accomp', style: 'jig', seconds: 60, tempo: 'moderate' });
