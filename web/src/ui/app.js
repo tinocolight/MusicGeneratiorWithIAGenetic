@@ -34,7 +34,7 @@ import { createPlayer } from './audio.js';
 import { loadVexFlow, renderScore, scorePdf } from './score.js';
 import { aboutHtml } from './about.js';
 import { t, tn, has, locale, applyTexts, setLang, getLang, onLangChange, initialLang, startLang, LANGUAGES } from '../i18n/i18n.js';
-import { STYLES, styleTraits } from '../fitness/styles.js';
+import { STYLES, styleTraits, expressionProfile } from '../fitness/styles.js';
 import { expressionOf, rubatoOf, timeline } from '../core/expression.js';
 import { fadoAccompaniment, ACCOMP_PARTS } from '../accomp/fado.js';
 import {
@@ -415,11 +415,16 @@ function pieceFromGenes(genes, built, cfg, extra = {}) {
   };
 }
 
-/** 'sad' | 'happy' when the piece's style plays with dynamics (the fado styles), else null. */
+/**
+ * How the piece is played (core/expression.js): the profile of its style ('sad' | 'happy' for the
+ * fado, 'song', 'baroque', 'dance'... for the others, 'general' with no style), or null in the
+ * classic mode and for melodies that were not composed here.
+ */
 function expressionKind(p) {
   if (!p?.config || p.config.mode === 'classic') return null;
-  return styleTraits(activeStyle(p.config)).expression ?? null;
+  return expressionProfile(activeStyle(p.config));
 }
+const isFadoKind = (kind) => kind === 'sad' || kind === 'happy';
 
 /** Dynamics of the piece's melody, one entry per event (core/expression.js), or null. */
 function expressionFor(p) {
@@ -427,21 +432,25 @@ function expressionFor(p) {
   if (!kind) return null;
   if (p.expression?.kind !== kind) {
     const beat = (p.meter && METERS[p.meter]?.beat) || 4;
-    p.expression = { kind, notes: expressionOf(p.events, { kind, barLen: p.barLen, beat, key: p.key ?? { tonic: 0, mode: 'major' } }) };
+    const phraseLen = (p.config.phraseBars || 2) * p.barLen;
+    p.expression = { kind, notes: expressionOf(p.events, { kind, barLen: p.barLen, beat, key: p.key ?? { tonic: 0, mode: 'major' }, phraseLen }) };
   }
   return p.expression.notes;
 }
 
 /**
- * The rubato of a piece that plays with dynamics (fado): the time stretched into the held notes and
- * held on the last one, from the melody as it sounds ({stretch, marks}), or null.
+ * The rubato of the piece as it sounds ({stretch, marks}), or null: in the fado, the time stretched
+ * into the held notes and held on the last one; in the other styles, the phrase ends (one voice)
+ * and the final ritardando (core/expression.js).
  */
 function rubatoFor(p, sounding = soundingVoices(p)) {
   const kind = $('dynPlay').checked ? expressionKind(p) : null;
   if (!kind) return null;
   const lead = sounding.voices[0];
   const beat = (p.meter && METERS[p.meter]?.beat) || 4;
-  return rubatoOf(lead.events, { total: sounding.total, beat, kind });
+  if (isFadoKind(kind)) return rubatoOf(lead.events, { total: sounding.total, beat, kind });
+  const melodic = sounding.voices.filter((v) => v.kind !== 'accomp');
+  return rubatoOf(lead.events, { total: sounding.total, beat, barLen: p.barLen, kind, all: melodic.flatMap((v) => v.events), phrases: melodic.length === 1 });
 }
 
 /**
@@ -468,9 +477,11 @@ function accompanimentFor(p) {
  */
 function soundingVoices(p, all = $('canonPlay').checked) {
   const voices = all ? p.voices : p.voices.slice(0, 1);
-  // with dynamics (fado), the other voices play a little softer so that the melody leads
+  // with dynamics, every voice plays the melody's; in the fado the other voices a little softer,
+  // so that the sung melody leads (in the other canons the voices are equal)
   const expr = expressionFor(p);
-  const xOf = (k, lead) => (expr?.[k] ? (lead ? expr[k] : { ...expr[k], vel: expr[k].vel * 0.8 }) : undefined);
+  const soft = isFadoKind(p.expression?.kind) ? 0.8 : 1;
+  const xOf = (k, lead) => (expr?.[k] ? (lead || soft === 1 ? expr[k] : { ...expr[k], vel: expr[k].vel * soft }) : undefined);
   const acc = all ? accompanimentFor(p) : null;
   const shift = acc ? acc.intro : 0;
   const delays = p.voices.map((v) => v.delay).sort((a, b) => b - a);
@@ -575,7 +586,9 @@ function render() {
   } else legend.push(`<span><i style="background:var(--wave-1)"></i>${t('legend.low')}</span><span><i style="background:var(--wave-2)"></i>${t('legend.fast')}</span><span>${t('legend.bands')}</span>`);
   $('legend').innerHTML = legend.join('');
   $('legend').hidden = state.view === 'score';
-  $('dynRow').hidden = !expressionKind(p);
+  const kind = expressionKind(p);
+  $('dynRow').hidden = !kind;
+  if (kind) $('dynRow').title = `${t('transport.dyn.title')}\n\n${t(`expr.${kind}`)}`;
 }
 
 // ------------------------------------------------------------------ engraved score (optional view)

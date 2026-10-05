@@ -57,3 +57,19 @@ Pedido do utilizador, deixado para depois da secção do fado:
   o leitor de fados e dar mais melodias para calibrar as regras, sobretudo as do fado alegre.
 - Com os números medidos, recalibrar os perfis `sad` e `happy` de `src/core/expression.js`: a
   descida ao longo do verso, o esmorecer da nota suspensa, o vibrato e o forte da última estrofe.
+
+## 4. Dinâmica e rubato: o que fica por medir
+
+Os perfis de todos os estilos estão feitos ([`results/expressao.md`](results/expressao.md)), mas
+os números medidos vêm de piano (ASAP).
+
+- **Canções cantadas e danças tocadas para dançar**: medir em gravações reais o rallentando final,
+  o fim de frase e os acentos, com `tools/fado_audio.py` adaptado, quando a rede deixar chegar às
+  gravações.
+- **Jazz**: o *swing* (colcheias desiguais, cerca de 2:1 a tempos médios) e as intensidades das
+  notas de um conjunto aberto de solos transcritos (por exemplo o *Weimar Jazz Database*).
+- **Barroco**:
+  - o eco também nas sequências (o mesmo desenho transposto);
+  - a dinâmica pela dissonância de Quantz, que precisa da harmonia: liga-se ao ponto 1 e às
+    cifras implícitas.
+

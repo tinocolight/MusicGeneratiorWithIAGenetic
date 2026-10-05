@@ -14,6 +14,8 @@ geração e uma **análise inversa** que passa música real pelas regras.
 - [O que se encontrou no código original](#o-que-se-encontrou-no-código-original)
 - [Da literatura para o código](#da-literatura-para-o-código)
 - [Heurísticas de composição e estilos](#heurísticas-de-composição-e-estilos)
+- [Fado](#fado)
+- [Dinâmica e rubato em todos os estilos](#dinâmica-e-rubato-em-todos-os-estilos)
 - [Línguas (português e inglês)](#línguas-português-e-inglês)
 - [Avaliação e resultados](#avaliação-e-resultados)
 - [O trabalho original à luz da literatura](#o-trabalho-original-à-luz-da-literatura)
@@ -590,7 +592,9 @@ e a pesquisa em [`results/fado/pesquisa.md`](results/fado/pesquisa.md).
 - **Aptidão**: além das regras, um estilo de fado muda as pausas (respirações), o ritmo (notas
   suspensas antecipadas), as cadências (os versos alternam entre suspensão e repouso), a
   variedade (recitação) e a tensão (o ápice no início do verso).
-- **Dinâmica**: só no fado, calculada a partir da melodia (`src/core/expression.js`).
+- **Dinâmica**: o fado tem o seu próprio modelo, calculado a partir da melodia
+  (`src/core/expression.js`). Os outros estilos passaram depois a ter perfis próprios: ver a
+  secção seguinte.
   - Cada verso começa forte e apaga-se, a nota suspensa esmorece, o ápice cresce, as notas de dor
     são acentuadas e a última estrofe é mais forte, com o vibrato estreito das fadistas.
   - Ouve-se na página (caixa «Dinâmica»), fica no MIDI (velocidade e CC 11) e aparece na
@@ -617,6 +621,41 @@ e a pesquisa em [`results/fado/pesquisa.md`](results/fado/pesquisa.md).
   - Num teste sintético recupera o esmorecer, a descida do verso e o vibrato.
   - A rede deste ambiente bloqueia o YouTube e o archive.org, por isso ainda não correu sobre
     gravações reais (ver [`TRABALHO-FUTURO.md`](TRABALHO-FUTURO.md)).
+
+## Dinâmica e rubato em todos os estilos
+
+Pedido: ver o que da secção do fado faz sentido nos outros modos e avançar por ordem de
+importância. A primeira prioridade foi a dinâmica e o rubato, que até aqui só o fado tinha. O
+relatório está em [`results/expressao.md`](results/expressao.md).
+
+- **Perfis**: cada estilo do modo campo toca com o perfil da sua família, ou com um perfil próprio.
+  O modo clássico fica sem dinâmica, como o original. Os perfis são:
+  - **canção**: frases em arco, respiração no fim das frases, fermata final;
+  - **infantil** e **embalar**: a canção de embalar suave e cada vez mais suave;
+  - **coral e hino**: fermata em cada fim de frase;
+  - **dança**, **valsa** e **mazurca**: tempo firme e o acento no 1.º ou no 2.º tempo;
+  - **barroco** e **sarabanda**: dinâmica em terraços, com a repetição de uma frase em eco
+    *piano*;
+  - **clássico**: arco de frase e fim de frase alargado;
+  - **pop** e **jazz**: tempo de metrónomo e síncopas ou contratempos acentuados;
+  - **blues**: a frase que começa forte e se apaga e as notas blue apoiadas;
+  - **geral**, sem estilo.
+- **Literatura**: o sistema de regras do KTH (arco de frase, agudo-forte, rallentando final;
+  Friberg, Bresin & Sundberg 2006), o modelo do rallentando final de Friberg & Sundberg (1999) e
+  os arcos de dinâmica de Todd (1992). São 8 achados novos em `literatura.csv` (`X01`–`X08`).
+- **Medição**: `tools/expression_study.py` mediu 1036 interpretações de piano alinhadas com a
+  partitura (conjunto ASAP).
+  - **Rallentando final**: o último tempo vai a 0,47 do andamento em Bach e a 0,69 no clássico.
+    O modelo reproduz estes valores com a curva de Friberg & Sundberg (q = 2, w = 0,35 no
+    barroco; linear, w = 0,62 no clássico), e um teste confirma-o.
+  - **Agudo-forte**: a altura e a velocidade correlacionam a r ≈ 0,4.
+  - **Fim de frase**: alonga quase nada em Bach (+0,6 %) e +2,5 % no clássico.
+  - **Acento métrico**: o 1.º tempo só é mais forte nas danças.
+- **Onde aparece**:
+  - na reprodução (caixa «Dinâmica e rubato», com o perfil descrito na dica) e no MIDI;
+  - na partitura, no PDF e no LilyPond: *pp*–*ff*, reguladores dos arcos, *rit.* e uma fermata
+    na última nota de cada pauta.
+- **Cânones**: as vozes são iguais e só o fim abranda.
 
 ## Ouvir no telemóvel: QR code, ligação e PDF com o MIDI
 
@@ -1078,9 +1117,9 @@ web/
   src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond,
                                  cânone numa só linha com as entradas
   src/io/pdf.js                  PDF vetorial (A4), contexto de desenho para o VexFlow, ficheiros anexados
-  src/ui/score.js                partitura na página (VexFlow + Gonville), com a dinâmica do fado
-  src/core/expression.js         dinâmica e rubato de uma linha cantada (fado): nível, esmorecer, crescendo,
-                                 acentos, vibrato, rit. e fermata
+  src/ui/score.js                partitura na página (VexFlow + Gonville), com a dinâmica e o rubato
+  src/core/expression.js         dinâmica e rubato por estilo (fado e perfis por família): nível, arcos de frase,
+                                 agudo-forte, terraços, acentos, vibrato, rit., rallentando final e fermatas
   src/accomp/fado.js             acompanhamento do fado: acordes (Viterbi), viola, guitarra portuguesa
   src/core/meter.js              compassos simples e compostos (tempo, pesos métricos, frases)
   src/ga/figures.js              leitura por tempos: figura, contorno, entrada, direção
@@ -1104,7 +1143,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 110 testes
+npm test                              # 117 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
@@ -1124,6 +1163,9 @@ python3 tools/fado_corpus.py /tmp/fado-scores   # fados reais (git clone https:/
 node tools/fado_study.mjs none fado fadoAlegre   # o que distingue o fado, confronto e validação → results/fado/
 node tools/fado_ga_study.mjs 6 400    # o AG com e sem os estilos de fado → results/fado/ga.csv
 python3 tools/fado_audio.py --selftest          # dinâmica da voz em gravações (pip install librosa imageio-ffmpeg)
+python3 tools/expression_study.py /tmp/asap --csv results/expressao/asap.csv
+                                      # tempo e dinâmica de ~1000 interpretações de piano (ASAP;
+                                      #   git clone https://github.com/fosfrancesco/asap-dataset /tmp/asap)
 python3 tools/build_pdf_fonts.py      # larguras das fontes-padrão do PDF → src/data/pdf-fonts.js
 node tools/classic_study.mjs          # estudo do algoritmo original (~1 h, 4 processos) →
                                       #   results/classic-study.md, src/data/classic-presets.js

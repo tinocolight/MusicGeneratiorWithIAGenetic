@@ -199,7 +199,9 @@ export function toBars(events, nBars, m) {
  * @param voices [{events (absolute starts, sounding pitches), instrument, name, dynamics (false: no
  *   dynamic marks for this staff, as for an accompaniment)}]
  * @param chords [{start, dur, name, root, q}] chord symbols over the first staff (accompaniment)
- * @param marks {rit: [steps], fermata: [steps]} the rubato of the first staff (core/expression.js)
+ * @param marks {rit: [steps], fermata: [steps], last} the rubato (core/expression.js): "rit." and
+ *   fermatas over the first staff, and with `last` a fermata on the last note of every staff
+ *   that carries dynamics
  */
 export function scoreModel({ voices, total, barLen, meter = null, key, title = '', subtitle = '', bpm = 84, chords = null, marks = null }) {
   const m = meterOf(barLen, meter);
@@ -213,13 +215,17 @@ export function scoreModel({ voices, total, barLen, meter = null, key, title = '
     title,
     subtitle,
     bpm,
-    marks: marks ? { rit: marks.rit ?? [], fermata: marks.fermata ?? [] } : null,
+    marks: marks ? { rit: marks.rit ?? [], fermata: marks.fermata ?? [], last: !!marks.last } : null,
     chords: chords ? chords.filter((c) => c.start < nBars * m.barLen).map((c) => ({ step: c.start, dur: c.dur, name: c.name, root: c.root, q: c.q })) : null,
-    staves: voices.map((v) => {
+    staves: voices.map((v, i) => {
       const pitches = v.events.filter((e) => e.pitch !== null).map((e) => e.pitch);
       // dynamics, when the notes carry them (the fado styles; core/expression.js)
       const dynamics = v.dynamics !== false && v.events.some((e) => e.x) ? dynamicMarks(v.events.filter((e) => e.start < nBars * m.barLen)) : [];
-      return { name: v.name, instrument: v.instrument, ...clefFor(v.instrument, pitches), bars: toBars(v.events, nBars, m), dynamics };
+      // fermatas: the first staff's, and the last note of every staff with dynamics
+      const notes = v.events.filter((e) => e.pitch !== null && e.start < nBars * m.barLen);
+      const fermata = [...(i === 0 ? marks?.fermata ?? [] : [])];
+      if (marks?.last && v.dynamics !== false && notes.length) fermata.push(Math.max(...notes.map((e) => e.start)));
+      return { name: v.name, instrument: v.instrument, ...clefFor(v.instrument, pitches), bars: toBars(v.events, nBars, m), dynamics, fermata };
     }),
   };
 }
@@ -308,10 +314,8 @@ export function toLilyPond(model) {
     const dyn = new Map();
     const post = (step, txt) => dyn.set(step, [...(dyn.get(step) ?? []), txt]);
     const starts = st.bars.flatMap((bar, b) => bar.map((it) => b * m.barLen + it.start));
-    if (i === 0 && model.marks) {
-      for (const st0 of model.marks.fermata) post(st0, '\\fermata');
-      for (const st0 of model.marks.rit) post(st0, '^\\markup { \\italic "rit." }');
-    }
+    for (const st0 of new Set(st.fermata ?? [])) post(st0, '\\fermata');
+    if (i === 0 && model.marks) for (const st0 of model.marks.rit) post(st0, '^\\markup { \\italic "rit." }');
     for (const d of st.dynamics ?? []) {
       if (d.type === 'accent') post(d.step, '->');
       else if (d.type === 'text') post(d.step, `\\${d.text}`);
