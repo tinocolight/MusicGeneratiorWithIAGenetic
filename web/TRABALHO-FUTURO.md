@@ -158,3 +158,99 @@ os números medidos vêm de piano (ASAP).
   - a dinâmica pela dissonância de Quantz, que precisa da harmonia: liga-se ao ponto 1 e às
     cifras implícitas.
 
+
+## 5. QR code, leitor de MIDI e PDF com o MIDI
+
+O que existe:
+- o QR no PDF, que traz o MIDI comprimido no endereço;
+- o leitor leve `tocar.html`, publicado no GitHub Pages;
+- o MIDI anexado ao PDF;
+- «Abrir PDF ou MIDI…».
+
+A pesquisa, as decisões e as medições estão em [`results/qr.md`](results/qr.md) e
+[`results/qr/pesquisa.csv`](results/qr/pesquisa.csv) (Q01–Q19); o código está em `src/io/qr.js`,
+`src/io/song.js`, `src/io/pdf.js` e `src/player/player.js`.
+
+**O que se viu depois de entrarem o fado, o acompanhamento e a dinâmica (PRs #14–#16).** Um fado
+com acompanhamento sai com um QR versão 19 (716 bytes, 3 vozes), o leitor toca-o e o PDF reaberto
+recupera o estilo e o acompanhamento. Ficaram três diferenças entre o leitor e a página:
+
+1. **Rubato no QR.**
+   - O MIDI compacto do QR e das ligações não leva as mudanças de andamento (`midiOf` em
+     `src/ui/app.js` passa `tempos = null` quando `compact`).
+   - Cada mudança custa cerca de 7 bytes. Basta escrevê-las no ficheiro compacto, juntando as
+     que estão perto e com um teto de bytes.
+   - O leitor também tem de as ler: hoje `parseMidi` guarda só o primeiro andamento.
+2. **Dinâmica no leitor.**
+   - `src/player/player.js` toca todas as notas com a mesma força.
+   - `parseMidi` já devolve a `velocity` de cada nota. Basta passá-la ao sintetizador como
+     `x: { vel: velocity / 127 }`, que `src/ui/audio.js` já sabe tocar.
+   - Os crescendos e diminuendos (controlador 11) não vão no ficheiro compacto. Ficam de fora,
+     ou vão como um nível por nota.
+3. **Instrumento das vozes cantadas.**
+   - O leitor escolhe o instrumento pelo programa MIDI e, entre os que o partilham (as quatro
+     vozes têm o programa 52), pelo registo das notas. Uma melodia de contralto apareceu como
+     «Soprano».
+   - Correção: ler o instrumento do registo da peça, no evento de texto. Ou escrever o id do
+     instrumento no nome da pista e lê-lo de volta.
+
+Também por fazer:
+- **Testar com telemóveis e papel reais.**
+  - Os testes foram no navegador (pdf.js + jsQR) com o ecrã de um iPhone simulado.
+  - Falta ler QR impressos das versões 25–40 num iPhone e num Android, a várias distâncias, para
+    confirmar o tamanho dos módulos (0,55 mm no máximo, 0,32 mm na versão 40).
+  - Se as versões altas falharem, baixar o teto do símbolo, ou passar a correção M quando couber.
+- **Peças longas com acompanhamento.**
+  - Quando o MIDI inteiro não cabe, o QR leva só a melodia e o registo. A aplicação refaz as
+    vozes e o acompanhamento a partir do registo; o leitor toca só a melodia.
+  - Opções: o leitor refazer o acompanhamento (precisa de `src/accomp/`, o que o torna mais
+    pesado), ou repartir a peça por vários QR. Os telemóveis não suportam o «structured append»
+    do QR, por isso seria um QR por página, com a ligação a juntar as partes.
+- **Navegadores antigos.** Sem `DecompressionStream` (Safari antes de 16.4), o leitor não abre a
+  música. Juntar um descompressor DEFLATE pequeno (cerca de 3 kB) como alternativa.
+- **PDF/A-3 a sério.** O anexo usa `/AF` e `/AFRelationship /Source` como o PDF/A-3, mas o PDF
+  não é PDF/A: faltam os metadados XMP, o OutputIntent e as fontes embutidas. Até agora só o
+  pdf.js leu os anexos. Falta confirmar no Acrobat, no Chrome e na Pré-visualização do macOS.
+- **Abrir um PDF digitalizado.** «Abrir PDF ou MIDI…» só lê os anexos. Uma partitura impressa e
+  digitalizada não os tem, mas tem o QR: ler o QR da imagem com um descodificador (jsQR, cerca de
+  40 kB). Para ler o QR de um PDF digitalizado é preciso renderizá-lo, com o pdf.js.
+
+## 6. Heurísticas de composição e estilos: o que fica por fazer
+
+O relatório está em [`results/estilos.md`](results/estilos.md) e a pesquisa em
+[`results/estilos/literatura.csv`](results/estilos/literatura.csv).
+
+- **Ritmos que a grelha não escreve.** A grelha de semicolcheias não tem tercinas: faltam os
+  ornamentos irlandeses, o *swing*, a síncopa do tango e o rubato escrito. Precisa de uma
+  subdivisão em 12 por tempo, ou de um gene de figura.
+- **Notas cromáticas.** Os operadores do AG só escrevem notas da escala: não há as notas de
+  passagem do bebop nem os ♭3 e ♭7 do blues em modo maior. Seria um operador de nota cromática
+  com uma regra que o limite.
+- **Anacrusas.** As anacrusas da alemanda e da bourrée raramente se cumprem, porque o AG quase
+  nunca cria uma pausa inicial da duração certa. Pode resolver-se com uma mutação «deslocar a
+  entrada», ou com a anacrusa fixada pelo estilo na população inicial.
+- **O crítico mede a proximidade a canções populares e corais.** Penaliza estilos longe disso
+  (jazz 0,88 → 0,61, valsa 0,80 → 0,63 com o estilo ativo). Retreiná-lo, ou ter um crítico por
+  família, quando houver corpus desses estilos.
+- **Estilos sem corpus.** Os alvos destes estilos vêm da literatura ou foram estimados. Para os
+  calibrar como os outros (P10–P90), faltam melodias reais: mazurca, polonesa, minueto, gavota,
+  sarabanda, siciliana, habanera, vira, blues, jazz, pop. `tools/build_styles.mjs` aceita grupos
+  novos.
+- **Modo clássico só em 4/4.** Só os estilos em 4/4 lá funcionam.
+- **Um lapso do C# original, por decidir.** Em `ScoreTerminationQualifyers`, a pontuação máxima
+  vai para uma nota final de 2 semicolcheias, ao contrário do comentário, que pede notas mais
+  longas. Está documentado mas não foi mudado, porque as combinações calibradas contam com ele.
+  Decidir se entra nas «correções dos lapsos».
+- **Teste de escuta.** A avaliação decisiva continua a ser ouvir as peças. Seria um teste às cegas
+  das peças com e sem estilo, e com e sem as heurísticas, contra melodias reais.
+
+## 7. Repositório
+
+- **Ficheiros do C# que não deviam estar no git.** A chave de assinatura
+  `GeneticMusic/GeneticMusic/GeneticMusic_TemporaryKey.pfx` e os resultados da compilação (`bin/`
+  e `obj/`, 15 ficheiros com a chave) estão no repositório. Retirá-los do git e juntar um
+  `.gitignore` do Visual Studio. A chave é temporária, mas convém revogá-la, ou pelo menos não a
+  reutilizar.
+- **Sem integração contínua.** O único workflow é o do GitHub Pages. Um workflow que corra o
+  `npm test` em `web/` e confirme que o `dist/` está atualizado (`node tools/build_single.mjs` e
+  `git diff --exit-code`) apanharia os esquecimentos de reconstruir o `dist`.
