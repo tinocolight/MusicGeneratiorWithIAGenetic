@@ -301,10 +301,16 @@ export function fadoAccompaniment(events, ctx) {
   const introBars = length >= 4 * barLen ? introBarsFor(meter) : 0;
   const intro = introBars * barLen;
   const src = length - intro;
-  const chords = [
-    ...melody.filter((c) => c.start + c.dur > src).map((c) => ({ ...c, start: Math.max(0, c.start - src), dur: c.start + c.dur - Math.max(src, c.start) })),
-    ...melody.map((c) => ({ ...c, start: c.start + intro })),
-  ];
+  const chords = [];
+  for (const c of [
+    ...melody.filter((x) => x.start + x.dur > src).map((x) => ({ ...x, start: Math.max(0, x.start - src), dur: x.start + x.dur - Math.max(src, x.start) })),
+    ...melody.map((x) => ({ ...x, start: x.start + intro })),
+  ]) {
+    // the introduction may end on the chord the voice starts with: one chord, not two
+    const last = chords[chords.length - 1];
+    if (last && last.id === c.id && last.start + last.dur === c.start) last.dur += c.dur;
+    else chords.push(c);
+  }
   const total = intro + length;
   const chordAt = (t) => chords.find((c) => c.start <= t && t < c.start + c.dur) ?? chords[chords.length - 1];
 

@@ -227,7 +227,7 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
           const s0 = bar * m.barLen + it.start;
           if (!it.rest && accents[i].has(s0)) note.addModifier(new VF.Articulation('a>').setPosition(VF.Modifier.Position.ABOVE), 0);
           if (i === 0 && !it.rest && model.marks?.fermata.includes(s0)) note.addModifier(new VF.Articulation('a@a').setPosition(VF.Modifier.Position.ABOVE), 0);
-          placed[i].push({ start: s0, end: s0 + (it.full ? m.barLen : it.dur), note, sys: si, stave: null, i });
+          placed[i].push({ start: s0, end: s0 + (it.full ? m.barLen : it.dur), note, sys: si, stave: null, i, full: !!it.full });
           out.push({ note, start: s0, end: s0 + (it.full ? m.barLen : it.dur), rest: it.rest });
           if (!it.rest) chains[i].push({ note, tie: it.tie, sys: si });
           else chains[i].push({ note: null, tie: false, sys: si });
@@ -315,7 +315,9 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
     for (const c of model.chords) {
       // over the note (of any staff) that starts with the chord: the voice may be resting there
       const all = placed.flat();
-      const pl = placed[0].find((x) => x.start === c.step) ?? all.find((x) => x.start === c.step) ?? placed[0].find((x) => x.start <= c.step && c.step < x.end);
+      // (a whole-bar rest is drawn in the middle of the bar, so it does not say where a chord starts)
+      const at = (x) => x.start === c.step && !x.full;
+      const pl = placed[0].find(at) ?? all.find(at) ?? placed[0].find((x) => x.start <= c.step && c.step < x.end);
       if (!pl) continue;
       const ctx = ctxOf[pl.sys];
       ctx.save();
