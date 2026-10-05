@@ -536,7 +536,7 @@ foram repetidas com 24 sementes (`node tools/solo_defaults.mjs 24`,
 
 Pedido: procurar na literatura regras de composição por estilo e compasso, registá-las num CSV com as fontes, confrontá-las com as regras que já existiam, acrescentar as novas à aptidão num campo «Heurísticas de composição» e criar uma entrada «Estilo» que obriga esse peso a ser diferente de zero. O relatório completo está em [`results/estilos.md`](results/estilos.md) e as tabelas em [`results/estilos/`](results/estilos/).
 
-- **Pesquisa**: 66 achados com fonte em [`literatura.csv`](results/estilos/literatura.csv). São 19 regras gerais (Huron, Chiu & Temperley, von Hippel & Huron, Narmour, Tierney et al., Savage et al., Fux, Jeppesen, Caplin, Koch, Schoenberg, Lerdahl & Jackendoff, Huron & Ommen, Temperley) e 47 achados sobre estilos: danças irlandesas e escocesas, danças barrocas, tópicos de Ratner, embalar, infantil, coral, hino, blues, jazz, pop, tango, fado, vira e corridinho, canção chinesa.
+- **Pesquisa**: 66 achados com fonte em [`literatura.csv`](results/estilos/literatura.csv) (mais 15 sobre o fado, `F01`–`F15`; ver a secção «Fado»). São 19 regras gerais (Huron, Chiu & Temperley, von Hippel & Huron, Narmour, Tierney et al., Savage et al., Fux, Jeppesen, Caplin, Koch, Schoenberg, Lerdahl & Jackendoff, Huron & Ommen, Temperley) e 47 achados sobre estilos: danças irlandesas e escocesas, danças barrocas, tópicos de Ratner, embalar, infantil, coral, hino, blues, jazz, pop, tango, fado, vira e corridinho, canção chinesa.
 - **Confronto** ([`confronto.csv`](results/estilos/confronto.csv)): as regras antigas cobriam a proximidade, a regressão, a cadência e a forma, mas eram maximizadas. As melodias do AG tinham quase nenhum salto (0–3 %; reais 3–20 %), desciam por grau menos do que as reais (0,40; reais 0,43–0,82), repetiam pouco os ritmos dos compassos (0,14–0,20; reais 0,29–0,82), alongavam pouco a nota final da frase e faziam um arco em todas as frases. Não havia nenhuma regra de estilo.
 - **Codificação** (`src/fitness/heuristics.js`, `src/fitness/styles.js`):
   - cada regra mede uma característica e compara-a com um intervalo-alvo: vale 1 dentro e desce até −1 fora, sem nada a maximizar;
@@ -545,13 +545,13 @@ Pedido: procurar na literatura regras de composição por estilo e compasso, reg
   - os estilos são dados: regras com os ids das fontes, mais o compasso, a frase, a forma, o comprimento, a anacrusa, o andamento e o modo sugeridos;
   - todas as regras, com o alvo e a origem, estão em [`regras.csv`](results/estilos/regras.csv).
 - **Na página**:
-  - «Estilo», na secção «Peça», escolhe um de 36 estilos. Ajusta o compasso, a frase, a forma, o comprimento e o andamento, e põe o peso «Heurísticas de composição» acima de 0; enquanto houver estilo, esse peso não pode voltar a 0.
+  - «Estilo», na secção «Peça», escolhe um de 37 estilos. Ajusta o compasso, a frase, a forma, o comprimento e o andamento, e põe o peso «Heurísticas de composição» acima de 0; enquanto houver estilo, esse peso não pode voltar a 0.
   - Sem estilo, o peso (a 0 por omissão) aplica só as regras gerais.
   - No modo clássico há o mesmo peso nos dois grupos, somado por tempo; só aí funcionam os estilos em 4/4.
   - Depois de gerar, um indicador («heurísticas 15/17») e uma tabela mostram cada regra: o valor, o alvo, a origem e as fontes.
 - **Validação** (validação cruzada em 5 dobras):
   - as regras gerais põem a melodia real acima das mesmas notas baralhadas em 90 % dos pares;
-  - reels e strathspeys são reconhecidos entre 19 estilos em 69–74 % dos casos (ao acaso: 5 %);
+  - reels e strathspeys são reconhecidos entre 20 estilos em 71–75 % dos casos (ao acaso: 5 %);
   - estilos descritos de forma parecida confundem-se (jig com tarantela, coral com hino).
 - **No AG** ([`results/estilos-ga.md`](results/estilos-ga.md), 37 casos × 4 sementes):
   - com o peso a 4, a pontuação do estilo passa de 0,60 para 0,95 e as regras dentro do intervalo de 65 % para 93 %;
@@ -560,6 +560,46 @@ Pedido: procurar na literatura regras de composição por estilo e compasso, reg
   - por isso o peso fica a 0 sem estilo.
 - **Descrições dos pesos**: em «Pesos das regras», cada peso tem um botão «?» que explica o que a regra mede e como muda a melodia. No modo clássico, a descrição interpreta também o que os autores pretendiam, a partir do código e dos seus comentários.
 - **Lapso novo no original**: ao escrever essas descrições encontrou-se outro lapso. `ScoreTerminationQualifyers` dá a pontuação máxima a uma nota final de só duas semicolcheias: os testes aninhados usam `!=`, embora o comentário diga «terminação com notas mais longas». Fica como no original, porque as combinações calibradas contam com ele.
+
+## Fado
+
+Pedido: estudar a fundo o fado, o que o distingue, os seus ritmos e formas, o simbolismo e o que a
+música tem de transmitir; escrever tudo num ficheiro de apoio antes de derivar regras; derivar
+regras novas, confrontá-las com as do projeto e criar uma secção do algoritmo para o fado. O
+pedido trazia também uma pergunta: a tensão do fado consegue-se sem crescendos e diminuendos? Se
+não, a dinâmica liga-se só para o fado. O relatório está em [`results/fado.md`](results/fado.md)
+e a pesquisa em [`results/fado/pesquisa.md`](results/fado/pesquisa.md).
+
+- **Pesquisa**: história (Nery, UNESCO), simbolismo (destino, saudade, o mar e a espera, e o lado
+  alegre do saber receber), formas (fado tradicional e fado-canção, quadras e redondilha),
+  harmonia (Ernesto Vieira, 1890; 11 esquemas reais), ritmo e rubato, a voz (vibrato medido em
+  104 fadistas), a dinâmica (Sergl) e os estudos computacionais. São 15 achados novos (`F01`–`F15`)
+  em [`literatura.csv`](results/estilos/literatura.csv).
+- **Fados reais**: cinco melodias e uma transcrição «como é cantada», medidas contra as 5727
+  melodias do corpus em 2/4 e 4/4.
+  - O verso de fado tem 7 a 12 notas, recita em notas repetidas, desce por graus e acaba numa
+    nota suspensa 2 a 5 vezes mais longa do que as outras. A nota é alcançada por um grau a descer
+    e muitas vezes cantada antes do tempo, e o verso respira antes do seguinte.
+  - A tónica fica para o fim da estrofe. As notas rápidas são raras e, quando aparecem, são
+    ornamento que leva à nota suspensa.
+  - As regras gerais do projeto punham os fados entre as piores melodias do corpus (percentis
+    2–46). As regras de fado põem-nos nos percentis 55–100.
+- **Dois grupos** (sugestão do utilizador): **Fado triste (menor)** e **Fado alegre (maior)**,
+  numa família «Fado» do menu de estilos. O triste é lento, com respirações e notas suspensas
+  antecipadas; o alegre é vivo, com as notas longas no tempo, e convida a dançar.
+- **Aptidão**: além das regras, um estilo de fado muda as pausas (respirações), o ritmo (notas
+  suspensas antecipadas), as cadências (os versos alternam entre suspensão e repouso), a
+  variedade (recitação) e a tensão (o ápice no início do verso).
+- **Dinâmica**: só no fado, calculada a partir da melodia (`src/core/expression.js`).
+  - Cada verso começa forte e apaga-se, a nota suspensa esmorece, o ápice cresce, as notas de dor
+    são acentuadas e a última estrofe é mais forte, com o vibrato estreito das fadistas.
+  - Ouve-se na página (caixa «Dinâmica»), fica no MIDI (velocidade e CC 11) e aparece na
+    partitura da página, no PDF (*pp*–*ff*, reguladores e acentos) e no LilyPond.
+- **Áudio**: `tools/fado_audio.py` mede a dinâmica da voz em gravações, separando-a das guitarras
+  pela forma como cada som decai.
+  - Num teste sintético recupera o esmorecer, a descida do verso e o vibrato.
+  - A rede deste ambiente bloqueia o YouTube e o archive.org, por isso ainda não correu sobre
+    gravações reais (ver [`TRABALHO-FUTURO.md`](TRABALHO-FUTURO.md)).
 
 ## Ouvir no telemóvel: QR code, ligação e PDF com o MIDI
 
@@ -1007,7 +1047,7 @@ web/
   src/fitness/cadence.js         fórmulas de final aprendidas do corpus
   src/fitness/attractor.js       campo de atratores
   src/fitness/heuristics.js      heurísticas de composição: medidas da melodia e pontuação por intervalo-alvo
-  src/fitness/styles.js          regras gerais e 36 estilos (dados, com as fontes do CSV)
+  src/fitness/styles.js          regras gerais e 37 estilos (dados, com as fontes do CSV)
   src/i18n/                      texts.js: todos os textos da página (pt, en); i18n.js: t(), troca de língua
   src/fitness/canon.js           contraponto entre as vozes (pares, tríades, registo, intervalos diatónicos)
   src/ga/                        AG, operadores, MAP-Elites
@@ -1021,7 +1061,8 @@ web/
   src/io/notation.js             notação: ortografia, compassos, figuras e ligaduras, claves, escrita LilyPond,
                                  cânone numa só linha com as entradas
   src/io/pdf.js                  PDF vetorial (A4), contexto de desenho para o VexFlow, ficheiros anexados
-  src/ui/score.js                partitura na página (VexFlow + Gonville)
+  src/ui/score.js                partitura na página (VexFlow + Gonville), com a dinâmica do fado
+  src/core/expression.js         dinâmica de uma linha cantada (fado): nível, esmorecer, crescendo, acentos, vibrato
   src/core/meter.js              compassos simples e compostos (tempo, pesos métricos, frases)
   src/ga/figures.js              leitura por tempos: figura, contorno, entrada, direção
   src/ga/context.js              modelo de contexto de ordem variável (suavização interpolada)
@@ -1030,6 +1071,8 @@ web/
   data/corpus-large.json         6758 melodias em x/4 do estudo do algoritmo original
   results/qr/                    pesquisa sobre QR code, MIDI e PDF (pesquisa.csv)
   results/estilos/               pesquisa (literatura.csv), confronto, regras, calibração, validação, estudo no AG
+  results/fado/                  o fado: pesquisa de apoio, harmonias, medidas, confronto, validação, AG, áudio
+  TRABALHO-FUTURO.md             ideias para depois (voz livre com acompanhamento de guitarra, Início rápido e fado)
   results/meters/                a análise por compasso em CSV e Excel (auditável)
   src/data/classic-presets.js    combinações de partida do modo clássico (gerado pelo estudo)
   vendor/                        VexFlow 4.2.5 com a fonte Gonville (MIT, LICENSE-vexflow.txt)
@@ -1042,7 +1085,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 99 testes
+npm test                              # 105 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
@@ -1058,6 +1101,10 @@ node tools/meters_ga_study.mjs 8 400  # os blocos por compasso no AG → results
 node tools/openings.mjs 8             # inícios e qualidade por variante → results/openings.md
 node tools/solo_defaults.mjs 24       # omissão da melodia só, 24 sementes → results/solo-defaults.md
 node tools/build_cadences.mjs         # fórmulas de final → src/data/cadence-data.js, results/cadences.md
+python3 tools/fado_corpus.py /tmp/fado-scores   # fados reais (git clone https://github.com/fadado/fado-scores)
+node tools/fado_study.mjs none fado fadoAlegre   # o que distingue o fado, confronto e validação → results/fado/
+node tools/fado_ga_study.mjs 6 400    # o AG com e sem os estilos de fado → results/fado/ga.csv
+python3 tools/fado_audio.py --selftest          # dinâmica da voz em gravações (pip install librosa imageio-ffmpeg)
 python3 tools/build_pdf_fonts.py      # larguras das fontes-padrão do PDF → src/data/pdf-fonts.js
 node tools/classic_study.mjs          # estudo do algoritmo original (~1 h, 4 processos) →
                                       #   results/classic-study.md, src/data/classic-presets.js

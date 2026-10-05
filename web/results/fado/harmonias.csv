@@ -1,0 +1,12 @@
+﻿fado,autor,modo,compasso,versos_por_estrofe,silabas,esquema_basico,saida_no_3o_verso,remate,fonte
+Fado Menor,popular,menor,2/4,4,7,"i (2) | V7 (4) | i (2)",—,i,fadado/fado-scores Menor/README.md
+Fado Corrido,popular,maior,2/4,4,7,"I (2) | V7 (4) | I (2)",—,I,fadado/fado-scores Corrido/README.md
+Fado Mouraria,popular,maior,2/4,4,7,"I (2) | V7 (4) | I (2)",—,I,fadado/fado-scores Mouraria/README.md
+Fado Adiça,Armando Augusto Freire (Armandinho),maior,4/4,4,7,"I ii V7 I | I ii V7 I | I V7 V7 I | I V7 V7 I",dominante (V7 dois compassos),I V7 I,fadado/fado-scores Adiça/README.md
+Fado Alberto,Miguel Ramos,menor,4/4,5,10,"i V7 V7 i | I7 iv VII7 III | VI V7 V7 i",I7 → iv; VII7 → III (relativa maior),i V7 i,fadado/fado-scores Alberto/README.md
+Fado Bailado,Alfredo Duarte (Marceneiro),menor,4/4,5,7,"i (6) V7 (2) | V7 (3) iv V7 (2) i (2) | i (4) I7 (2) iv (2) | iv iv6 i (2) V7 (2) i (2)",I7 → iv,i V7 i,fadado/fado-scores Bailado/README.md
+Fado Menor do Porto,João Black,menor,4/4,4,7,"i V7 V7 i | i V7 iv7-V7 i | VII7-VI V V7 i | VII7-VI V V7 i",VII7 → VI → V (descida),i V7 i,fadado/fado-scores Menor do Porto/README.md
+Fado Dois Tons,Alberto Simões Costa,menor,2/2,4,7,"III VII7 VII7 III | III VII7 VII7 III-VI6-V7 | i V7 V7 i | i V7 V7 i",começa na relativa maior (III) e passa ao menor,i V7 i,fadado/fado-scores Dois Tons/README.md
+Fado Perseguição,Carlos da Maia,maior,4/4,6,7,"I I-V7 I | iii VI7 ii ii-VI7 | ii ii V7 | IV V7 I I-V7",iii → VI7 → ii (dominantes secundárias),I V7 I,fadado/fado-scores Perseguição/README.md
+Rosinha dos Limões,Artur Ribeiro,menor,2/4,8,10?,"i i V7 V7 V7 V7 i i | i i V7 V7 V7 V7 i I7 | iv iv-V7 i i V7 V7 i I7 | iv iv-V7 i i VI V7 i i",I7 → iv,i V7 i,fadado/fado-scores Rosinha dos Limões/README.md
+Coimbra (Coimbra é uma lição),Raul Ferrão,menor → maior,2/2,6,6,"i i^ i7 i6 i6m i-VIb V7 V7 | V7 iv V7 V7 … i || I #iv°7 V7 ii7 V7 V7 I I",menor → maior homónimo (mi menor → mi maior),I,fadado/fado-scores Coimbra/README.md

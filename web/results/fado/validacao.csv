@@ -1,0 +1,19 @@
+﻿style,title,mode,score,corpusPercentile,corpusMedian,corpusP90
+"none","Fado Adiça","major",0.8866,0.3738,0.9189,1.0000
+"none","Fado Alberto","minor",0.5978,0.0229,0.9189,1.0000
+"none","Coimbra (Raul Ferrão)","minor",0.9088,0.4575,0.9189,1.0000
+"none","Coimbra, as sung","minor",0.6348,0.0370,0.9189,1.0000
+"none","Fado do Marujo","minor",0.6411,0.0389,0.9189,1.0000
+"none","Fado Pagem","minor",0.6918,0.0597,0.9189,1.0000
+"fado","Fado Adiça","major",0.9087,0.9576,0.7541,0.8821
+"fado","Fado Alberto","minor",0.9994,1.0000,0.7541,0.8821
+"fado","Coimbra (Raul Ferrão)","minor",0.8292,0.7451,0.7541,0.8821
+"fado","Coimbra, as sung","minor",0.9191,0.9839,0.7541,0.8821
+"fado","Fado do Marujo","minor",0.7695,0.5478,0.7541,0.8821
+"fado","Fado Pagem","minor",0.9867,1.0000,0.7541,0.8821
+"fadoAlegre","Fado Adiça","major",1.0000,0.9997,0.8716,0.9618
+"fadoAlegre","Fado Alberto","minor",0.9453,0.8278,0.8716,0.9618
+"fadoAlegre","Coimbra (Raul Ferrão)","minor",0.8253,0.3318,0.8716,0.9618
+"fadoAlegre","Coimbra, as sung","minor",0.9044,0.6433,0.8716,0.9618
+"fadoAlegre","Fado do Marujo","minor",0.6473,0.0629,0.8716,0.9618
+"fadoAlegre","Fado Pagem","minor",0.9462,0.8313,0.8716,0.9618

@@ -34,6 +34,9 @@
 //             (step declination, leaps outlining chords, phrase-final lengthening, motifs...) and,
 //             with a style, the features of that style (figures, pickup, density...), each scored
 //             against the range of real melodies
+// A fado style also changes some components (styleTraits in styles.js; results/fado.md): rests
+// for the breaths between verses, held notes sung half a beat early, verse endings alternating
+// between suspension and rest, recitation on a repeated note, and the peak early in each verse.
 
 import { toEvents } from '../core/score.js';
 import { meterOf, phraseBarsFor, plainDurations } from '../core/meter.js';
@@ -44,7 +47,7 @@ import { analyzeEnsemble, intervalMap } from './canon.js';
 import { createBlockModel } from '../ga/blocks.js';
 import blocksData from '../data/blocks-data.js';
 import { melodyFeatures, scoreRules } from './heuristics.js';
-import { resolveRules, STYLES } from './styles.js';
+import { resolveRules, STYLES, styleTraits } from './styles.js';
 
 let blockModels = null;
 /** The building-block model of a meter learned from real melodies (shared, built on first use). */
@@ -139,13 +142,17 @@ export function createAttractorFitness(options = {}) {
   // with several voices the counterpoint weighs in unless the caller set its weight explicitly
   if (ensemble.length >= 2 && options.weights?.canon === undefined) weights.canon = 6;
   const canonOn = ensemble.length >= 2 && (weights.canon ?? 0) !== 0;
+  // the style is needed early: a fado changes the rests, rhythm, cadences, variety and tension
+  const style = o.style && STYLES[o.style] ? o.style : null;
+  const traits = styleTraits(style);
+  const restTarget = options.restTarget ?? traits.restTarget ?? o.restTarget;
   const phraseLen = phraseBars * bpb;
   const nPhrases = Math.max(1, Math.round(o.bars / phraseBars));
   const form = FORMS[o.form] ?? null;
   const formUnit = form ? length / form.length : 0;
 
   // target tension: an arch per phrase, scaled by a global arch that peaks at ~62% of the piece
-  const phraseArch = archWave(length, bpb, { phraseBars, amplitude: 1, mean: 0.5, peakAt: 0.62, descent: 0.3 });
+  const phraseArch = archWave(length, bpb, { phraseBars, amplitude: 1, mean: 0.5, peakAt: traits.phrasePeak ?? 0.62, descent: 0.3 });
   const globalArch = archWave(length, bpb, { phraseBars: o.bars, amplitude: 1, mean: 0.5, peakAt: 0.62, descent: 0.2 });
   const tensionTarget = phraseArch.map((v, i) => 0.6 * v + 0.4 * globalArch[i]);
 
@@ -153,7 +160,6 @@ export function createAttractorFitness(options = {}) {
   const caps = ruleCapsFor(meter);
   // composition heuristics: the rules of the style (and the general ones) with their ranges for
   // this meter; a style with a pickup starts its phrases that much before the downbeat
-  const style = o.style && STYLES[o.style] ? o.style : null;
   const heuristicRules = resolveRules(style, meter);
   const pickup = style ? STYLES[style].pickup ?? 0 : 0;
   const heuristicCtx = { meter, key, phraseBars, phraseStart: pickup ? bpb - pickup : 0, sectionBars: 8 };
@@ -285,6 +291,7 @@ export function createAttractorFitness(options = {}) {
 
     // cadences --------------------------------------------------------------
     acc = 0;
+    const alternate = traits.cadence === 'alternate';
     for (let ph = 0; ph < nPhrases; ph++) {
       const end = Math.min(length, (ph + 1) * phraseLen);
       const inPhrase = notes.filter((nt) => nt.start >= ph * phraseLen && nt.start < end);
@@ -301,13 +308,25 @@ export function createAttractorFitness(options = {}) {
       const reach = last.start + last.dur;
       s += last.dur >= 2 * beat ? 1 : last.dur >= beat ? 0.6 : -0.5;
       s += reach >= end - beat ? 0.3 : -0.5;
-      if (isFinal) s += pc === key.tonic ? 1.2 : key.anchoring[pc] >= 3 ? 0.2 : -1;
+      const deg = (pc - key.tonic + 12) % 12;
+      if (alternate) {
+        // fado (F01, F03, F10): the 1st and 3rd verse stay suspended on the dominant chord (2, 4,
+        // 5, 7, or the 6th leaning on the 5th), the 2nd and 4th come to rest on the tonic chord,
+        // and the tonic itself is kept for the end of the stanza
+        const stanzaEnd = ph % 4 === 3;
+        if (isFinal) s += deg === 0 ? 1.2 : -1;
+        else if (ph % 2 === 0) s += [2, 5, 7, 11, key.major ? 9 : 8].includes(deg) ? 1 : -0.6;
+        else if (stanzaEnd) s += deg === 0 ? 1 : key.anchoring[pc] >= 3 ? 0.6 : -0.6;
+        else s += deg === 0 ? 0.3 : key.anchoring[pc] >= 3 ? 0.9 : -0.4;
+      } else if (isFinal) s += pc === key.tonic ? 1.2 : key.anchoring[pc] >= 3 ? 0.2 : -1;
       else if (isHalf) s += key.anchoring[pc] === 4 || pc === (key.tonic + 7) % 12 ? 1 : key.anchoring[pc] >= 3 ? 0.6 : -0.6;
       else s += key.anchoring[pc] >= 3 ? 0.8 : -0.6;
       const prev = inPhrase[inPhrase.length - 2];
       if (prev) {
         const d = last.pitch - prev.pitch;
-        if (Math.abs(d) <= 2 && d !== 0) s += isFinal && d < 0 ? 0.5 : 0.3;
+        // the fado reaches its held note with a sigh: a falling step (F09)
+        if (alternate) s += d < 0 && d >= -2 ? 0.5 : Math.abs(d) <= 2 && d !== 0 ? 0.1 : 0;
+        else if (Math.abs(d) <= 2 && d !== 0) s += isFinal && d < 0 ? 0.5 : 0.3;
         else if (isFinal && Math.abs(d) === 5) s += 0.2; // 5-1 motion
       }
       acc += s / 3;
@@ -330,6 +349,8 @@ export function createAttractorFitness(options = {}) {
       } else {
         const align = nt.dur >= 4 ? 4 : nt.dur >= 2 ? 2 : 1;
         s = pos % align === 0 ? 1 : pos % 2 === 0 ? 0 : -1;
+        // fado: a held note sung half a beat early, across the beat (F06, F07)
+        if (traits.anticipation && nt.dur >= 6 && pos % 4 === 2) s = 1;
       }
       if (!plain.has(nt.dur)) s -= 0.7;
       if (nt.dur === 1) {
@@ -343,7 +364,7 @@ export function createAttractorFitness(options = {}) {
     let rhythm = acc / notes.length;
     const restSteps = genes.length - line.pitch.filter((p) => p !== null).length;
     const restRatio = restSteps / genes.length;
-    const [rLo, rHi] = o.restTarget;
+    const [rLo, rHi] = restTarget;
     if (restRatio > rHi) rhythm -= 4 * (restRatio - rHi);
     if (restRatio < rLo) rhythm -= 2 * (rLo - restRatio);
     const density = notes.length / (length / 4); // notes per beat
@@ -390,12 +411,14 @@ export function createAttractorFitness(options = {}) {
 
     // variety ---------------------------------------------------------------------
     let v = 0;
+    // a fado recites a line on one note (F08): runs of up to four repeated notes are not monotony
+    const recitationRun = traits.recitation ? 5 : 3;
     let run = 1;
     let repeats = 0;
     for (let i = 1; i < notes.length; i++) {
       if (notes[i].pitch === notes[i - 1].pitch) {
         run++;
-        if (run >= 3) repeats++;
+        if (run >= recitationRun) repeats++;
       } else run = 1;
     }
     v -= 3 * (repeats / notes.length);
@@ -444,6 +467,7 @@ export function createAttractorFitness(options = {}) {
     },
     components: (genes) => components(genes).parts,
     style,
+    traits,
     heuristicRules,
     /** Every heuristic rule on a melody: {score, rules: [{id, value, s, w}]} (for the page). */
     heuristics: (genes) => heuristicsOf(soundingLine(genes)),

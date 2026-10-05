@@ -13,6 +13,7 @@ const MAJOR_TONIC = { 0: 'C', 1: 'Db', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F', 6: 'F#',
 const MINOR_TONIC = { 0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F', 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'Bb', 11: 'B' };
 
 import { METERS } from '../core/meter.js';
+import { dynamicMarks } from '../core/expression.js';
 import { t } from '../i18n/i18n.js';
 
 // ------------------------------------------------------------------ meter
@@ -205,7 +206,9 @@ export function scoreModel({ voices, total, barLen, meter = null, key, title = '
     bpm,
     staves: voices.map((v) => {
       const pitches = v.events.filter((e) => e.pitch !== null).map((e) => e.pitch);
-      return { name: v.name, instrument: v.instrument, ...clefFor(v.instrument, pitches), bars: toBars(v.events, nBars, m) };
+      // dynamics, when the notes carry them (the fado styles; core/expression.js)
+      const dynamics = v.events.some((e) => e.x) ? dynamicMarks(v.events.filter((e) => e.start < nBars * m.barLen)) : [];
+      return { name: v.name, instrument: v.instrument, ...clefFor(v.instrument, pitches), bars: toBars(v.events, nBars, m), dynamics };
     }),
   };
 }
@@ -288,9 +291,25 @@ export function toLilyPond(model) {
       restRun = 0;
     };
     const marks = i === 0 ? model.entries ?? [] : [];
+    // dynamics (fado): what to write after the item that starts at a step; a hairpin ends (\!)
+    // on the first item at or after its end
+    const dyn = new Map();
+    const post = (step, txt) => dyn.set(step, [...(dyn.get(step) ?? []), txt]);
+    const starts = st.bars.flatMap((bar, b) => bar.map((it) => b * m.barLen + it.start));
+    for (const d of st.dynamics ?? []) {
+      if (d.type === 'accent') post(d.step, '->');
+      else if (d.type === 'text') post(d.step, `\\${d.text}`);
+      else {
+        post(d.step, d.type === 'cresc' ? '\\<' : '\\>');
+        const stop = starts.find((x) => x >= d.end);
+        if (stop !== undefined) post(stop, '\\!');
+      }
+    }
+    const order = (a) => (a === '\\!' ? 0 : a === '->' ? 1 : a.startsWith('\\') && !/[<>]$/.test(a) ? 2 : 3);
+    const postOf = (step) => (dyn.get(step) ?? []).slice().sort((a, b) => order(a) - order(b)).join('');
     st.bars.forEach((bar, b) => {
       const here = marks.filter((e) => Math.floor(e.step / m.barLen) === b);
-      if (bar.length === 1 && bar[0].full && !here.length) {
+      if (bar.length === 1 && bar[0].full && !here.length && !dyn.has(b * m.barLen)) {
         restRun++;
         return;
       }
@@ -304,8 +323,9 @@ export function toLilyPond(model) {
             done.add(e);
           }
         }
-        if (it.full) tokens.push(`R${barDur}`);
-        else tokens.push(it.rest ? `r${LILY_DURATION[it.dur]}` : `${lilyPitch(spell(it.pitch, model.spelling))}${LILY_DURATION[it.dur]}${it.tie ? '~' : ''}`);
+        const after = postOf(b * m.barLen + it.start);
+        if (it.full) tokens.push(`R${barDur}${after}`);
+        else tokens.push(it.rest ? `r${LILY_DURATION[it.dur]}${after}` : `${lilyPitch(spell(it.pitch, model.spelling))}${LILY_DURATION[it.dur]}${it.tie ? '~' : ''}${after}`);
       }
       bars.push(tokens.join(' '));
     });

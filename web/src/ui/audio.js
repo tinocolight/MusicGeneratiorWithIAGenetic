@@ -1,5 +1,7 @@
 // Small Web Audio synthesiser: plays up to three voices (a canon = the same line several times,
 // each voice later and possibly transposed), with one simple preset per instrument family.
+// A note may carry dynamics (core/expression.js, the fado styles): a level, an accent, a fade or
+// a swell over its length, and the depth of its vibrato.
 
 import { instrument } from '../core/instruments.js';
 
@@ -40,15 +42,34 @@ export function createPlayer() {
     return o;
   }
 
-  function note(t0, dur, midi, inst, pan, gainScale) {
+  // dynamics of one note on its own gain stage, after the instrument's envelope
+  function dynamics(gain, t0, dur, x) {
+    const level = Math.min(1.8, (x.vel / 0.7) ** 1.6);
+    const a = Math.min(0.12, dur * 0.3);
+    gain.setValueAtTime(level * (x.accent ? 1.3 : 1), t0);
+    gain.linearRampToValueAtTime(level, t0 + a);
+    if (x.shape === 'fade') {
+      gain.setValueAtTime(level, t0 + Math.max(a, Math.min(0.3, dur * 0.25)));
+      gain.linearRampToValueAtTime(level * x.end, t0 + dur);
+    } else if (x.shape === 'swell') {
+      gain.linearRampToValueAtTime(level * x.end, t0 + Math.max(a + 0.01, dur * 0.75));
+    }
+  }
+
+  function note(t0, dur, midi, inst, pan, gainScale, x = null) {
     const f = 440 * 2 ** ((midi - 69) / 12);
     const out = ctx.createGain();
+    const dyn = ctx.createGain();
+    out.connect(dyn);
+    if (x) dynamics(dyn.gain, t0, dur, x);
     const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
     if (panner) {
       panner.pan.value = pan;
-      out.connect(panner);
+      dyn.connect(panner);
       panner.connect(master);
-    } else out.connect(master);
+    } else dyn.connect(master);
+    // the fado's narrow vibrato on long notes (about 0.3 semitone at 5.6 Hz; Mendes et al. 2013)
+    const vibDepth = x?.vib ? 2 ** (x.vib / 12) - 1 : null;
     const g = out.gain;
     const peak = 0.2 * gainScale;
     const oscs = [];
@@ -61,10 +82,10 @@ export function createPlayer() {
       return lp;
     };
     const vibrato = (o, depth, delay) => {
-      const v = osc('sine', 5.5, t0);
+      const v = osc('sine', vibDepth ? 5.6 : 5.5, t0);
       const vg = ctx.createGain();
       vg.gain.setValueAtTime(0, t0);
-      vg.gain.linearRampToValueAtTime(f * depth, t0 + Math.min(delay, dur));
+      vg.gain.linearRampToValueAtTime(f * (vibDepth ?? depth), t0 + Math.min(delay, dur));
       v.connect(vg);
       vg.connect(o.frequency);
       oscs.push(v);
@@ -185,7 +206,7 @@ export function createPlayer() {
       }
     }
     for (const o of oscs) o.stop(t0 + dur + 0.8);
-    nodes.push({ oscs, out });
+    nodes.push({ oscs, out: dyn });
   }
 
   const api = {
@@ -193,8 +214,8 @@ export function createPlayer() {
       return raf !== 0;
     },
     /**
-     * voices: [{events: [{pitch, start, dur}], offset (16ths), map (pitch => pitch),
-     *           instrument (id), pan, gain}]
+     * voices: [{events: [{pitch, start, dur, x (dynamics, optional)}], offset (16ths),
+     *           map (pitch => pitch), instrument (id), pan, gain}]
      * opts: {bpm, onStep(step), onEnd()}
      */
     play(voices, { bpm = 90, onStep = null, onEnd = null } = {}) {
@@ -210,7 +231,7 @@ export function createPlayer() {
           if (e.pitch === null) continue;
           const start = e.start + (v.offset || 0);
           lastStep = Math.max(lastStep, start + e.dur);
-          note(t0 + start * stepSec, Math.max(0.05, e.dur * stepSec * 0.97), map(e.pitch), inst, v.pan || 0, v.gain ?? 1);
+          note(t0 + start * stepSec, Math.max(0.05, e.dur * stepSec * 0.97), map(e.pitch), inst, v.pan || 0, v.gain ?? 1, e.x ?? null);
         }
       }
       const total = lastStep * stepSec;

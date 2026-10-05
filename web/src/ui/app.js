@@ -34,7 +34,8 @@ import { createPlayer } from './audio.js';
 import { loadVexFlow, renderScore, scorePdf } from './score.js';
 import { aboutHtml } from './about.js';
 import { t, tn, has, locale, applyTexts, setLang, getLang, onLangChange, initialLang, startLang, LANGUAGES } from '../i18n/i18n.js';
-import { STYLES } from '../fitness/styles.js';
+import { STYLES, styleTraits } from '../fitness/styles.js';
+import { expressionOf } from '../core/expression.js';
 import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves, meterOfConfig,
   presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf, adaptToVoices, activeStyle,
@@ -254,6 +255,7 @@ function initControls() {
   });
   window.addEventListener('hashchange', openFromLink);
   $('canonPlay').addEventListener('change', render);
+  $('dynPlay').addEventListener('change', render);
   $('meRun').addEventListener('click', runMapElites);
   $('meStop').addEventListener('click', () => (state.meRunning = null));
   $('eliteMap').addEventListener('click', onMapClick);
@@ -412,8 +414,28 @@ function pieceFromGenes(genes, built, cfg, extra = {}) {
  * the second violin stops with the first); a round goes round twice and every voice stops
  * at the end of the second pass.
  */
+/** 'sad' | 'happy' when the piece's style plays with dynamics (the fado styles), else null. */
+function expressionKind(p) {
+  if (!p?.config || p.config.mode === 'classic') return null;
+  return styleTraits(activeStyle(p.config)).expression ?? null;
+}
+
+/** Dynamics of the piece's melody, one entry per event (core/expression.js), or null. */
+function expressionFor(p) {
+  const kind = $('dynPlay').checked ? expressionKind(p) : null;
+  if (!kind) return null;
+  if (p.expression?.kind !== kind) {
+    const beat = (p.meter && METERS[p.meter]?.beat) || 4;
+    p.expression = { kind, notes: expressionOf(p.events, { kind, barLen: p.barLen, beat, key: p.key ?? { tonic: 0, mode: 'major' } }) };
+  }
+  return p.expression.notes;
+}
+
 function soundingVoices(p, all = $('canonPlay').checked) {
   const voices = all ? p.voices : p.voices.slice(0, 1);
+  // with dynamics (fado), the other voices play a little softer so that the melody leads
+  const expr = expressionFor(p);
+  const xOf = (k, lead) => (expr?.[k] ? (lead ? expr[k] : { ...expr[k], vel: expr[k].vel * 0.8 }) : undefined);
   const delays = p.voices.map((v) => v.delay).sort((a, b) => b - a);
   const reps = p.circular && voices.length > 1 ? 2 : 1;
   const total = voices.length === 1 ? p.length : p.end ?? (p.circular ? reps * p.length : p.length + (delays[1] ?? 0));
@@ -424,11 +446,12 @@ function soundingVoices(p, all = $('canonPlay').checked) {
       const events = [];
       for (let r = 0; v.delay + r * p.length < total; r++) {
         if (i === 0 && r >= reps) break;
-        for (const e of p.events) {
+        p.events.forEach((e, k) => {
           const s = e.start + r * p.length + v.delay;
-          if (e.pitch === null || s >= total) continue;
-          events.push({ pitch: map(e.pitch), start: s, dur: Math.min(e.dur, total - s) });
-        }
+          if (e.pitch === null || s >= total) return;
+          const x = xOf(k, i === 0);
+          events.push(x ? { pitch: map(e.pitch), start: s, dur: Math.min(e.dur, total - s), x } : { pitch: map(e.pitch), start: s, dur: Math.min(e.dur, total - s) });
+        });
       }
       return { events, instrument: v.instrument, kind: i === 0 ? 'lead' : i === 1 ? 'follower' : 'v3', spec: v };
     }),
@@ -505,6 +528,7 @@ function render() {
   } else legend.push(`<span><i style="background:var(--wave-1)"></i>${t('legend.low')}</span><span><i style="background:var(--wave-2)"></i>${t('legend.fast')}</span><span>${t('legend.bands')}</span>`);
   $('legend').innerHTML = legend.join('');
   $('legend').hidden = state.view === 'score';
+  $('dynRow').hidden = !expressionKind(p);
 }
 
 // ------------------------------------------------------------------ engraved score (optional view)
@@ -544,6 +568,12 @@ const scoreLayoutOf = (p) => ($('scoreLayout').value === 'line' && p.voices?.len
  * Score model of what is on the stage: the voices as they sound, one staff each, or the canon on
  * one line with a numbered mark where each voice comes in.
  */
+/** The melody's notes, with their dynamics when it has them (the one-line score). */
+function leadEventsWithDynamics(p) {
+  const expr = expressionFor(p);
+  return p.events.flatMap((e, k) => (e.pitch === null ? [] : [expr?.[k] ? { ...e, x: expr[k] } : e]));
+}
+
 function scoreModelFor(p, layout = scoreLayoutOf(p)) {
   let key = p.key;
   if (!key || !key.mode) {
@@ -556,7 +586,7 @@ function scoreModelFor(p, layout = scoreLayoutOf(p)) {
   if (layout === 'line') {
     const names = voiceNames(p.voices);
     return canonLineModel({
-      lead: { events: p.events.filter((e) => e.pitch !== null), instrument: p.voices[0].instrument, name: names[0] },
+      lead: { events: leadEventsWithDynamics(p), instrument: p.voices[0].instrument, name: names[0] },
       entries: p.voices.map((v, i) => ({
         step: v.delay,
         name: names[i],
@@ -593,7 +623,7 @@ function renderScoreView() {
   const width = box.clientWidth || 800;
   const cs = getComputedStyle(document.documentElement);
   const theme = cs.getPropertyValue('--paper').trim();
-  const sig = { p, all: $('canonPlay').checked, width, theme, bpm: $('bpm').value, layout: $('scoreLayout').value };
+  const sig = { p, all: $('canonPlay').checked, dyn: $('dynPlay').checked, width, theme, bpm: $('bpm').value, layout: $('scoreLayout').value };
   const same = state.scoreFor && Object.keys(sig).every((k) => state.scoreFor[k] === sig[k]);
   if (same) {
     highlightScore(state.playhead);

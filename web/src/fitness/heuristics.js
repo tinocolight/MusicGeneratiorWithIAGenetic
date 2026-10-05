@@ -310,6 +310,74 @@ export function melodyFeatures(line, ctx) {
 
   // the beat of the bar where the melody's last note starts (0 = downbeat)
   f.finalBeat = Math.floor(mod(notes[notes.length - 1].s, bar) / beat);
+
+  Object.assign(f, verseFeatures(notes, { beat, bar, pc }));
+  return f;
+}
+
+/**
+ * Verses: the groups of notes between two breaths (rests of an eighth or more), as a singer
+ * phrases a poem (results/fado.md). Measured whatever the style; the fado rules use them.
+ *   verseNotes     notes per verse (a verse of 7 syllables: about 7 to 12 notes)
+ *   verseFinal     how much longer the last note of a verse is than the others (the held note)
+ *   verseEndStep   share of verses that reach their last note by a falling step (the "sigh")
+ *   verseTonic     share of the verses before the last one that end on the tonic (the rest is
+ *                  kept for the end of the stanza; the other verses stay suspended)
+ *   verseAnticip   share of verses whose held note starts off the beat (sung "early")
+ *   quickRuns      runs of three or more 16ths in a row, per bar; quickRunMax the longest
+ *   runsIntoLong   share of those runs that lead straight into a note of two beats or more
+ */
+function verseFeatures(notes, { beat, bar, pc }) {
+  const f = { verseNotes: undefined, verseFinal: undefined, verseEndStep: undefined, verseAnticip: undefined, verseTonic: undefined };
+  const verses = [];
+  let cur = [];
+  for (let i = 0; i < notes.length; i++) {
+    if (i && notes[i].s - (notes[i - 1].s + notes[i - 1].d) >= 2) {
+      if (cur.length >= 3) verses.push(cur);
+      cur = [];
+    }
+    cur.push(notes[i]);
+  }
+  if (cur.length >= 3) verses.push(cur);
+  if (verses.length >= 2) {
+    let nNotes = 0;
+    let ratio = 0;
+    let fall = 0;
+    let early = 0;
+    for (const v of verses) {
+      const last = v[v.length - 1];
+      const before = v[v.length - 2];
+      nNotes += v.length;
+      ratio += Math.min(8, last.d / (v.slice(0, -1).reduce((a, n) => a + n.d, 0) / (v.length - 1)));
+      const d = last.p - before.p;
+      if (d < 0 && d >= -2) fall++;
+      if (last.s % beat !== 0 && last.d >= beat) early++;
+    }
+    f.verseNotes = nNotes / verses.length;
+    f.verseFinal = ratio / verses.length;
+    f.verseEndStep = fall / verses.length;
+    f.verseAnticip = early / verses.length;
+    if (verses.length >= 3) {
+      const inner = verses.slice(0, -1);
+      f.verseTonic = inner.filter((v) => pc(v[v.length - 1].p) === 0).length / inner.length;
+    }
+  }
+  // runs of 16ths (fast notes): rare in fado, and then mostly an ornament into a held note
+  const span = notes[notes.length - 1].s + notes[notes.length - 1].d - notes[0].s;
+  const runs = [];
+  let run = 0;
+  for (let i = 0; i <= notes.length; i++) {
+    const n = notes[i];
+    const quick = n && n.d === 1 && (run === 0 || notes[i - 1].s + notes[i - 1].d === n.s);
+    if (quick) run++;
+    else {
+      if (run >= 3) runs.push({ len: run, next: n });
+      run = n && n.d === 1 ? 1 : 0;
+    }
+  }
+  f.quickRuns = runs.length / Math.max(1, span / bar);
+  f.quickRunMax = runs.reduce((a, r) => Math.max(a, r.len), 0);
+  f.runsIntoLong = runs.length ? runs.filter((r) => r.next && r.next.d >= 2 * beat).length / runs.length : undefined;
   return f;
 }
 
