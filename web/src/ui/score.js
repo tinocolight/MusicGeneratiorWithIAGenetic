@@ -226,6 +226,7 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
           if (dur.endsWith('d')) VF.Dot.buildAndAttach([note], { all: true });
           const s0 = bar * m.barLen + it.start;
           if (!it.rest && accents[i].has(s0)) note.addModifier(new VF.Articulation('a>').setPosition(VF.Modifier.Position.ABOVE), 0);
+          if (i === 0 && !it.rest && model.marks?.fermata.includes(s0)) note.addModifier(new VF.Articulation('a@a').setPosition(VF.Modifier.Position.ABOVE), 0);
           placed[i].push({ start: s0, end: s0 + (it.full ? m.barLen : it.dur), note, sys: si, stave: null, i });
           out.push({ note, start: s0, end: s0 + (it.full ? m.barLen : it.dur), rest: it.rest });
           if (!it.rest) chains[i].push({ note, tie: it.tie, sys: si });
@@ -324,6 +325,18 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
       ctx.fillText(c.name, pl.note.getAbsoluteX() - 2, top.getYForLine(0) - 12);
       ctx.restore();
     }
+  }
+
+  // ---- "rit." over the first staff where the singer slows into a held note (the rubato)
+  for (const step of model.marks?.rit ?? []) {
+    const pl = placed[0].find((x) => x.start <= step && step < x.end);
+    if (!pl) continue;
+    const ctx = ctxOf[pl.sys];
+    ctx.save();
+    ctx.setFillStyle(ink);
+    ctx.setFont('Georgia, serif', 12, 'normal', 'italic');
+    ctx.fillText('rit.', pl.note.getAbsoluteX(), pl.stave.getYForLine(0) - (model.chords?.length ? 26 : 12));
+    ctx.restore();
   }
 
   // ---- dynamics under the staves: letters, then hairpins from the note where they start to the

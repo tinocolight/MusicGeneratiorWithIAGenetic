@@ -35,7 +35,7 @@ import { loadVexFlow, renderScore, scorePdf } from './score.js';
 import { aboutHtml } from './about.js';
 import { t, tn, has, locale, applyTexts, setLang, getLang, onLangChange, initialLang, startLang, LANGUAGES } from '../i18n/i18n.js';
 import { STYLES, styleTraits } from '../fitness/styles.js';
-import { expressionOf } from '../core/expression.js';
+import { expressionOf, rubatoOf, timeline } from '../core/expression.js';
 import { fadoAccompaniment, ACCOMP_PARTS } from '../accomp/fado.js';
 import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves, meterOfConfig,
@@ -433,6 +433,18 @@ function expressionFor(p) {
 }
 
 /**
+ * The rubato of a piece that plays with dynamics (fado): the time stretched into the held notes and
+ * held on the last one, from the melody as it sounds ({stretch, marks}), or null.
+ */
+function rubatoFor(p, sounding = soundingVoices(p)) {
+  const kind = $('dynPlay').checked ? expressionKind(p) : null;
+  if (!kind) return null;
+  const lead = sounding.voices[0];
+  const beat = (p.meter && METERS[p.meter]?.beat) || 4;
+  return rubatoOf(lead.events, { total: sounding.total, beat, kind });
+}
+
+/**
  * The accompaniment of a piece set to "melody + accompaniment" in a fado style (src/accomp/fado.js):
  * {intro, total, chords, parts}, or null (another style, the classic mode, or not asked for).
  */
@@ -637,11 +649,13 @@ function scoreModelFor(p, layout = scoreLayoutOf(p)) {
       circular: !!p.circular,
     });
   }
-  const { voices, total, chords } = soundingVoices(p);
+  const sounding = soundingVoices(p);
+  const { voices, total, chords } = sounding;
   const names = voiceNames(voices);
   return scoreModel({
     voices: voices.map((v, i) => ({ events: v.events, instrument: v.instrument, name: names[i], dynamics: v.kind !== 'accomp' })),
     chords,
+    marks: rubatoFor(p, sounding)?.marks ?? null,
     total,
     barLen: p.barLen,
     meter: p.meter ?? null,
@@ -1184,15 +1198,18 @@ function togglePlay() {
 
 function playPiece(p) {
   if (!p) return;
-  const { voices } = soundingVoices(p);
+  const sounding = soundingVoices(p);
+  const { voices } = sounding;
   const n = voices.length;
   const accomp = voices.some((v) => v.kind === 'accomp');
+  const rubato = rubatoFor(p, sounding);
   // the voice in the middle, the guitarra to the right and the viola to the left, a little softer
   const pans = accomp ? [0, 0.35, -0.35] : n === 1 ? [0] : n === 2 ? [-0.35, 0.35] : [-0.45, 0.45, 0];
   const gainOf = (v, i) => (v.kind === 'accomp' ? (v.events.some((e) => e.x) ? 0.85 : 0.6) : i ? 0.9 : 1);
   $('playBtn').textContent = t('play.stop');
   player.play(voices.map((v, i) => ({ events: v.events, instrument: v.instrument, pan: pans[i] ?? 0, gain: gainOf(v, i) })), {
     bpm: Number($('bpm').value),
+    times: rubato ? timeline(rubato.stretch, Number($('bpm').value)) : null,
     onStep: (s) => {
       state.playhead = s;
       render();
@@ -1247,7 +1264,12 @@ function songOf(p) {
  * codes; `voices: false` keeps only the melody (the page rebuilds the canon from the record).
  */
 function midiOf(p, { compact = false, voices: all = $('canonPlay').checked } = {}) {
-  const { voices } = soundingVoices(p, all);
+  const sounding = soundingVoices(p, all);
+  const { voices } = sounding;
+  // the rubato as tempo changes (not in the compact files of links and QR codes)
+  const bpm = Number($('bpm').value);
+  const rubato = compact ? null : rubatoFor(p, sounding);
+  const tempos = rubato ? rubato.stretch.flatMap((f, i) => (i && f !== rubato.stretch[i - 1] ? [{ step: i, bpm: bpm / f }] : [])) : null;
   const tracks = voices.map((v, i) => ({
     events: v.events,
     name: `${instrument(v.instrument).label} ${i + 1}`,
@@ -1255,7 +1277,7 @@ function midiOf(p, { compact = false, voices: all = $('canonPlay').checked } = {
     ...(v.kind === 'accomp' ? { velocity: 64 } : {}),
   }));
   const [num, den] = p.meter && METERS[p.meter] ? [METERS[p.meter].num, METERS[p.meter].den] : TIME_SIGNATURES[p.barLen] ?? [4, 4];
-  return writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den, text: songText(songOf(p)), compact });
+  return writeMidi(tracks, { bpm, numerator: num, denominator: den, text: songText(songOf(p)), compact, tempos });
 }
 
 // The page the links and QR codes open: the light player (tocar.html) published on the repository's

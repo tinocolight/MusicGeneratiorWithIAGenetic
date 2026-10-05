@@ -199,8 +199,9 @@ export function toBars(events, nBars, m) {
  * @param voices [{events (absolute starts, sounding pitches), instrument, name, dynamics (false: no
  *   dynamic marks for this staff, as for an accompaniment)}]
  * @param chords [{start, dur, name, root, q}] chord symbols over the first staff (accompaniment)
+ * @param marks {rit: [steps], fermata: [steps]} the rubato of the first staff (core/expression.js)
  */
-export function scoreModel({ voices, total, barLen, meter = null, key, title = '', subtitle = '', bpm = 84, chords = null }) {
+export function scoreModel({ voices, total, barLen, meter = null, key, title = '', subtitle = '', bpm = 84, chords = null, marks = null }) {
   const m = meterOf(barLen, meter);
   const spelling = spellingFor(key);
   const nBars = Math.max(1, Math.ceil(total / barLen));
@@ -212,6 +213,7 @@ export function scoreModel({ voices, total, barLen, meter = null, key, title = '
     title,
     subtitle,
     bpm,
+    marks: marks ? { rit: marks.rit ?? [], fermata: marks.fermata ?? [] } : null,
     chords: chords ? chords.filter((c) => c.start < nBars * m.barLen).map((c) => ({ step: c.start, dur: c.dur, name: c.name, root: c.root, q: c.q })) : null,
     staves: voices.map((v) => {
       const pitches = v.events.filter((e) => e.pitch !== null).map((e) => e.pitch);
@@ -306,6 +308,10 @@ export function toLilyPond(model) {
     const dyn = new Map();
     const post = (step, txt) => dyn.set(step, [...(dyn.get(step) ?? []), txt]);
     const starts = st.bars.flatMap((bar, b) => bar.map((it) => b * m.barLen + it.start));
+    if (i === 0 && model.marks) {
+      for (const st0 of model.marks.fermata) post(st0, '\\fermata');
+      for (const st0 of model.marks.rit) post(st0, '^\\markup { \\italic "rit." }');
+    }
     for (const d of st.dynamics ?? []) {
       if (d.type === 'accent') post(d.step, '->');
       else if (d.type === 'text') post(d.step, `\\${d.text}`);
@@ -315,7 +321,7 @@ export function toLilyPond(model) {
         if (stop !== undefined) post(stop, '\\!');
       }
     }
-    const order = (a) => (a === '\\!' ? 0 : a === '->' ? 1 : a.startsWith('\\') && !/[<>]$/.test(a) ? 2 : 3);
+    const order = (a) => (a === '\\!' ? 0 : a === '->' || a === '\\fermata' ? 1 : a.startsWith('^') ? 4 : a.startsWith('\\') && !/[<>]$/.test(a) ? 2 : 3);
     const postOf = (step) => (dyn.get(step) ?? []).slice().sort((a, b) => order(a) - order(b)).join('');
     st.bars.forEach((bar, b) => {
       const here = marks.filter((e) => Math.floor(e.step / m.barLen) === b);

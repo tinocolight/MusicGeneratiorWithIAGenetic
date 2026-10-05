@@ -255,12 +255,32 @@ export function createPlayer() {
     /**
      * voices: [{events: [{pitch, start, dur, x (dynamics, optional)}], offset (16ths),
      *           map (pitch => pitch), instrument (id), pan, gain}]
-     * opts: {bpm, onStep(step), onEnd()}
+     * opts: {bpm, onStep(step), onEnd(), times (seconds at each 16th, for a rubato; see
+     *        core/expression.js timeline)}
      */
-    play(voices, { bpm = 90, onStep = null, onEnd = null } = {}) {
+    play(voices, { bpm = 90, onStep = null, onEnd = null, times = null } = {}) {
       api.stop();
       ensure();
       const stepSec = 60 / bpm / 4;
+      // the time of a step: in tempo, or along the rubato's timeline
+      const at = (s) => {
+        if (!times) return s * stepSec;
+        if (s >= times.length - 1) return times[times.length - 1] + (s - (times.length - 1)) * stepSec;
+        const i = Math.floor(s);
+        return times[i] + (times[i + 1] - times[i]) * (s - i);
+      };
+      const stepAt = (sec) => {
+        if (!times) return sec / stepSec;
+        let lo = 0;
+        let hi = times.length - 1;
+        if (sec >= times[hi]) return hi + (sec - times[hi]) / stepSec;
+        while (hi - lo > 1) {
+          const mid = (lo + hi) >> 1;
+          if (times[mid] <= sec) lo = mid;
+          else hi = mid;
+        }
+        return lo + (sec - times[lo]) / (times[hi] - times[lo]);
+      };
       const t0 = ctx.currentTime + 0.08;
       let lastStep = 0;
       for (const v of voices) {
@@ -270,12 +290,12 @@ export function createPlayer() {
           if (e.pitch === null) continue;
           const start = e.start + (v.offset || 0);
           lastStep = Math.max(lastStep, start + e.dur);
-          note(t0 + start * stepSec, Math.max(0.05, e.dur * stepSec * 0.97), map(e.pitch), inst, v.pan || 0, v.gain ?? 1, e.x ?? null);
+          note(t0 + at(start), Math.max(0.05, (at(start + e.dur) - at(start)) * 0.97), map(e.pitch), inst, v.pan || 0, v.gain ?? 1, e.x ?? null);
         }
       }
-      const total = lastStep * stepSec;
+      const total = at(lastStep);
       const tick = () => {
-        const step = (ctx.currentTime - t0) / stepSec;
+        const step = stepAt(ctx.currentTime - t0);
         if (onStep) onStep(step);
         if (ctx.currentTime - t0 < total + 0.1) raf = requestAnimationFrame(tick);
         else {

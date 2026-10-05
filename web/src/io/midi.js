@@ -35,16 +35,21 @@ function trackChunk(events, compact = false) {
  * @param voices [{events: [{pitch|null, start, dur, x}], offset (16ths), program, channel, name}]
  *   x: the dynamics of a note (core/expression.js, fado styles): its velocity, and a fade or a
  *   swell written as expression controller (CC 11) changes along the note (not in compact files)
- * @param opts {bpm, numerator, denominator, text (a text event in the first track), compact
+ * @param opts {bpm, numerator, denominator, tempos ([{step, bpm}]: tempo changes, for a rubato),
+ *   text (a text event in the first track), compact
  *   (running status, and note-off written as note-on at velocity 0, so that every note after
  *   the first in a track takes 3 bytes less: the files are smaller, for links and QR codes)}
  */
-export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4, text = '', compact = false } = {}) {
-  const tempo = Math.round(60000000 / bpm);
+export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4, text = '', compact = false, tempos = null } = {}) {
+  const tempoEvent = (tick, b) => {
+    const us = Math.round(60000000 / b);
+    return { tick, order: 0, bytes: [0xff, 0x51, 0x03, (us >> 16) & 255, (us >> 8) & 255, us & 255] };
+  };
   const meta = [
-    { tick: 0, order: 0, bytes: [0xff, 0x51, 0x03, (tempo >> 16) & 255, (tempo >> 8) & 255, tempo & 255] },
+    tempoEvent(0, bpm),
     { tick: 0, order: 0, bytes: [0xff, 0x58, 0x04, numerator, Math.log2(denominator), 24, 8] },
   ];
+  for (const tp of tempos ?? []) if (tp.step > 0) meta.push(tempoEvent(tp.step * (TICKS / 4), tp.bpm));
   if (text) {
     const t = [...new TextEncoder().encode(text)];
     meta.push({ tick: 0, order: 1, bytes: [0xff, 0x01, ...vlq(t.length), ...t] });

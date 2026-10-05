@@ -324,7 +324,9 @@ export function melodyFeatures(line, ctx) {
  *   verseTonic     share of the verses before the last one that end on the tonic (the rest is
  *                  kept for the end of the stanza; the other verses stay suspended)
  *   verseAnticip   share of verses whose held note starts off the beat (sung "early")
- *   quickRuns      runs of three or more 16ths in a row, per bar; quickRunMax the longest
+ *   quickRuns      runs of three or more 16ths in a row that move (two changes of pitch or more:
+ *                  16ths on one repeated note are recitation, as in the refrains of the fado
+ *                  scores, results/fado/partituras.md), per bar; quickRunMax the longest
  *   runsIntoLong   share of those runs that lead straight into a note of two beats or more
  */
 function verseFeatures(notes, { beat, bar, pc }) {
@@ -366,13 +368,17 @@ function verseFeatures(notes, { beat, bar, pc }) {
   const span = notes[notes.length - 1].s + notes[notes.length - 1].d - notes[0].s;
   const runs = [];
   let run = 0;
+  let moves = 0;
   for (let i = 0; i <= notes.length; i++) {
     const n = notes[i];
     const quick = n && n.d === 1 && (run === 0 || notes[i - 1].s + notes[i - 1].d === n.s);
-    if (quick) run++;
-    else {
-      if (run >= 3) runs.push({ len: run, next: n });
+    if (quick) {
+      if (run > 0 && n.p !== notes[i - 1].p) moves++;
+      run++;
+    } else {
+      if (run >= 3 && moves >= 2) runs.push({ len: run, next: n });
       run = n && n.d === 1 ? 1 : 0;
+      moves = 0;
     }
   }
   f.quickRuns = runs.length / Math.max(1, span / bar);

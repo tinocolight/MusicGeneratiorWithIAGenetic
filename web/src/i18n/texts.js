@@ -53,10 +53,10 @@ export const TEXTS = {
   'transport.tempo': { pt: 'Tempo', en: 'Tempo' },
   'transport.tempo.title': { pt: 'Semínimas por minuto', en: 'Quarter notes per minute' },
   'transport.allVoices': { pt: 'Tocar com todas as vozes', en: 'Play all the voices' },
-  'transport.dyn': { pt: 'Dinâmica', en: 'Dynamics' },
+  'transport.dyn': { pt: 'Dinâmica e rubato', en: 'Dynamics and rubato' },
   'transport.dyn.title': {
-    pt: 'Só no fado: cada verso começa forte e apaga-se, a nota suspensa do fim do verso esmorece, a nota mais aguda cresce, as notas de dor são acentuadas e a última estrofe é mais forte, com o vibrato estreito das fadistas. Desligue para ouvir a mesma melodia sem dinâmica.',
-    en: 'Fado only: each verse starts strong and dies away, the held note at its end fades, the highest note swells, the notes of pain are accented and the last stanza is louder, with the narrow vibrato of fado singers. Turn it off to hear the same melody without dynamics.',
+    pt: 'Só no fado: cada verso começa forte e apaga-se, a nota suspensa do fim do verso esmorece, a nota mais aguda cresce, as notas de dor são acentuadas e a última estrofe é mais forte, com o vibrato estreito das fadistas; e o andamento abranda para a nota suspensa de cada verso e para na última nota (rit. e fermata, como nas partituras de fado). Desligue para ouvir a mesma melodia sem dinâmica nem rubato.',
+    en: 'Fado only: each verse starts strong and dies away, the held note at its end fades, the highest note swells, the notes of pain are accented and the last stanza is louder, with the narrow vibrato of fado singers; and the tempo slows into the held note of each verse and stops on the last note (rit. and fermata, as in fado scores). Turn it off to hear the same melody without dynamics or rubato.',
   },
   'transport.midi': { pt: 'Descarregar MIDI', en: 'Download MIDI' },
   'transport.staves': { pt: 'Pautas', en: 'Staves' },

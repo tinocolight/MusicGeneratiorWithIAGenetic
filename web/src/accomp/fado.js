@@ -30,36 +30,42 @@ export const ACCOMP_PARTS = [
 ];
 
 // chord qualities (semitones above the root)
-const QUALITY = { M: [0, 4, 7], m: [0, 3, 7], 7: [0, 4, 7, 10], m7b5: [0, 3, 6, 10] };
+const QUALITY = { M: [0, 4, 7], m: [0, 3, 7], 7: [0, 4, 7, 10], m7b5: [0, 3, 6, 10], dim7: [0, 3, 6, 9] };
 // the chords of the fados (root in semitones above the tonic)
 const CHORDS = {
   minor: [
     { id: 'i', root: 0, q: 'm' }, { id: 'V7', root: 7, q: '7' }, { id: 'iv', root: 5, q: 'm' },
     { id: 'I7', root: 0, q: '7' }, { id: 'VII7', root: 10, q: '7' }, { id: 'III', root: 3, q: 'M' },
     { id: 'VI', root: 8, q: 'M' }, { id: 'iiø7', root: 2, q: 'm7b5' },
+    // the diminished seventh on the leading tone, a dominant without its root (Fado dos Fados,
+    // Coimbra: results/fado/partituras.md)
+    { id: 'vii°7', root: 11, q: 'dim7' },
   ],
   major: [
     { id: 'I', root: 0, q: 'M' }, { id: 'V7', root: 7, q: '7' }, { id: 'IV', root: 5, q: 'M' },
     { id: 'ii', root: 2, q: 'm' }, { id: 'I7', root: 0, q: '7' }, { id: 'VI7', root: 9, q: '7' },
     { id: 'II7', root: 2, q: '7' }, { id: 'vi', root: 9, q: 'm' }, { id: 'iii', root: 4, q: 'm' },
+    { id: 'vii°7', root: 11, q: 'dim7' },
   ],
 };
 // how usual each change is in real fados (0..1); a change not listed costs
 const MOVES = {
   minor: {
-    i: { V7: 1, iv: 0.5, I7: 0.5, VI: 0.3, VII7: 0.3, III: 0.2 },
+    i: { V7: 1, iv: 0.5, I7: 0.5, VI: 0.3, VII7: 0.3, III: 0.2, 'vii°7': 0.2 },
     V7: { i: 1, VI: 0.2 },
+    'vii°7': { i: 1, V7: 0.3 },
     I7: { iv: 1 },
-    iv: { V7: 0.8, i: 0.5, iiø7: 0.4 },
+    iv: { V7: 0.8, i: 0.5, iiø7: 0.4, 'vii°7': 0.3 },
     iiø7: { V7: 1 },
     VII7: { III: 1 },
     III: { VI: 0.6, iv: 0.3, V7: 0.3, VII7: 0.3 },
     VI: { V7: 0.8, iiø7: 0.4, iv: 0.3 },
   },
   major: {
-    I: { V7: 1, IV: 0.6, ii: 0.4, I7: 0.4, vi: 0.3, iii: 0.2, VI7: 0.2 },
+    I: { V7: 1, IV: 0.6, ii: 0.4, I7: 0.4, vi: 0.3, iii: 0.2, VI7: 0.2, 'vii°7': 0.2 },
     V7: { I: 1, vi: 0.2 },
-    IV: { V7: 0.7, I: 0.6, ii: 0.3 },
+    'vii°7': { I: 1, V7: 0.3 },
+    IV: { V7: 0.7, I: 0.6, ii: 0.3, 'vii°7': 0.3 },
     ii: { V7: 1 },
     I7: { IV: 1 },
     VI7: { ii: 1 },
@@ -70,7 +76,7 @@ const MOVES = {
 };
 const SCALE = { minor: [0, 2, 3, 5, 7, 8, 11], major: [0, 2, 4, 5, 7, 9, 11] };
 const NAMES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
-const SUFFIX = { M: '', m: 'm', 7: '7', m7b5: 'ø7' };
+const SUFFIX = { M: '', m: 'm', 7: '7', m7b5: 'ø7', dim7: '°7' };
 
 // registers: the viola's bass and chords, the guitarra's lines
 const BASS = [40, 52];
@@ -168,7 +174,7 @@ export function harmonize(events, { length, barLen = 16, beat = 4, key = { tonic
     const final = j === verses.length - 1;
     vocab.forEach((c, ci) => {
       if (final) plan[k][ci] += isTonic(c) ? 2 : -2;
-      else if (j % 2 === 0) plan[k][ci] += isDom(c) ? 0.8 : ['VII7', 'iiø7', 'iv', 'II7', 'IV'].includes(c.id) ? 0.3 : isTonic(c) ? -0.4 : 0;
+      else if (j % 2 === 0) plan[k][ci] += isDom(c) ? 0.8 : c.id === 'vii°7' ? 0.5 : ['VII7', 'iiø7', 'iv', 'II7', 'IV'].includes(c.id) ? 0.3 : isTonic(c) ? -0.4 : 0;
       else plan[k][ci] += isTonic(c) ? 0.8 : c.id === 'III' ? 0.2 : 0;
     });
   });
@@ -261,7 +267,7 @@ function scaleStep(p, steps, tonic, mode) {
 
 /** A closed chord for the viola from CHORD_LOW up: 3rd, 5th, 7th (or root) of the chord. */
 function voicing(c) {
-  const order = c.q === '7' || c.q === 'm7b5' ? [1, 2, 3] : [0, 1, 2];
+  const order = c.q === '7' || c.q === 'm7b5' || c.q === 'dim7' ? [1, 2, 3] : [0, 1, 2];
   const pcs = order.map((i) => c.pcs[i]);
   const out = [];
   let floor = CHORD_LOW;
@@ -314,21 +320,27 @@ export function fadoAccompaniment(events, ctx) {
       if (d <= 0) continue;
       if (d >= 2 * beat) {
         // the trinado: the note struck again quickly before it is held
-        guitarra.push({ pitch: p, start: s, dur: 1, x: x(0.62 + loud) }, { pitch: p, start: s + 1, dur: 1, x: x(0.6 + loud) }, { pitch: p, start: s + 2, dur: d - 2, x: x(0.58 + loud) });
-      } else guitarra.push({ pitch: p, start: s, dur: d, x: x(0.6 + loud) });
+        guitarra.push({ pitch: p, start: s, dur: 1, x: x(0.74 + loud) }, { pitch: p, start: s + 1, dur: 1, x: x(0.72 + loud) }, { pitch: p, start: s + 2, dur: d - 2, x: x(0.7 + loud) });
+      } else guitarra.push({ pitch: p, start: s, dur: d, x: x(0.72 + loud) });
     }
   }
 
-  // answers in the breaths, and a soft note above the voice under its held notes
+  // answers in the breaths, and under the voice's held notes the guitar's "dedilho": on each beat
+  // a low note of the chord (an eighth) and two higher ones (sixteenths), softly (the figure of the
+  // guitar method's fados and Vieira's arpeggiated accompaniment: results/fado/partituras.md)
   verses.forEach((v, j) => {
     const held = v[v.length - 1];
     const next = verses[j + 1]?.[0];
     if (held.d >= 2 * beat && next) {
-      const c = chordAt(intro + held.s + beat);
-      const target = held.p + 4;
-      const pc = c.pcs.slice().sort((a, b) => Math.abs(nearestPc(a, target) - target) - Math.abs(nearestPc(b, target) - target)).find((q) => mod(q - held.p, 12) !== 0);
-      const p = inRange(nearestPc(pc, target), GUITAR);
-      if (p !== held.p) guitarra.push({ pitch: p, start: intro + held.s + beat, dur: held.d - beat, x: x(0.36 + loud) });
+      for (let t = held.s + beat; t + beat <= held.s + held.d; t += beat) {
+        const c = chordAt(intro + t);
+        const low = inRange(nearestPc(c.pcs[0], GUITAR[0] + 3), GUITAR);
+        // the two upper notes: chord notes a third or more above the voice, never its own note
+        const above = c.pcs.map((pc) => inRange(nearestPc(pc, held.p + 5), GUITAR)).filter((p) => p >= held.p + 3 && mod(p - held.p, 12) !== 0).sort((a, b) => a - b);
+        const hi = above.length >= 2 ? above.slice(0, 2) : [low + 7, low + 12];
+        guitarra.push({ pitch: low, start: intro + t, dur: beat / 2, x: x(0.34 + loud) });
+        hi.forEach((p, k) => guitarra.push({ pitch: p, start: intro + t + beat / 2 + k * (beat / 4), dur: beat / 4, x: x(0.32 + loud) }));
+      }
     }
     if (!next) return;
     const a = held.s + held.d;

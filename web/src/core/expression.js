@@ -139,3 +139,58 @@ export function dynamicMarks(events) {
   }
   return marks;
 }
+
+// ------------------------------------------------------------------ rubato
+
+// how much the time stretches (1 = in time): into the held note of a verse, on it, on the held note
+// that ends a stanza, and on the last note of the piece (a fermata)
+const RUBATO = {
+  sad: { into: 1.12, held: 1.1, stanza: 1.25, last: 1.6 },
+  happy: { into: 1.05, held: 1.04, stanza: 1.12, last: 1.35 },
+};
+
+/**
+ * Rubato of a sung line (fado): every 16th of the piece stretched by how much the singer holds back
+ * there. In the scores of fado (results/fado/partituras.md) the phrase slows into its held note
+ * (rit., rallent.), the note is held, the stanza and the piece end on a fermata, and the music goes
+ * on a tempo; the guitars keep with the voice. Returns {stretch (one factor per 16th), marks:
+ * {rit: [steps], fermata: [steps]}} for the score.
+ * events: the melody in the piece's time; total: the piece's length (16ths).
+ */
+export function rubatoOf(events, { total, beat = 4, kind = 'sad' }) {
+  const P = RUBATO[kind] ?? RUBATO.sad;
+  const stretch = new Array(total).fill(1);
+  const notes = events.filter((e) => e.pitch !== null && e.pitch !== undefined).sort((a, b) => a.start - b.start);
+  const verses = [];
+  let cur = [];
+  notes.forEach((e, i) => {
+    if (i && e.start - (notes[i - 1].start + notes[i - 1].dur) >= 2) {
+      verses.push(cur);
+      cur = [];
+    }
+    cur.push(e);
+  });
+  if (cur.length) verses.push(cur);
+  const marks = { rit: [], fermata: [] };
+  verses.forEach((v, j) => {
+    const held = v[v.length - 1];
+    const final = j === verses.length - 1;
+    if (held.dur < beat && !final) return;
+    const stanzaEnd = j % 4 === 3;
+    const from = Math.max(0, held.start - beat);
+    for (let t = from; t < held.start; t++) stretch[t] *= 1 + (P.into - 1) * ((t - from + 1) / (held.start - from));
+    const f = final ? P.last : stanzaEnd ? P.stanza : P.held;
+    for (let t = held.start; t < Math.min(total, held.start + held.dur); t++) stretch[t] *= f;
+    if (final || stanzaEnd) marks.rit.push(from);
+    if (final) marks.fermata.push(held.start);
+  });
+  return { stretch, marks };
+}
+
+/** Seconds from the start to each 16th (length total + 1), for a tempo and a stretch. */
+export function timeline(stretch, bpm) {
+  const step = 60 / bpm / 4;
+  const out = [0];
+  for (let i = 0; i < stretch.length; i++) out.push(out[i] + step * stretch[i]);
+  return out;
+}
