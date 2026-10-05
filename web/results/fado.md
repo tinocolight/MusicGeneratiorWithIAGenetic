@@ -330,7 +330,60 @@ A última linha mostra o pouco que as quatro regras antigas distinguiam: o fado 
 pontua pior nelas do que uma melodia sem estilo, embora cumpra as novas. Sem a gravação, a
 dinâmica não entra nestes números, que são só de notas e ritmos.
 
-## 8. Ficheiros
+## 8. Melodia + acompanhamento desacoplado
+
+**Pesquisa:** [`fado/harmonizacao.md`](fado/harmonizacao.md) reúne as técnicas de harmonização em
+geral e as do fado, e os papéis da guitarra portuguesa e da viola. As partituras enviadas pelo
+utilizador estão catalogadas e analisadas em [`fado/partituras.md`](fado/partituras.md).
+
+**Desacoplado** quer dizer que a voz é composta primeiro, pelo algoritmo genético, e as guitarras
+harmonizam-na depois, como seguem uma fadista ([`src/accomp/fado.js`](../src/accomp/fado.js)).
+
+**Acordes:**
+
+- São escolhidos pelo algoritmo de Viterbi sobre o vocabulário dos fados: i, V7, iv, I7, VII7, III,
+  VI, iiø7, vii°7; no maior I, V7, IV, ii, I7, VI7, II7, vi, iii, vii°7.
+- A escolha pesa quatro coisas:
+  - o ajuste à melodia: as notas de passagem e as bordaduras nos tempos fracos não contam contra o
+    acorde, e a apojatura que resolve conta pouco;
+  - as passagens dos fados reais;
+  - um ritmo harmónico lento: um acorde por compasso de 4/4 ou por dois de 2/4, com mudanças a
+    meio só perto do fim;
+  - o plano dos versos: a nota suspensa dos versos ímpares sobre a dominante e o fim em V7–i.
+- Na quadra dos testes sai i–V7 / V7–i e, no 3.º verso, **I7 → iv**. Nas melodias geradas
+  aparecem também **VII7 → III → VI**. São as duas saídas dos fados de autor.
+
+**Viola:** baixo e acorde.
+
+- No 4/4 lento, baixo nos tempos 1 e 3 (fundamental, depois quinta) e acorde nos tempos 2 e 4.
+- Em 2/4 e no fado alegre, baixo e acorde em cada tempo.
+- Uma passagem de baixo por grau antes de cada mudança de acorde e o último acorde segurado.
+
+**Guitarra portuguesa:**
+
+- **introdução** com o último verso da melodia, uma oitava acima, em *forte* e com trinado nas
+  notas longas («dar o tom»);
+- **resposta** em cada respiração da voz, uma frase por grau que acaba junto da primeira nota do
+  verso seguinte;
+- por baixo das notas suspensas, o **dedilho** (colcheia grave + duas semicolcheias, baixinho,
+  nunca na nota da voz);
+- um arpejo final por baixo da última nota.
+
+**Na página:**
+
+- a voz ao centro, a guitarra à direita e a viola à esquerda;
+- as cifras por cima da voz na partitura e no PDF, e em `ChordNames` no LilyPond;
+- a viola escrita uma oitava acima, como a guitarra;
+- uma faixa por instrumento no MIDI.
+- No Início rápido, a opção **«Melodia + acompanhamento (só fado)»** deixa escolher só o fado
+  triste e o fado alegre, e conta a introdução no tempo total.
+
+**Rubato:** as partituras enviadas têm *rit.*, *rallent.* e fermatas no fim das frases e *a tempo*
+depois. A caixa «Dinâmica e rubato» faz isso na reprodução: o andamento abranda para a nota
+suspensa de cada verso, estica-se no fim de cada estrofe e pára na última nota. O MIDI recebe as
+mudanças de andamento, e a partitura, o PDF e o LilyPond recebem *rit.* e a fermata.
+
+## 9. Ficheiros
 
 | Ficheiro | O quê |
 |---|---|
@@ -343,4 +396,7 @@ dinâmica não entra nestes números, que são só de notas e ritmos.
 | [`fado/regras-atuais.csv`](fado/regras-atuais.csv), [`fado/validacao.csv`](fado/validacao.csv) | as regras do projeto (gerais e de fado) nos fados reais |
 | [`fado/ga.csv`](fado/ga.csv) | o algoritmo genético com e sem os estilos de fado |
 | [`fado/audio-selftest.txt`](fado/audio-selftest.txt) | o teste sintético da análise de áudio |
+| [`fado/harmonizacao.md`](fado/harmonizacao.md) | pesquisa: harmonização (geral e no fado), a guitarra portuguesa e a viola |
+| [`fado/partituras.md`](fado/partituras.md) | as partituras enviadas pelo utilizador: catálogo e o que mostram para a voz e o acompanhamento |
+| `src/accomp/fado.js` | a harmonização e as partes da viola e da guitarra |
 | `tools/fado_corpus.py`, `tools/fado_study.mjs`, `tools/fado_ga_study.mjs`, `tools/fado_audio.py` | as ferramentas que os produzem |

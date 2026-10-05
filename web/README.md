@@ -595,6 +595,23 @@ e a pesquisa em [`results/fado/pesquisa.md`](results/fado/pesquisa.md).
     são acentuadas e a última estrofe é mais forte, com o vibrato estreito das fadistas.
   - Ouve-se na página (caixa «Dinâmica»), fica no MIDI (velocidade e CC 11) e aparece na
     partitura da página, no PDF (*pp*–*ff*, reguladores e acentos) e no LilyPond.
+- **Melodia + acompanhamento** (só no fado, por agora): a voz é composta primeiro e depois as
+  guitarras harmonizam-na (`src/accomp/fado.js`; pesquisa em
+  [`results/fado/harmonizacao.md`](results/fado/harmonizacao.md)).
+  - Os acordes são escolhidos pelo algoritmo de Viterbi sobre o vocabulário dos fados.
+  - A **viola** faz baixo e acorde, com passagens de baixo.
+  - A **guitarra portuguesa** faz a introdução com o último verso, responde nas respirações da voz
+    e faz o dedilho por baixo das notas suspensas.
+  - Na partitura e no PDF aparecem as três pautas e as cifras; no LilyPond, os acordes vão em
+    `ChordNames`.
+  - No Início rápido, «Melodia + acompanhamento (só fado)» deixa escolher só os estilos de fado.
+- **Partituras do utilizador**: «Fado dos Fados», «Fadista Louco», «Fado do Bairro Alto», um método
+  de guitarra portuguesa e canções de Coutinho de Oliveira, analisados em
+  [`results/fado/partituras.md`](results/fado/partituras.md). Daí vieram:
+  - o **rubato** (*rit.* e fermata, na reprodução, no MIDI e na partitura);
+  - o dedilho da guitarra e o vii°7;
+  - a introdução em *forte*;
+  - a distinção entre corridas rápidas e recitação rápida em notas repetidas.
 - **Áudio**: `tools/fado_audio.py` mede a dinâmica da voz em gravações, separando-a das guitarras
   pela forma como cada som decai.
   - Num teste sintético recupera o esmorecer, a descida do verso e o vibrato.
@@ -1062,7 +1079,9 @@ web/
                                  cânone numa só linha com as entradas
   src/io/pdf.js                  PDF vetorial (A4), contexto de desenho para o VexFlow, ficheiros anexados
   src/ui/score.js                partitura na página (VexFlow + Gonville), com a dinâmica do fado
-  src/core/expression.js         dinâmica de uma linha cantada (fado): nível, esmorecer, crescendo, acentos, vibrato
+  src/core/expression.js         dinâmica e rubato de uma linha cantada (fado): nível, esmorecer, crescendo,
+                                 acentos, vibrato, rit. e fermata
+  src/accomp/fado.js             acompanhamento do fado: acordes (Viterbi), viola, guitarra portuguesa
   src/core/meter.js              compassos simples e compostos (tempo, pesos métricos, frases)
   src/ga/figures.js              leitura por tempos: figura, contorno, entrada, direção
   src/ga/context.js              modelo de contexto de ordem variável (suavização interpolada)
@@ -1085,7 +1104,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 105 testes
+npm test                              # 110 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória

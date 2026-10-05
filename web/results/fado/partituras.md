@@ -27,10 +27,13 @@ analisadas para as duas partes do algoritmo: a **voz** (as regras do fado) e o *
 | 5 | **Janeiro** | letra Marques dos Santos, música Coutinho de Oliveira | idem | canção (canto e piano) | 3 ♭ (mi♭ maior) · binário | *Andante*; introdução de 4 compassos em *pp* |
 | 6 | **S. João** (coro a 4 vozes) | versos Motta Cabral, música Coutinho de Oliveira | idem | canção de festa (marcha), **não é fado** | 3 ♭ (mi♭ maior) · 2/4 | *p*, *mf*, *f*, *menos*, *a tempo*, *rall.*, *muito lento*, coda *Brilhante* |
 | 7 | **Fado do Bairro Alto**, da opereta «Bairro Alto» | letra Avelino de Sousa, música Wenceslau Pinto, Alves Coelho e Raul Portela | Sassetti & Cª, Lisboa (dedicado a Aldina de Sousa; discos Columbia) | fado-canção de opereta, **voz e coro** | 3 ♯ (lá maior) · 2/4 | *Violento* em *ff* na introdução, voz *menos*; *rit.*, *a tempo*, *apress.*, *più vivo*, *rall.*, *vivo*; *Côro / Voz*, *Fim* |
+| 9 | **Fado do Alvará**, da opereta «Bairro Alto» | letra Avelino de Sousa, música Wenceslau Pinto, Alves Coelho e Raul Portela | Sassetti & Cª, Lisboa (dedicado a Carlos Viana e Alfredo Santos) | fado-canção de opereta (canto e piano) | 1 ♯ (sol maior) · binário | introdução *All.º mod.to* em *mf* com apojaturas e grupetos; a voz entra *Vagaroso*; *com sentimento*, *com energia*; 1.ª e 2.ª vez, *Fim* |
+| 10 | **Canção das Cerejas** | versos Avelino de Sousa, música Raul Portela | Valentim de Carvalho, © 1926 | canção de revista em **«Tempo de One Step»**, **não é fado** | 3 ♭ (mi♭ maior) · binário | *Côro* e *Voz* |
 | 8 | **17 e 20**, fox-trot | Joaquim Pedro dos Santos | Sassetti & Cª, © 1932 | **não é fado** (dança de salão) | 2 ♭ · binário | *ff*, *p* |
 
-Os n.ºs 6 e 8 não são fado. O S. João entra só como termo de comparação para o fado **alegre** (a
-textura de uma marcha de festa); o fox-trot fica de fora.
+Os n.ºs 6, 8 e 10 não são fado. O S. João entra só como termo de comparação para o fado **alegre** (a
+textura de uma marcha de festa). A «Canção das Cerejas» mostra que a mesma opereta e os mesmos
+autores escreviam fados e danças da moda (one-step) lado a lado. O fox-trot fica de fora.
 
 ## 2. O que mostram para a voz
 
@@ -57,6 +60,15 @@ programa não as escreve; ficam aproximadas.
 - **Confirma** a nota suspensa do fim do verso (F04).
 - **Mostra o que faltava ao programa:** o andamento estica na nota suspensa e no fim, e retoma
   depois.
+
+**Andamento e carácter.**
+
+- No «Fado do Alvará», a introdução do piano é *Allegretto moderato* e a voz entra *Vagaroso*: a
+  voz canta mais devagar e mais livre do que a música que a apresenta.
+- Pelo meio aparecem *com sentimento* e *com energia*, e a interjeição «(Ai)», o grito curto que
+  abre um verso.
+- **Confirma** o rubato e a dinâmica por verso. A diferença de andamento entre a introdução e a voz
+  fica para depois (um só andamento por peça).
 
 **Dinâmica escrita.**
 
@@ -114,6 +126,9 @@ O programa usa um só compasso e um só andamento por peça; fica registado como
 - **Confirma** as respostas nas respirações.
 
 **Ornamentos da guitarra.**
+
+- Na introdução do «Fado do Alvará» há apojaturas e grupetos (notas pequenas) na mão direita do
+  piano, que imitam a guitarra.
 
 - No «Fado de Coimbra com variações» há apojaturas (notas pequenas) e, no *vivace*, notas
   repetidas em semicolcheias: o trinado escrito.
