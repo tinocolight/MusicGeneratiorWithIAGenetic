@@ -117,3 +117,19 @@ test('the dynamics reach the MIDI file, the score model and the LilyPond export'
   assert.deepEqual(plain.staves[0].dynamics, []);
   assert.doesNotMatch(toLilyPond(plain), /\\[<>!]|\\m[fp]/);
 });
+
+test('the blues and the pop borrow the fado\'s traits: breaths, notes sung early (results/estilos-tracos.md)', () => {
+  assert.deepEqual(styleTraits('blues'), { restTarget: [0.12, 0.45], anticipation: true, recitation: true });
+  assert.deepEqual(styleTraits('pop'), { restTarget: [0.06, 0.3], anticipation: true });
+  // a blues call and response: a phrase on a repeated note, a breath, the answer
+  const BLUES = [
+    [67, 4], [67, 2], [70, 2], [67, 4], [-1, 4], [65, 2], [67, 6], [-1, 8],
+    [67, 4], [67, 2], [70, 2], [72, 4], [-1, 4], [70, 2], [67, 6], [-1, 8],
+    [74, 4], [72, 2], [70, 2], [67, 8], [-1, 8], [65, 2], [67, 6], [-1, 8],
+  ];
+  const opts = { bars: 12, meter: '4/4', tonic: 7, mode: 'minor', waves: resolvePreset('arch', 7), form: 'AAB', phraseBars: 4 };
+  const blues = createAttractorFitness({ ...opts, style: 'blues' });
+  const none = createAttractorFitness(opts);
+  const genes = fromEvents(compactToEvents(BLUES), blues.length);
+  assert.ok(blues.evaluate(genes).parts.rhythm > none.evaluate(genes).parts.rhythm, 'the breaths fit the blues\' rest target');
+});

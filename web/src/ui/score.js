@@ -226,7 +226,7 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
           if (dur.endsWith('d')) VF.Dot.buildAndAttach([note], { all: true });
           const s0 = bar * m.barLen + it.start;
           if (!it.rest && accents[i].has(s0)) note.addModifier(new VF.Articulation('a>').setPosition(VF.Modifier.Position.ABOVE), 0);
-          if (i === 0 && !it.rest && model.marks?.fermata.includes(s0)) note.addModifier(new VF.Articulation('a@a').setPosition(VF.Modifier.Position.ABOVE), 0);
+          if (!it.rest && st.fermata?.includes(s0)) note.addModifier(new VF.Articulation('a@a').setPosition(VF.Modifier.Position.ABOVE), 0);
           placed[i].push({ start: s0, end: s0 + (it.full ? m.barLen : it.dur), note, sys: si, stave: null, i, full: !!it.full });
           out.push({ note, start: s0, end: s0 + (it.full ? m.barLen : it.dur), rest: it.rest });
           if (!it.rest) chains[i].push({ note, tie: it.tie, sys: si });

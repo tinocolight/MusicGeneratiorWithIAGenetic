@@ -28,6 +28,8 @@ export const INSTRUMENTS = {
   // nearest are the steel- and nylon-string guitars
   guitarra: { family: 'plucked', program: 25, range: [57, 88], synth: 'guitarra' },
   violaFado: { family: 'plucked', program: 24, range: [40, 76], synth: 'viola' },
+  // the classical guitar of song accompaniments (folk; src/accomp/patterns.js)
+  guitar: { family: 'plucked', program: 24, range: [40, 76], synth: 'viola' },
 };
 
 withLabels(INSTRUMENTS, 'instrument');
@@ -62,7 +64,8 @@ export const ENSEMBLES = withLabels({
   fifth: {
     voices: [{ instrument: 'oboe' }, { instrument: 'bassoon', delayBars: 1, interval: 'fifthDown' }],
   },
-  // melody + decoupled accompaniment: the voice alone in the genetic algorithm, then the Portuguese
-  // guitar and the viola harmonise it (src/accomp/fado.js; for now only the fado styles)
+  // melody + decoupled accompaniment: the voice alone in the genetic algorithm, then the
+  // accompaniment of its style harmonises it (the fado's guitars, src/accomp/fado.js; the piano or
+  // the guitar of the waltz, polka, march, folk song, children's song and blues, src/accomp/patterns.js)
   accomp: { voices: [{ instrument: 'alto' }], accompaniment: true },
 }, 'ensemble');

@@ -34,14 +34,15 @@ import { createPlayer } from './audio.js';
 import { loadVexFlow, renderScore, scorePdf } from './score.js';
 import { aboutHtml } from './about.js';
 import { t, tn, has, locale, applyTexts, setLang, getLang, onLangChange, initialLang, startLang, LANGUAGES } from '../i18n/i18n.js';
-import { STYLES, styleTraits } from '../fitness/styles.js';
+import { STYLES, styleTraits, expressionProfile } from '../fitness/styles.js';
 import { expressionOf, rubatoOf, timeline } from '../core/expression.js';
 import { fadoAccompaniment, ACCOMP_PARTS } from '../accomp/fado.js';
+import { styleAccompaniment, ACCOMP_PROFILES } from '../accomp/patterns.js';
 import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves, meterOfConfig,
   presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf, adaptToVoices, activeStyle, applyStyle,
 } from './config.js';
-import { createQuickStart } from './quickstart.js';
+import { createQuickStart, ACCOMP_STYLES } from './quickstart.js';
 import { createControls, FIELD_LABELS, CLASSIC_LABELS } from './controls.js';
 
 const $ = (id) => document.getElementById(id);
@@ -297,8 +298,8 @@ function onConfigChange(kind, arg) {
   const c = state.config;
   if (kind === 'ensemble') {
     applyEnsemble(c, arg);
-    // the accompaniment exists only for fado for now: it brings a fado style with it
-    if (c.accompaniment && !styleTraits(activeStyle(c)).expression) {
+    // the accompaniment exists for some styles: another style is replaced by the fado
+    if (c.accompaniment && !ACCOMP_STYLES.includes(activeStyle(c))) {
       applyStyle(c, 'fado');
       c.major = false;
       controls.renderAll();
@@ -415,11 +416,16 @@ function pieceFromGenes(genes, built, cfg, extra = {}) {
   };
 }
 
-/** 'sad' | 'happy' when the piece's style plays with dynamics (the fado styles), else null. */
+/**
+ * How the piece is played (core/expression.js): the profile of its style ('sad' | 'happy' for the
+ * fado, 'song', 'baroque', 'dance'... for the others, 'general' with no style), or null in the
+ * classic mode and for melodies that were not composed here.
+ */
 function expressionKind(p) {
   if (!p?.config || p.config.mode === 'classic') return null;
-  return styleTraits(activeStyle(p.config)).expression ?? null;
+  return expressionProfile(activeStyle(p.config));
 }
+const isFadoKind = (kind) => kind === 'sad' || kind === 'happy';
 
 /** Dynamics of the piece's melody, one entry per event (core/expression.js), or null. */
 function expressionFor(p) {
@@ -427,34 +433,45 @@ function expressionFor(p) {
   if (!kind) return null;
   if (p.expression?.kind !== kind) {
     const beat = (p.meter && METERS[p.meter]?.beat) || 4;
-    p.expression = { kind, notes: expressionOf(p.events, { kind, barLen: p.barLen, beat, key: p.key ?? { tonic: 0, mode: 'major' } }) };
+    const phraseLen = (p.config.phraseBars || 2) * p.barLen;
+    p.expression = { kind, notes: expressionOf(p.events, { kind, barLen: p.barLen, beat, key: p.key ?? { tonic: 0, mode: 'major' }, phraseLen }) };
   }
   return p.expression.notes;
 }
 
 /**
- * The rubato of a piece that plays with dynamics (fado): the time stretched into the held notes and
- * held on the last one, from the melody as it sounds ({stretch, marks}), or null.
+ * The rubato of the piece as it sounds ({stretch, marks}), or null: in the fado, the time stretched
+ * into the held notes and held on the last one; in the other styles, the phrase ends (one voice)
+ * and the final ritardando (core/expression.js).
  */
 function rubatoFor(p, sounding = soundingVoices(p)) {
   const kind = $('dynPlay').checked ? expressionKind(p) : null;
   if (!kind) return null;
   const lead = sounding.voices[0];
   const beat = (p.meter && METERS[p.meter]?.beat) || 4;
-  return rubatoOf(lead.events, { total: sounding.total, beat, kind });
+  if (isFadoKind(kind)) return rubatoOf(lead.events, { total: sounding.total, beat, kind });
+  const melodic = sounding.voices.filter((v) => v.kind !== 'accomp');
+  return rubatoOf(lead.events, { total: sounding.total, beat, barLen: p.barLen, kind, all: melodic.flatMap((v) => v.events), phrases: melodic.length === 1 });
 }
 
 /**
- * The accompaniment of a piece set to "melody + accompaniment" in a fado style (src/accomp/fado.js):
- * {intro, total, chords, parts}, or null (another style, the classic mode, or not asked for).
+ * The accompaniment of a piece set to "melody + accompaniment": the fado's guitars
+ * (src/accomp/fado.js) or the piano or guitar of the other styles that have one
+ * (src/accomp/patterns.js): {intro, total, chords, partList, parts}, or null (a style without
+ * one, the classic mode, or not asked for).
  */
 function accompanimentFor(p) {
   if (!p?.config?.accompaniment || p.config.mode === 'classic') return null;
-  const kind = styleTraits(activeStyle(p.config)).expression;
-  if (!kind) return null;
-  if (p.accomp?.kind !== kind) {
+  const style = activeStyle(p.config);
+  const fado = styleTraits(style).expression;
+  if (!fado && !ACCOMP_PROFILES[style]) return null;
+  const sig = fado ?? style;
+  if (p.accomp?.kind !== sig) {
     const m = meterOf(p.meter || p.barLen);
-    p.accomp = { kind, ...fadoAccompaniment(p.events, { length: p.length, barLen: p.barLen, beat: m.beat, meter: m.id, key: p.key ?? { tonic: 0, mode: 'minor' }, kind, seed: p.config.ga?.seed ?? 1 }) };
+    const ctx = { length: p.length, barLen: p.barLen, beat: m.beat, meter: m.id, key: p.key ?? { tonic: 0, mode: fado === 'sad' ? 'minor' : 'major' }, seed: p.config.ga?.seed ?? 1 };
+    p.accomp = fado
+      ? { kind: sig, partList: ACCOMP_PARTS, ...fadoAccompaniment(p.events, { ...ctx, kind: fado }) }
+      : { kind: sig, ...styleAccompaniment(p.events, { ...ctx, style, phraseLen: (p.config.phraseBars || 2) * p.barLen }) };
   }
   return p.accomp;
 }
@@ -463,14 +480,16 @@ function accompanimentFor(p) {
  * Voices as they sound: leader and followers with absolute onsets and transposed pitches.
  * A plain canon stops when fewer than two voices remain (like the fermata in Telemann, where
  * the second violin stops with the first); a round goes round twice and every voice stops
- * at the end of the second pass. With an accompaniment, the guitars come after the melody (which
- * starts after the guitarra's introduction).
+ * at the end of the second pass. With an accompaniment, its parts come after the melody (which
+ * starts after the accompaniment's introduction).
  */
 function soundingVoices(p, all = $('canonPlay').checked) {
   const voices = all ? p.voices : p.voices.slice(0, 1);
-  // with dynamics (fado), the other voices play a little softer so that the melody leads
+  // with dynamics, every voice plays the melody's; in the fado the other voices a little softer,
+  // so that the sung melody leads (in the other canons the voices are equal)
   const expr = expressionFor(p);
-  const xOf = (k, lead) => (expr?.[k] ? (lead ? expr[k] : { ...expr[k], vel: expr[k].vel * 0.8 }) : undefined);
+  const soft = isFadoKind(p.expression?.kind) ? 0.8 : 1;
+  const xOf = (k, lead) => (expr?.[k] ? (lead || soft === 1 ? expr[k] : { ...expr[k], vel: expr[k].vel * soft }) : undefined);
   const acc = all ? accompanimentFor(p) : null;
   const shift = acc ? acc.intro : 0;
   const delays = p.voices.map((v) => v.delay).sort((a, b) => b - a);
@@ -478,7 +497,7 @@ function soundingVoices(p, all = $('canonPlay').checked) {
   const total = acc ? acc.total : voices.length === 1 ? p.length : p.end ?? (p.circular ? reps * p.length : p.length + (delays[1] ?? 0));
   const dyn = $('dynPlay').checked;
   const accompaniment = acc
-    ? ACCOMP_PARTS.map((part) => ({
+    ? acc.partList.map((part) => ({
         events: acc.parts[part.id].map((e) => (dyn ? e : { pitch: e.pitch, start: e.start, dur: e.dur })),
         instrument: part.instrument, kind: 'accomp', spec: { instrument: part.instrument, delay: 0, accomp: true },
       }))
@@ -521,7 +540,7 @@ function stageScene() {
   if (!p) return null;
   const analyzing = p === state.analysisPiece;
   const { voices, total, shift } = soundingVoices(p);
-  // with an accompaniment the melody (and its waves) starts after the guitarra's introduction
+  // with an accompaniment the melody (and its waves) starts after the accompaniment's introduction
   let waves = shift ? (p.waves || []).map((w) => ({ ...w, start: (w.start ?? 0) + shift })) : p.waves || [];
   let length = total;
   let segments = [];
@@ -575,7 +594,9 @@ function render() {
   } else legend.push(`<span><i style="background:var(--wave-1)"></i>${t('legend.low')}</span><span><i style="background:var(--wave-2)"></i>${t('legend.fast')}</span><span>${t('legend.bands')}</span>`);
   $('legend').innerHTML = legend.join('');
   $('legend').hidden = state.view === 'score';
-  $('dynRow').hidden = !expressionKind(p);
+  const kind = expressionKind(p);
+  $('dynRow').hidden = !kind;
+  if (kind) $('dynRow').title = `${t('transport.dyn.title')}\n\n${t(`expr.${kind}`)}`;
 }
 
 // ------------------------------------------------------------------ engraved score (optional view)
@@ -653,7 +674,7 @@ function scoreModelFor(p, layout = scoreLayoutOf(p)) {
   const { voices, total, chords } = sounding;
   const names = voiceNames(voices);
   return scoreModel({
-    voices: voices.map((v, i) => ({ events: v.events, instrument: v.instrument, name: names[i], dynamics: v.kind !== 'accomp' })),
+    voices: voices.map((v, i) => ({ events: v.events, instrument: v.instrument, name: names[i], dynamics: v.kind !== 'accomp', clef: v.kind === 'accomp' && v.instrument === 'piano' ? 'bass' : undefined })),
     chords,
     marks: rubatoFor(p, sounding)?.marks ?? null,
     total,
@@ -1203,7 +1224,7 @@ function playPiece(p) {
   const n = voices.length;
   const accomp = voices.some((v) => v.kind === 'accomp');
   const rubato = rubatoFor(p, sounding);
-  // the voice in the middle, the guitarra to the right and the viola to the left, a little softer
+  // the voice in the middle, the accompaniment to the right (the fado's viola to the left), a little softer
   const pans = accomp ? [0, 0.35, -0.35] : n === 1 ? [0] : n === 2 ? [-0.35, 0.35] : [-0.45, 0.45, 0];
   const gainOf = (v, i) => (v.kind === 'accomp' ? (v.events.some((e) => e.x) ? 0.85 : 0.6) : i ? 0.9 : 1);
   $('playBtn').textContent = t('play.stop');

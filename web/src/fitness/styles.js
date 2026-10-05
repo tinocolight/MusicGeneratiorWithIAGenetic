@@ -72,7 +72,7 @@ export const STYLES = {
     ],
   },
   children: {
-    family: 'trad', meters: ['2/4', '4/4'], bpm: 108,
+    family: 'trad', perform: 'children', meters: ['2/4', '4/4'], bpm: 108,
     rules: [
       R('range', 'range', ['E21'], { lo: 5, hi: 9, tol: 4, weight: 2 }),
       R('pentatonic', 'pentatonic', ['E21'], { lo: 0.9, hi: 1, tol: 0.2, weight: 2 }),
@@ -82,7 +82,7 @@ export const STYLES = {
     ],
   },
   lullaby: {
-    family: 'trad', meters: ['6/8', '3/4', '2/4'], bpm: 84,
+    family: 'trad', perform: 'lullaby', meters: ['6/8', '3/4', '2/4'], bpm: 84,
     rules: [
       R('steps', 'steps', ['E19', 'E20'], { lo: 0.55, hi: 0.9, weight: 1.5 }),
       R('leaps', 'leaps', ['E19', 'E20'], { lo: 0, hi: 0.08, tol: 0.15 }),
@@ -95,7 +95,7 @@ export const STYLES = {
     ],
   },
   hymn: {
-    family: 'trad', meters: ['4/4', '3/4'], pickup: 4, bpm: 80,
+    family: 'trad', perform: 'chorale', meters: ['4/4', '3/4'], pickup: 4, bpm: 80,
     rules: [
       R('firstOnset', 'firstOnset', ['E33'], { pickupOnset: true, weight: 1.5 }),
       R('density', 'density', ['E33'], { lo: 0.8, hi: 1.2 }),
@@ -241,7 +241,7 @@ export const STYLES = {
     ],
   },
   waltz: {
-    family: 'dance', meters: ['3/4'], phraseBars: 4, bars: 16, bpm: 180,
+    family: 'dance', perform: 'waltz', meters: ['3/4'], phraseBars: 4, bars: 16, bpm: 180,
     rules: [
       R('downbeatLong', 'downbeatLong', ['E10'], { lo: 0.3, hi: 0.8, weight: 2 }),
       R('density', 'density', ['E10'], { lo: 0.6, hi: 1.3 }),
@@ -251,7 +251,7 @@ export const STYLES = {
     ],
   },
   mazurka: {
-    family: 'dance', meters: ['3/4'], phraseBars: 4, bars: 16, bpm: 132,
+    family: 'dance', perform: 'mazurka', meters: ['3/4'], phraseBars: 4, bars: 16, bpm: 132,
     rules: [
       F('fig:shortShort', [DOT, EE, ESS], ['E26'], { at: 0, lo: 0.5, hi: 0.9, weight: 1.5 }),
       R('beat2Long', 'beat2Long', ['E26'], { lo: 0.15, hi: 0.5, weight: 1.5 }),
@@ -294,7 +294,7 @@ export const STYLES = {
   },
   // ------------------------------------------------------------------ Renaissance and Baroque
   palestrina: {
-    family: 'baroque', meters: ['4/4'], bpm: 72,
+    family: 'baroque', perform: 'song', meters: ['4/4'], bpm: 72,
     rules: [
       R('density', 'density', ['G11'], { lo: 0.5, hi: 1.1 }),
       R('steps', 'steps', ['G10', 'G11'], { lo: 0.6, hi: 0.9, weight: 1.5 }),
@@ -309,7 +309,7 @@ export const STYLES = {
     ],
   },
   chorale: {
-    family: 'baroque', meters: ['4/4', '3/4'], group: 'chorale', bpm: 72,
+    family: 'baroque', perform: 'chorale', meters: ['4/4', '3/4'], group: 'chorale', bpm: 72,
     rules: [
       R('density', 'density', ['E18'], { cal: true, lo: 0.8, hi: 1.15, weight: 1.5 }),
       F('fig:quarters', [Q], ['E18'], { cal: true, lo: 0.6, hi: 0.9, weight: 1.5 }),
@@ -347,7 +347,7 @@ export const STYLES = {
     ],
   },
   sarabande: {
-    family: 'baroque', meters: ['3/4'], phraseBars: 4, form: 'AABB', bars: 16, bpm: 60,
+    family: 'baroque', perform: 'sarabande', meters: ['3/4'], phraseBars: 4, form: 'AABB', bars: 16, bpm: 60,
     rules: [
       R('beat2Long', 'beat2Long', ['E13'], { lo: 0.3, hi: 0.8, weight: 2 }),
       R('density', 'density', ['E13'], { lo: 0.8, hi: 1.5 }),
@@ -413,7 +413,7 @@ export const STYLES = {
     ],
   },
   hunt: {
-    family: 'classical', meters: ['6/8'], bars: 16, bpm: 150, mode: 'major',
+    family: 'classical', perform: 'dance', meters: ['6/8'], bars: 16, bpm: 150, mode: 'major',
     rules: [
       R('arpeggio', 'arpeggio', ['E36'], { lo: 0.35, hi: 0.65, weight: 2 }),
       R('repeats', 'repeats', ['E36'], { lo: 0.12, hi: 0.35 }),
@@ -423,7 +423,10 @@ export const STYLES = {
   },
   // ------------------------------------------------------------------ popular music of the 20th century
   blues: {
-    family: 'popular', meters: ['4/4'], form: 'AAB', bars: 12, phraseBars: 4, bpm: 90, mode: 'minor',
+    family: 'popular', perform: 'blues', meters: ['4/4'], form: 'AAB', bars: 12, phraseBars: 4, bpm: 90, mode: 'minor',
+    // the fitness traits of the fado, read from the blues' own rules (results/estilos-tracos.md):
+    // breaths between the calls and responses, notes sung early, repeated notes
+    restTarget: [0.12, 0.45], anticipation: true, recitation: true,
     rules: [
       R('restShare', 'restShare', ['E22'], { lo: 0.15, hi: 0.45, weight: 1.5 }),
       R('syncBar', 'syncBar', ['E22', 'G17'], { lo: 0.3, hi: 1.5, weight: 1.5 }),
@@ -434,7 +437,7 @@ export const STYLES = {
     ],
   },
   jazz: {
-    family: 'popular', meters: ['4/4'], bpm: 160,
+    family: 'popular', perform: 'jazz', meters: ['4/4'], bpm: 160,
     rules: [
       R('density', 'density', ['E23'], { lo: 1.8, hi: 2.6 }),
       R('syncBar', 'syncBar', ['E23', 'G17'], { lo: 0.4, hi: 1.8, weight: 1.5 }),
@@ -447,6 +450,8 @@ export const STYLES = {
   },
   pop: {
     family: 'popular', meters: ['4/4'], bpm: 100,
+    // rests and notes that anticipate the beat, as the pop's rules ask (results/estilos-tracos.md)
+    restTarget: [0.06, 0.3], anticipation: true,
     rules: [
       R('syncBar', 'syncBar', ['G17', 'G18'], { lo: 0.4, hi: 1.8, weight: 1.5 }),
       R('motifs', 'motifs', ['E24', 'E45'], { lo: 0.6, hi: 0.95, weight: 1.5 }),
@@ -513,7 +518,17 @@ export function styleSettings(style, currentMeter) {
   return { meter, phraseBars: s.phraseBars ?? null, form: s.form ?? null, bars: s.bars ?? null, bpm: s.bpm ?? null, mode: s.mode ?? null, pickup: s.pickup ?? 0 };
 }
 
-/** The style's own changes to the fitness and the playback (fado): {} for the other styles. */
+// How a style is played (core/expression.js, results/expressao.md): the family's profile unless
+// the style names its own (perform), the fado by its expression ('sad' | 'happy'); with no style,
+// the general one.
+const FAMILY_EXPRESSION = { trad: 'song', dance: 'dance', baroque: 'baroque', classical: 'classical', popular: 'popular' };
+export function expressionProfile(style) {
+  const s = STYLES[style];
+  if (!s) return 'general';
+  return s.expression ?? s.perform ?? FAMILY_EXPRESSION[s.family] ?? 'general';
+}
+
+/** The style's own changes to the fitness and the playback (fado, blues, pop): {} for the others. */
 export function styleTraits(style) {
   const s = STYLES[style];
   if (!s) return {};

@@ -1,0 +1,8 @@
+﻿estilo,tracos,pontuacao,regras_no_intervalo,critico,critico_sem_sincopa,tipicas,pausas,sincopas_por_compasso,regras_que_falham
+blues,"nenhum",0.8976,0.8396,0.6691,0.7561,21.50,0.0801,0.135,"restShare 8/8; syncBar 8/8; leaps 4/8; stepDown 1/8"
+blues,"pausas",0.9468,0.9067,0.5707,0.7604,19.00,0.2012,0.265,"leaps 4/8; syncBar 4/8; motifs 2/8; pentatonic 1/8; finalLength 1/8"
+blues,"pausas + antecipação",0.9097,0.9154,0.5228,0.7738,18.50,0.1842,0.306,"motifs 6/8; leaps 4/8; syncBar 1/8"
+blues,"pausas + antecipação + recitação",0.9721,0.9141,0.5441,0.7024,19.50,0.1725,0.302,"leaps 5/8; syncBar 3/8; motifs 2/8; endLow 1/8"
+pop,"nenhum",0.8833,0.8010,0.7349,0.8338,21.88,0.0654,0.203,"syncBar 8/8; restShare 8/8; motifs 6/8; leaps 4/8"
+pop,"pausas",0.9216,0.8369,0.6286,0.7778,21.38,0.1045,0.234,"syncBar 8/8; leaps 5/8; motifs 4/8; restShare 2/8; finalLength 1/8; pentatonic 1/8"
+pop,"pausas + antecipação",0.9469,0.8534,0.4842,0.7872,20.88,0.0928,0.359,"syncBar 7/8; motifs 6/8; restShare 3/8; leaps 3/8"

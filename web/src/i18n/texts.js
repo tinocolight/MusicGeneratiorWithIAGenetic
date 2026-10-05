@@ -55,8 +55,72 @@ export const TEXTS = {
   'transport.allVoices': { pt: 'Tocar com todas as vozes', en: 'Play all the voices' },
   'transport.dyn': { pt: 'Dinâmica e rubato', en: 'Dynamics and rubato' },
   'transport.dyn.title': {
-    pt: 'Só no fado: cada verso começa forte e apaga-se, a nota suspensa do fim do verso esmorece, a nota mais aguda cresce, as notas de dor são acentuadas e a última estrofe é mais forte, com o vibrato estreito das fadistas; e o andamento abranda para a nota suspensa de cada verso e para na última nota (rit. e fermata, como nas partituras de fado). Desligue para ouvir a mesma melodia sem dinâmica nem rubato.',
-    en: 'Fado only: each verse starts strong and dies away, the held note at its end fades, the highest note swells, the notes of pain are accented and the last stanza is louder, with the narrow vibrato of fado singers; and the tempo slows into the held note of each verse and stops on the last note (rit. and fermata, as in fado scores). Turn it off to hear the same melody without dynamics or rubato.',
+    pt: 'Toca a melodia como um intérprete, com o perfil do seu estilo: a dinâmica (frases em arco, notas agudas mais fortes, os acentos do estilo) e o rubato (o fim das frases e o rallentando final), escritos também na partitura e no PDF. Os números vêm de cerca de 1000 interpretações reais (results/expressao.md). Desligue para ouvir a mesma melodia sem dinâmica nem rubato.',
+    en: 'Plays the melody as a performer would, with its style\'s profile: dynamics (arched phrases, louder high notes, the style\'s accents) and rubato (the phrase ends and the final ritardando), also written in the score and the PDF. The numbers come from about 1000 real performances (results/expressao.md). Turn it off to hear the same melody without dynamics or rubato.',
+  },
+  'expr.sad': {
+    pt: 'Fado triste: cada verso começa forte e apaga-se, a nota suspensa do fim do verso esmorece, a nota mais aguda cresce, as notas de dor são acentuadas e a última estrofe é mais forte, com o vibrato estreito das fadistas; o andamento abranda para a nota suspensa de cada verso e para na última nota (rit. e fermata, como nas partituras de fado).',
+    en: 'Sad fado: each verse starts strong and dies away, the held note at its end fades, the highest note swells, the notes of pain are accented and the last stanza is louder, with the narrow vibrato of fado singers; the tempo slows into the held note of each verse and stops on the last note (rit. and fermata, as in fado scores).',
+  },
+  'expr.happy': {
+    pt: 'Fado alegre: mais forte e menos apagado do que o triste, com um acento no primeiro tempo (convida a dançar), vibrato mais leve e um rubato menor.',
+    en: 'Happy fado: louder and less tapered than the sad one, with an accent on the downbeat (it invites dancing), a lighter vibrato and less rubato.',
+  },
+  'expr.general': {
+    pt: 'Sem estilo: frases em arco (crescendo até à nota mais aguda, diminuendo depois), notas agudas mais fortes, o fim das frases um pouco mais lento e um rallentando no último compasso.',
+    en: 'No style: arched phrases (crescendo to the highest note, diminuendo after it), louder high notes, the phrase ends a little slower and a ritardando in the last bar.',
+  },
+  'expr.song': {
+    pt: 'Canção: frases cantadas em arco, a nota longa do fim da frase a esmorecer, uma pequena respiração no fim de cada frase, o rallentando final e uma fermata na última nota.',
+    en: 'Song: phrases sung as arches, the long note at the end of a phrase dying away, a small breath at the end of each phrase, the final ritardando and a fermata on the last note.',
+  },
+  'expr.children': {
+    pt: 'Canção infantil: um nível vivo e regular, o primeiro tempo marcado (bate-se palmas), quase sem rubato.',
+    en: 'Children\'s song: a lively, even level, the downbeat marked (one claps along), almost no rubato.',
+  },
+  'expr.lullaby': {
+    pt: 'Canção de embalar: suave e cada vez mais suave no fim (o bebé adormece), notas longas a esmorecer, um rallentando longo e uma fermata.',
+    en: 'Lullaby: soft and softer still at the end (the baby falls asleep), long notes dying away, a long ritardando and a fermata.',
+  },
+  'expr.chorale': {
+    pt: 'Coral e hino: frases em arco suave, uma fermata em cada fim de frase (onde se respira), um rallentando e a fermata final.',
+    en: 'Chorale and hymn: gently arched phrases, a fermata at every phrase end (where one breathes), a ritardando and the final fermata.',
+  },
+  'expr.dance': {
+    pt: 'Dança: andamento firme (quem dança precisa dele), o primeiro tempo de cada compasso acentuado e quase nenhum rallentando no fim.',
+    en: 'Dance: a steady tempo (dancers need it), the first beat of each bar accented and almost no ritardando at the end.',
+  },
+  'expr.waltz': {
+    pt: 'Valsa: andamento firme e um primeiro tempo bem marcado (um-pá-pá).',
+    en: 'Waltz: a steady tempo and a strongly marked first beat (oom-pah-pah).',
+  },
+  'expr.mazurka': {
+    pt: 'Mazurca: andamento firme e o acento deslocado para o 2.º tempo, típico da dança.',
+    en: 'Mazurka: a steady tempo and the accent moved to the 2nd beat, typical of the dance.',
+  },
+  'expr.baroque': {
+    pt: 'Barroco: dinâmica em terraços (sem crescendos; a frase que repete outra é o seu eco, piano), andamento firme e um rallentando final forte, com fermata.',
+    en: 'Baroque: terraced dynamics (no hairpins; a phrase that repeats another is its echo, piano), a steady tempo and a strong final ritardando, with a fermata.',
+  },
+  'expr.sarabande': {
+    pt: 'Sarabanda: dinâmica em terraços, com o 2.º tempo de cada compasso apoiado, como na dança.',
+    en: 'Sarabande: terraced dynamics, with the 2nd beat of each bar leaned on, as in the dance.',
+  },
+  'expr.classical': {
+    pt: 'Clássico: frases em arco (crescendo e diminuendo), notas agudas mais fortes, o fim das frases um pouco alargado e um rallentando linear no último compasso.',
+    en: 'Classical: arched phrases (crescendo and diminuendo), louder high notes, the phrase ends slightly broadened and a linear ritardando in the last bar.',
+  },
+  'expr.popular': {
+    pt: 'Pop: nível constante, as síncopas acentuadas e o andamento sempre igual (sem rallentando).',
+    en: 'Pop: an even level, the syncopations accented and the tempo always the same (no ritardando).',
+  },
+  'expr.jazz': {
+    pt: 'Jazz: nível constante, as colcheias em contratempo e as síncopas acentuadas, andamento sempre igual.',
+    en: 'Jazz: an even level, the off-beat eighths and the syncopations accented, the tempo always the same.',
+  },
+  'expr.blues': {
+    pt: 'Blues: cada frase começa forte e apaga-se (a pergunta e a resposta), as notas blue (♭3, ♭5, ♭7) apoiadas, vibrato largo, um rallentando e a fermata no fim.',
+    en: 'Blues: each phrase starts strong and dies away (call and response), the blue notes (♭3, ♭5, ♭7) leaned on, a wide vibrato, a ritardando and a fermata at the end.',
   },
   'transport.midi': { pt: 'Descarregar MIDI', en: 'Download MIDI' },
   'transport.staves': { pt: 'Pautas', en: 'Staves' },
@@ -216,6 +280,7 @@ export const TEXTS = {
   'instrument.tenor': { pt: 'Tenor', en: 'Tenor' },
   'instrument.guitarra': { pt: 'Guitarra portuguesa', en: 'Portuguese guitar' },
   'instrument.violaFado': { pt: 'Viola (guitarra clássica)', en: 'Viola (classical guitar)' },
+  'instrument.guitar': { pt: 'Guitarra clássica', en: 'Classical guitar' },
   'instrument.bassVoice': { pt: 'Baixo', en: 'Bass' },
   'family.strings': { pt: 'Cordas', en: 'Strings' },
   'family.winds': { pt: 'Sopros', en: 'Woodwinds' },
@@ -224,7 +289,7 @@ export const TEXTS = {
   'family.voices': { pt: 'Vozes', en: 'Voices' },
   'family.plucked': { pt: 'Cordas dedilhadas', en: 'Plucked strings' },
   'ensemble.solo': { pt: 'Só a melodia', en: 'Melody only' },
-  'ensemble.accomp': { pt: 'Melodia + acompanhamento: voz, guitarra portuguesa e viola (só fado)', en: 'Melody + accompaniment: voice, Portuguese guitar and viola (fado only)' },
+  'ensemble.accomp': { pt: 'Melodia + acompanhamento: voz e acompanhamento do estilo (fado, valsa, polca, marcha, folk, infantil, blues)', en: 'Melody + accompaniment: voice and the style\'s accompaniment (fado, waltz, polka, march, folk, children\'s, blues)' },
   'ensemble.telemann': { pt: 'Telemann: 2 violinos, 2.º entra no c. 2', en: 'Telemann: 2 violins, the 2nd enters at bar 2' },
   'ensemble.flutes': { pt: 'Telemann: 2 flautas, 2.º entra no c. 2', en: 'Telemann: 2 flutes, the 2nd enters at bar 2' },
   'ensemble.trio': { pt: 'Trio: violino, viola (c. 3), violoncelo 8.ª abaixo (c. 5)', en: 'Trio: violin, viola (bar 3), cello an octave below (bar 5)' },
@@ -1492,11 +1557,11 @@ export const TEXTS = {
   },
   'qs.voices.canon': { pt: 'Cânone (recomendado)', en: 'Canon (recommended)' },
   'qs.voices.single': { pt: 'Melodia simples', en: 'Single melody' },
-  'qs.voices.accomp': { pt: 'Melodia + acompanhamento (só fado)', en: 'Melody + accompaniment (fado only)' },
-  'qs.voices.accomp.title': { pt: 'Voz com guitarra portuguesa e viola', en: 'Voice with Portuguese guitar and viola' },
+  'qs.voices.accomp': { pt: 'Melodia + acompanhamento (fado, valsa, polca, marcha, folk, infantil, blues)', en: 'Melody + accompaniment (fado, waltz, polka, march, folk, children\'s, blues)' },
+  'qs.voices.accomp.title': { pt: 'Voz com o acompanhamento do estilo', en: 'Voice with the style\'s accompaniment' },
   'qs.voices.accomp.desc': {
-    pt: 'A melodia é composta primeiro e as duas guitarras do fado harmonizam-na depois: a viola no baixo e nos acordes, a guitarra portuguesa na introdução e a responder nas respirações da voz. Por agora só existe para o fado: se escolher esta opção, no estilo só aparece o fado.',
-    en: 'The melody is composed first and the two guitars of fado harmonise it afterwards: the viola on the bass and the chords, the Portuguese guitar in the introduction and answering in the voice\'s breaths. For now it only exists for fado: if you choose it, only fado appears among the styles.',
+    pt: 'A melodia é composta primeiro e o acompanhamento do estilo harmoniza-a depois. No fado, as duas guitarras: a viola no baixo e nos acordes, a guitarra portuguesa na introdução e nas respirações da voz. Na valsa, o piano em «um-pá-pá»; na polca e na marcha, em «um-pá»; no folk, a guitarra dedilhada; na canção infantil, acordes plaquê; no blues, os doze compassos com o baixo boogie-woogie. Só existe para estes estilos: se escolher esta opção, só eles aparecem.',
+    en: 'The melody is composed first and the style\'s accompaniment harmonises it afterwards. In fado, the two guitars: the viola on the bass and the chords, the Portuguese guitar in the introduction and in the voice\'s breaths. In the waltz, the piano in "oom-pah-pah"; in the polka and the march, in "oom-pah"; in folk, the picked guitar; in the children\'s song, block chords; in the blues, the twelve bars with the boogie-woogie bass. It only exists for these styles: if you choose it, only they appear.',
   },
   'qs.voices.solo.desc': {
     pt: 'Uma voz só, sem cânone: o algoritmo cuida da frase, da forma e do estilo, mas não do contraponto.',
@@ -1505,8 +1570,8 @@ export const TEXTS = {
 
   'qs.style.title': { pt: 'Que estilo?', en: 'Which style?' },
   'qs.style.accompOnly': {
-    pt: 'Escolheu melodia + acompanhamento, que por agora só existe para o fado: só aparecem os estilos de fado.',
-    en: 'You chose melody + accompaniment, which for now only exists for fado: only the fado styles appear.',
+    pt: 'Escolheu melodia + acompanhamento, que só existe para alguns estilos: só aparecem esses.',
+    en: 'You chose melody + accompaniment, which only exists for some styles: only those appear.',
   },
   'qs.style.hint': {
     pt: 'O estilo junta as regras de composição desse repertório e sugere o compasso, o andamento e o modo habituais. Pode não escolher nenhum: ficam só as regras gerais.',

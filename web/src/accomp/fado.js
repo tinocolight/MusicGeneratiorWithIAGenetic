@@ -22,15 +22,15 @@
 // Pure: melody events (16ths, from 0) in; chords and parts out, in the piece's time, where the
 // melody starts after the introduction.
 
-const mod = (a, n) => ((a % n) + n) % n;
+import { mod, SCALE, chordPcs, notesOf, phrasesOfNotes, chordFit, viterbiChords } from './harmony.js';
+
+export { chordPcs };
 
 export const ACCOMP_PARTS = [
   { id: 'guitarra', instrument: 'guitarra' },
   { id: 'viola', instrument: 'violaFado' },
 ];
 
-// chord qualities (semitones above the root)
-const QUALITY = { M: [0, 4, 7], m: [0, 3, 7], 7: [0, 4, 7, 10], m7b5: [0, 3, 6, 10], dim7: [0, 3, 6, 9] };
 // the chords of the fados (root in semitones above the tonic)
 const CHORDS = {
   minor: [
@@ -74,9 +74,6 @@ const MOVES = {
     iii: { VI7: 0.6, vi: 0.5 },
   },
 };
-const SCALE = { minor: [0, 2, 3, 5, 7, 8, 11], major: [0, 2, 4, 5, 7, 9, 11] };
-const NAMES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
-const SUFFIX = { M: '', m: 'm', 7: '7', m7b5: 'ø7', dim7: '°7' };
 
 // registers: the viola's bass and chords, the guitarra's lines
 const BASS = [40, 52];
@@ -96,26 +93,8 @@ function rngOf(seed) {
   };
 }
 
-/** Notes {p, s, d} of a melody given as events. */
-const notesOf = (events) => events.filter((e) => e.pitch !== null && e.pitch !== undefined).map((e) => ({ p: e.pitch, s: e.start, d: e.dur }));
-
 /** The groups of notes between two breaths (rests of an eighth or more). */
-function versesOf(notes) {
-  const out = [];
-  let cur = [];
-  notes.forEach((n, i) => {
-    if (i && n.s - (notes[i - 1].s + notes[i - 1].d) >= 2) {
-      out.push(cur);
-      cur = [];
-    }
-    cur.push(n);
-  });
-  if (cur.length) out.push(cur);
-  return out;
-}
-
-/** Pitch classes of a chord (absolute). */
-export const chordPcs = (c, tonic) => QUALITY[c.q].map((iv) => mod(tonic + c.root + iv, 12));
+const versesOf = (notes) => phrasesOfNotes(notes, 2);
 
 /**
  * Chords for a melody: [{start, dur, id, root (pitch class), q, name}] in the melody's time.
@@ -134,36 +113,7 @@ export function harmonize(events, { length, barLen = 16, beat = 4, key = { tonic
   const isDom = (c) => c.root === 7;
 
   // fit of each chord to the melody in each slot, in [-1, 1]
-  const fit = Array.from({ length: n }, () => new Array(vocab.length).fill(0));
-  for (let k = 0; k < n; k++) {
-    const a = k * slot;
-    const b = a + slot;
-    vocab.forEach((c, ci) => {
-      let acc = 0;
-      let wsum = 0;
-      notes.forEach((nt, i) => {
-        const o = Math.min(b, nt.s + nt.d) - Math.max(a, nt.s);
-        if (o <= 0) return;
-        const onBeat = nt.s >= a && (nt.s - a) % beat === 0;
-        const w = o * (nt.s < a ? 1.2 : onBeat ? 1.5 : 0.8);
-        wsum += w;
-        if (pcsOf[ci].has(mod(nt.p, 12))) {
-          acc += w;
-          return;
-        }
-        const prev = notes[i - 1];
-        const next = notes[i + 1];
-        const stepIn = prev && Math.abs(nt.p - prev.p) <= 2 && prev.s + prev.d >= nt.s - 1;
-        const stepOut = next && Math.abs(next.p - nt.p) <= 2 && nt.s + nt.d >= next.s - 1;
-        const resolves = next && stepOut && pcsOf[ci].has(mod(next.p, 12));
-        if (stepIn && stepOut && !onBeat) acc -= 0.1 * w; // passing or neighbour note
-        else if (onBeat && resolves) acc -= 0.3 * w; // appoggiatura
-        else if (stepOut && resolves) acc -= 0.4 * w;
-        else acc -= w;
-      });
-      fit[k][ci] = wsum ? acc / wsum : 0;
-    });
-  }
+  const fit = chordFit(notes, { n, slot, beat, pcsOf });
 
   // the plan of the verses: where each verse's held note sits
   const plan = Array.from({ length: n }, () => new Array(vocab.length).fill(0));
@@ -185,57 +135,12 @@ export function harmonize(events, { length, barLen = 16, beat = 4, key = { tonic
     plan[0][ci] += isTonic(c) ? 1 : 0;
   });
 
-  const move = (a, b) => {
-    if (a === b) return 0.4;
-    const w = moves[vocab[a].id]?.[vocab[b].id];
-    return w ? 1.5 * w - 0.5 : -2;
-  };
   // the harmonic rhythm: a chord lasts a bar of 4/4 or two of 2/4 (Vieira: two bars of 2/4);
   // changing in the middle of that costs, except near the end, where the cadence speeds it up
   const halfBar = (k) => (slot * k) % 16 !== 0;
   const nearEnd = (k) => (n - k) * slot <= 2 * barLen;
-
-  // Viterbi
-  let best = vocab.map((_, ci) => 2 * fit[0][ci] + plan[0][ci]);
-  const back = [];
-  for (let k = 1; k < n; k++) {
-    const row = [];
-    const nb = vocab.map((_, ci) => {
-      let bv = -Infinity;
-      let bi = 0;
-      vocab.forEach((__, pi) => {
-        let v = best[pi] + move(pi, ci);
-        if (pi !== ci && halfBar(k)) v -= nearEnd(k) ? 0.1 : 1;
-        if (v > bv) {
-          bv = v;
-          bi = pi;
-        }
-      });
-      row.push(bi);
-      return bv + 2 * fit[k][ci] + plan[k][ci];
-    });
-    back.push(row);
-    best = nb;
-  }
-  let ci = best.indexOf(Math.max(...best));
-  const seq = [ci];
-  for (let k = n - 1; k > 0; k--) {
-    ci = back[k - 1][ci];
-    seq.unshift(ci);
-  }
-  const chords = [];
-  seq.forEach((c, k) => {
-    const start = k * slot;
-    const dur = Math.min(slot, length - start);
-    const last = chords[chords.length - 1];
-    if (last && last.ci === c) last.dur += dur;
-    else {
-      const ch = vocab[c];
-      const root = mod(tonic + ch.root, 12);
-      chords.push({ ci: c, start, dur, id: ch.id, root, q: ch.q, pcs: chordPcs(ch, tonic), name: NAMES[root] + SUFFIX[ch.q] });
-    }
-  });
-  return chords.map(({ ci: _, ...c }) => c);
+  const changeCost = (k) => (halfBar(k) ? (nearEnd(k) ? 0.1 : 1) : 0);
+  return viterbiChords({ length, slot, tonic, vocab, moves, fit, plan, changeCost });
 }
 
 // ------------------------------------------------------------------ parts
