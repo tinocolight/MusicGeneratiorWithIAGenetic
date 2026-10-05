@@ -424,6 +424,9 @@ export const STYLES = {
   // ------------------------------------------------------------------ popular music of the 20th century
   blues: {
     family: 'popular', perform: 'blues', meters: ['4/4'], form: 'AAB', bars: 12, phraseBars: 4, bpm: 90, mode: 'minor',
+    // the fitness traits of the fado, read from the blues' own rules (results/estilos-tracos.md):
+    // breaths between the calls and responses, notes sung early, repeated notes
+    restTarget: [0.12, 0.45], anticipation: true, recitation: true,
     rules: [
       R('restShare', 'restShare', ['E22'], { lo: 0.15, hi: 0.45, weight: 1.5 }),
       R('syncBar', 'syncBar', ['E22', 'G17'], { lo: 0.3, hi: 1.5, weight: 1.5 }),
@@ -447,6 +450,8 @@ export const STYLES = {
   },
   pop: {
     family: 'popular', meters: ['4/4'], bpm: 100,
+    // rests and notes that anticipate the beat, as the pop's rules ask (results/estilos-tracos.md)
+    restTarget: [0.06, 0.3], anticipation: true,
     rules: [
       R('syncBar', 'syncBar', ['G17', 'G18'], { lo: 0.4, hi: 1.8, weight: 1.5 }),
       R('motifs', 'motifs', ['E24', 'E45'], { lo: 0.6, hi: 0.95, weight: 1.5 }),
@@ -523,7 +528,7 @@ export function expressionProfile(style) {
   return s.expression ?? s.perform ?? FAMILY_EXPRESSION[s.family] ?? 'general';
 }
 
-/** The style's own changes to the fitness and the playback (fado): {} for the other styles. */
+/** The style's own changes to the fitness and the playback (fado, blues, pop): {} for the others. */
 export function styleTraits(style) {
   const s = STYLES[style];
   if (!s) return {};

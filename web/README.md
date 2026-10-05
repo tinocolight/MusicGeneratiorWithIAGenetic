@@ -560,6 +560,20 @@ Pedido: procurar na literatura regras de composição por estilo e compasso, reg
   - o AG aprende a anacrusa da gavota, o final feminino da polonesa, as três colcheias da jig e os pontuados do hornpipe;
   - o crítico sobe ou mantém-se nos estilos próximos do seu corpus (bourrée 0,68 → 0,94, marcha 0,78 → 0,87) e desce nos que estão longe dele (jazz 0,88 → 0,61, valsa 0,80 → 0,63);
   - por isso o peso fica a 0 sem estilo.
+- **Traços do fado no blues e no pop** ([`results/estilos-tracos.md`](results/estilos-tracos.md),
+  8 sementes por variante). O núcleo da aptidão pede poucas pausas (0–8 %) e notas no tempo; as
+  regras do blues pedem 15–45 % de pausas e síncopas, as do pop 8–30 %. Os traços criados para o
+  fado resolvem esse conflito:
+  - **blues** com pausas, antecipação e recitação: pontuação do estilo 0,90 → 0,97, regras no
+    intervalo 84 → 91 %, pausas 8 → 17 %; a regra das pausas deixa de falhar e a das síncopas
+    falha em 3 de 8 sementes em vez de 8 de 8;
+  - **pop** com pausas e antecipação: 0,88 → 0,95, regras no intervalo 80 → 85 %, síncopas por
+    compasso 0,20 → 0,36. A antecipação junta-se às pausas, ao contrário do proposto, porque melhora
+    a pontuação sem custo;
+  - **o crítico desce** (blues 0,67 → 0,54, pop 0,73 → 0,48), mas quase só pela síncopa: aprendeu as
+    melodias em canções folk, onde ela é rara, e dá-lhe um peso negativo (−0,59). Com a síncopa na
+    média do corpus, o crítico fica igual no pop (0,79) e desce pouco no blues (0,76 → 0,70, pelas
+    notas repetidas).
 - **Descrições dos pesos**: em «Pesos das regras», cada peso tem um botão «?» que explica o que a regra mede e como muda a melodia. No modo clássico, a descrição interpreta também o que os autores pretendiam, a partir do código e dos seus comentários.
 - **Lapso novo no original**: ao escrever essas descrições encontrou-se outro lapso. `ScoreTerminationQualifyers` dá a pontuação máxima a uma nota final de só duas semicolcheias: os testes aninhados usam `!=`, embora o comentário diga «terminação com notas mais longas». Fica como no original, porque as combinações calibradas contam com ele.
 
@@ -1143,7 +1157,7 @@ web/
 
 ```bash
 cd web
-npm test                              # 117 testes
+npm test                              # 118 testes
 node tools/benchmark.mjs 6            # benchmark → results/benchmark.md
 node tools/reverse.mjs                # análise inversa → results/reverse.md, src/data/learned-weights.js
 node tools/convergence.mjs 4 2000     # convergência a partir de uma população musical ou aleatória
@@ -1163,6 +1177,7 @@ python3 tools/fado_corpus.py /tmp/fado-scores   # fados reais (git clone https:/
 node tools/fado_study.mjs none fado fadoAlegre   # o que distingue o fado, confronto e validação → results/fado/
 node tools/fado_ga_study.mjs 6 400    # o AG com e sem os estilos de fado → results/fado/ga.csv
 python3 tools/fado_audio.py --selftest          # dinâmica da voz em gravações (pip install librosa imageio-ffmpeg)
+node tools/traits_study.mjs 8 400    # traços do fado no blues e no pop → results/estilos-tracos.md
 python3 tools/expression_study.py /tmp/asap --csv results/expressao/asap.csv
                                       # tempo e dinâmica de ~1000 interpretações de piano (ASAP;
                                       #   git clone https://github.com/fosfrancesco/asap-dataset /tmp/asap)
