@@ -140,6 +140,9 @@ const CLEF_BY_INSTRUMENT = {
   bassVoice: { clef: 'bass' },
   bass: { clef: 'bass', octave: -1 },
   tenor: { clef: 'treble', octave: -1 },
+  // the guitar is written an octave higher than it sounds (the "8" under the treble clef)
+  violaFado: { clef: 'treble', octave: -1 },
+  guitarra: { clef: 'treble' },
 };
 
 export function clefFor(instrumentId, pitches) {
@@ -152,37 +155,40 @@ export function clefFor(instrumentId, pitches) {
 // ------------------------------------------------------------------ bars
 
 /**
- * Events with absolute starts (16ths) -> bars of items {pitch|null, dur, tie, rest, full, start}.
- * `tie` ties the item to the next one (a note split at a beat or bar line).
+ * Events with absolute starts (16ths) -> bars of items {pitch|null, pitches, dur, tie, rest, full,
+ * start}. `tie` ties the item to the next one (a note split at a beat or bar line). Notes that
+ * sound together make a chord: `pitches` holds them all, low to high, `pitch` the lowest.
  */
 export function toBars(events, nBars, m) {
   const total = nBars * m.barLen;
-  const pitchAt = new Array(total).fill(null);
+  const sounding = Array.from({ length: total }, () => []);
   const onset = new Array(total).fill(false);
   for (const e of events) {
     if (e.pitch === null || e.pitch === undefined) continue;
-    for (let s = e.start; s < Math.min(total, e.start + e.dur); s++) pitchAt[s] = e.pitch;
+    for (let s = e.start; s < Math.min(total, e.start + e.dur); s++) if (!sounding[s].includes(e.pitch)) sounding[s].push(e.pitch);
     if (e.start < total) onset[e.start] = true;
   }
+  const keyAt = sounding.map((ps) => (ps.length ? ps.sort((a, b) => a - b).join(',') : null));
   const bars = [];
   for (let b = 0; b < nBars; b++) {
     const items = [];
     const s0 = b * m.barLen;
     let s = s0;
     while (s < s0 + m.barLen) {
-      const p = pitchAt[s];
+      const k = keyAt[s];
       let e = s + 1;
-      while (e < s0 + m.barLen && pitchAt[e] === p && !(p !== null && onset[e])) e++;
-      const continues = p !== null && e === s0 + m.barLen && e < total && pitchAt[e] === p && !onset[e];
+      while (e < s0 + m.barLen && keyAt[e] === k && !(k !== null && onset[e])) e++;
+      const continues = k !== null && e === s0 + m.barLen && e < total && keyAt[e] === k && !onset[e];
       const parts = splitValues(s - s0, e - s, m);
+      const pitches = k === null ? [] : sounding[s].slice();
       let pos = s - s0;
       parts.forEach((d, i) => {
-        items.push({ pitch: p, dur: d, rest: p === null, start: pos, tie: p !== null && (i < parts.length - 1 || continues) });
+        items.push({ pitch: k === null ? null : pitches[0], pitches, dur: d, rest: k === null, start: pos, tie: k !== null && (i < parts.length - 1 || continues) });
         pos += d;
       });
       s = e;
     }
-    if (items.length && items.every((it) => it.rest)) bars.push([{ pitch: null, dur: m.barLen, rest: true, full: true, start: 0, tie: false }]);
+    if (items.length && items.every((it) => it.rest)) bars.push([{ pitch: null, pitches: [], dur: m.barLen, rest: true, full: true, start: 0, tie: false }]);
     else bars.push(items);
   }
   return bars;
@@ -190,9 +196,11 @@ export function toBars(events, nBars, m) {
 
 /**
  * Score model of a piece: one staff per voice.
- * @param voices [{events (absolute starts, sounding pitches), instrument, name}]
+ * @param voices [{events (absolute starts, sounding pitches), instrument, name, dynamics (false: no
+ *   dynamic marks for this staff, as for an accompaniment)}]
+ * @param chords [{start, dur, name, root, q}] chord symbols over the first staff (accompaniment)
  */
-export function scoreModel({ voices, total, barLen, meter = null, key, title = '', subtitle = '', bpm = 84 }) {
+export function scoreModel({ voices, total, barLen, meter = null, key, title = '', subtitle = '', bpm = 84, chords = null }) {
   const m = meterOf(barLen, meter);
   const spelling = spellingFor(key);
   const nBars = Math.max(1, Math.ceil(total / barLen));
@@ -204,10 +212,11 @@ export function scoreModel({ voices, total, barLen, meter = null, key, title = '
     title,
     subtitle,
     bpm,
+    chords: chords ? chords.filter((c) => c.start < nBars * m.barLen).map((c) => ({ step: c.start, dur: c.dur, name: c.name, root: c.root, q: c.q })) : null,
     staves: voices.map((v) => {
       const pitches = v.events.filter((e) => e.pitch !== null).map((e) => e.pitch);
       // dynamics, when the notes carry them (the fado styles; core/expression.js)
-      const dynamics = v.events.some((e) => e.x) ? dynamicMarks(v.events.filter((e) => e.start < nBars * m.barLen)) : [];
+      const dynamics = v.dynamics !== false && v.events.some((e) => e.x) ? dynamicMarks(v.events.filter((e) => e.start < nBars * m.barLen)) : [];
       return { name: v.name, instrument: v.instrument, ...clefFor(v.instrument, pitches), bars: toBars(v.events, nBars, m), dynamics };
     }),
   };
@@ -248,6 +257,7 @@ export function canonLineModel({ lead, entries, length, barLen, meter = null, ke
 // ------------------------------------------------------------------ LilyPond
 
 const LILY_MIDI = {
+  guitarra: 'acoustic guitar (steel)', violaFado: 'acoustic guitar (nylon)',
   violin: 'violin', viola: 'viola', cello: 'cello', bass: 'contrabass', flute: 'flute', recorder: 'recorder',
   oboe: 'oboe', clarinet: 'clarinet', bassoon: 'bassoon', horn: 'french horn', trumpet: 'trumpet',
   harpsichord: 'harpsichord', piano: 'acoustic grand', organ: 'church organ',
@@ -325,7 +335,12 @@ export function toLilyPond(model) {
         }
         const after = postOf(b * m.barLen + it.start);
         if (it.full) tokens.push(`R${barDur}${after}`);
-        else tokens.push(it.rest ? `r${LILY_DURATION[it.dur]}${after}` : `${lilyPitch(spell(it.pitch, model.spelling))}${LILY_DURATION[it.dur]}${it.tie ? '~' : ''}${after}`);
+        else if (it.rest) tokens.push(`r${LILY_DURATION[it.dur]}${after}`);
+        else {
+          const ps = it.pitches?.length ? it.pitches : [it.pitch];
+          const head = ps.length > 1 ? `<${ps.map((p) => lilyPitch(spell(p, model.spelling))).join(' ')}>` : lilyPitch(spell(ps[0], model.spelling));
+          tokens.push(`${head}${LILY_DURATION[it.dur]}${it.tie ? '~' : ''}${after}`);
+        }
       }
       bars.push(tokens.join(' '));
     });
@@ -335,11 +350,30 @@ export function toLilyPond(model) {
     bars.forEach((b) => lines.push(`  ${b} |`));
     lines.push(model.repeat ? '  \\bar ":|."' : '  \\bar "|."', '}', '');
   });
+  // chord symbols over the music (the accompaniment's harmony), as a lead sheet prints them
+  let chordNames = null;
+  if (model.chords?.length) {
+    const LILY_Q = { M: '', m: ':m', 7: ':7', m7b5: ':m7.5-' };
+    const tokens = [];
+    let at = 0;
+    for (const c of model.chords) {
+      if (c.step > at) for (const d of splitValues(at % m.barLen, c.step - at, m)) tokens.push(`s${LILY_DURATION[d]}`);
+      const name = lilyPitch({ ...spell(60 + c.root, model.spelling), octave: 3 });
+      splitValues(c.step % m.barLen, c.dur, m).forEach((d, i) => tokens.push(i ? `s${LILY_DURATION[d]}` : `${name}${LILY_DURATION[d]}${LILY_Q[c.q] ?? ''}`));
+      at = c.step + c.dur;
+    }
+    chordNames = `acordes = \\chordmode { ${tokens.join(' ')} }`;
+    lines.push(chordNames, '');
+  }
   lines.push('\\score {');
+  // the chord names go over the staff group, in a simultaneous block of their own
+  if (chordNames) lines.push('  <<', '  \\new ChordNames \\acordes');
   lines.push(model.staves.length > 1 ? '  \\new StaffGroup <<' : '  <<');
   model.staves.forEach((st, i) => {
     lines.push(`    \\new Staff \\with { instrumentName = ${lilyString(st.name)} midiInstrument = ${lilyString(LILY_MIDI[st.instrument] ?? 'violin')} } \\${names[i]}`);
   });
-  lines.push('  >>', '  \\layout { }', '  \\midi { }', '}', '');
+  lines.push('  >>');
+  if (chordNames) lines.push('  >>');
+  lines.push('  \\layout { }', '  \\midi { }', '}', '');
   return lines.join('\n');
 }

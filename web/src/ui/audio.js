@@ -91,6 +91,45 @@ export function createPlayer() {
       oscs.push(v);
     };
     switch (inst.synth) {
+      case 'guitarra': {
+        // Portuguese guitar: a pair of steel strings a few cents apart, a bright attack that
+        // darkens quickly, a short ring
+        for (const cents of [-4, 4]) {
+          const o = osc('sawtooth', f * 2 ** (cents / 1200), t0);
+          const lp = ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.setValueAtTime(Math.min(12000, f * 12), t0);
+          lp.frequency.exponentialRampToValueAtTime(Math.max(200, f * 2.5), t0 + 0.35);
+          lp.Q.value = 1.5;
+          lp.connect(out);
+          o.connect(lp);
+          oscs.push(o);
+        }
+        g.setValueAtTime(0, t0);
+        g.linearRampToValueAtTime(peak * 0.55, t0 + 0.003);
+        g.exponentialRampToValueAtTime(peak * 0.02, t0 + Math.max(0.3, Math.min(1.6, dur * 1.2)));
+        break;
+      }
+      case 'viola': {
+        // the viola (steel-string classical guitar): warmer, rounder, a longer ring
+        const o = osc('triangle', f, t0);
+        const o2 = osc('square', f, t0);
+        const lp = ctx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(Math.min(8000, f * 6), t0);
+        lp.frequency.exponentialRampToValueAtTime(Math.max(150, f * 1.6), t0 + 0.5);
+        lp.connect(out);
+        const g2 = ctx.createGain();
+        g2.gain.value = 0.25;
+        o2.connect(g2);
+        g2.connect(lp);
+        o.connect(lp);
+        g.setValueAtTime(0, t0);
+        g.linearRampToValueAtTime(peak * 0.9, t0 + 0.004);
+        g.exponentialRampToValueAtTime(peak * 0.03, t0 + Math.max(0.4, Math.min(2, dur * 1.3)));
+        oscs.push(o, o2);
+        break;
+      }
       case 'pluck': {
         const o = osc('square', f, t0);
         const lp = ctx.createBiquadFilter();
