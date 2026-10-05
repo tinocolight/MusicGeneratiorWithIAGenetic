@@ -32,7 +32,9 @@ function trackChunk(events, compact = false) {
 }
 
 /**
- * @param voices [{events: [{pitch|null, start, dur}], offset (16ths), program, channel, name}]
+ * @param voices [{events: [{pitch|null, start, dur, x}], offset (16ths), program, channel, name}]
+ *   x: the dynamics of a note (core/expression.js, fado styles): its velocity, and a fade or a
+ *   swell written as expression controller (CC 11) changes along the note (not in compact files)
  * @param opts {bpm, numerator, denominator, text (a text event in the first track), compact
  *   (running status, and note-off written as note-on at velocity 0, so that every note after
  *   the first in a track takes 3 bytes less: the files are smaller, for links and QR codes)}
@@ -55,11 +57,23 @@ export function writeMidi(voices, { bpm = 90, numerator = 4, denominator = 4, te
       { tick: 0, order: 1, bytes: [0xc0 | ch, v.program ?? 40] },
     ];
     const q = TICKS / 4;
+    const expressive = !compact && v.events.some((e) => e.x);
     for (const e of v.events) {
       if (e.pitch === null) continue;
       const on = (e.start + (v.offset || 0)) * q;
       const off = on + e.dur * q;
-      evs.push({ tick: on, order: 3, bytes: [0x90 | ch, e.pitch, v.velocity ?? 88] });
+      const vel = e.x ? Math.max(1, Math.min(127, Math.round(e.x.vel * 127))) : v.velocity ?? 88;
+      if (expressive) {
+        // expression back to its resting value at every note, then the note's fade or swell
+        evs.push({ tick: on, order: 2.5, bytes: [0xb0 | ch, 11, 100] });
+        if (e.x?.shape) {
+          for (const k of [1, 2, 3, 4]) {
+            const level = 100 * (1 + (e.x.end - 1) * (k / 4));
+            evs.push({ tick: Math.round(on + (off - on) * (e.x.shape === 'swell' ? 0.75 : 1) * (0.25 + 0.75 * (k / 4)) - (k === 4 && e.x.shape === 'fade' ? 1 : 0)), order: 4, bytes: [0xb0 | ch, 11, Math.max(1, Math.min(127, Math.round(level)))] });
+          }
+        }
+      }
+      evs.push({ tick: on, order: 3, bytes: [0x90 | ch, e.pitch, vel] });
       evs.push({ tick: off, order: 2, bytes: compact ? [0x90 | ch, e.pitch, 0] : [0x80 | ch, e.pitch, 0] });
     }
     tracks.push(trackChunk(evs, compact));

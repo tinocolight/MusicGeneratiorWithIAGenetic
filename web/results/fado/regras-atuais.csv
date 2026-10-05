@@ -13,22 +13,54 @@
 "Fado Adiça","none","motifs",0.6667,0.1765,0.8000,1.0000
 "Fado Adiça","none","longOnBeat",0.8929,0.8000,1.0000,1.0000
 "Fado Adiça","none","syncBar",0.1846,0.0000,0.1000,0.7179
-"Fado Adiça","fado","finalLength",0.9397,1.6000,3.0000,-0.8864
-"Fado Adiça","fado","range",13.0000,10.0000,17.0000,1.0000
-"Fado Adiça","fado","steps",0.3443,0.4500,0.8000,0.1541
-"Fado Adiça","fado","restShare",0.1077,0.0200,0.1500,1.0000
-"Fado Adiça","fado","stepDown",0.6667,0.3939,0.7778,1.0000
-"Fado Adiça","fado","inertia",1.0000,0.5000,0.8919,0.1352
+"Fado Adiça","fado","verseFinal",2.7992,2.2000,5.0000,1.0000
+"Fado Adiça","fado","verseNotes",7.8750,6.0000,16.0000,1.0000
+"Fado Adiça","fado","restShare",0.1077,0.0600,0.2200,1.0000
+"Fado Adiça","fado","syncBar",0.1846,0.1500,0.7000,1.0000
+"Fado Adiça","fado","verseAnticip",0.0000,0.1000,0.8500,0.4667
+"Fado Adiça","fado","longOnBeat",0.8929,0.2000,1.0000,1.0000
+"Fado Adiça","fado","verseEndStep",0.2500,0.4000,1.0000,-0.0000
+"Fado Adiça","fado","verseTonic",0.0000,0.0000,0.3400,1.0000
+"Fado Adiça","fado","repeats",0.0820,0.1500,0.4200,0.4557
+"Fado Adiça","fado","stepDown",0.6667,0.5500,0.8500,1.0000
+"Fado Adiça","fado","quickRuns",0.0000,0.0000,0.3500,1.0000
+"Fado Adiça","fado","quickRunMax",0.0000,0.0000,6.0000,1.0000
+"Fado Adiça","fado","runsIntoLong",,0.5000,1.0000,
+"Fado Adiça","fado","density",0.9846,0.6000,1.6000,1.0000
+"Fado Adiça","fado","range",13.0000,10.0000,19.0000,1.0000
+"Fado Adiça","fado","finalLength",0.9397,0.5000,2.6000,1.0000
+"Fado Adiça","fado","arch",0.1250,0.0000,1.0000,1.0000
+"Fado Adiça","fado","inertia",1.0000,0.3000,1.0000,1.0000
+"Fado Adiça","fado","recovery",0.0000,0.0000,0.7000,1.0000
+"Fado Adiça","fado","leapChain",0.0000,0.0000,0.0800,1.0000
 "Fado Adiça","fado","leaps",0.1967,0.0392,0.2366,1.0000
-"Fado Adiça","fado","recovery",0.0000,0.0000,0.6000,1.0000
-"Fado Adiça","fado","leapChain",0.0000,0.0000,0.0200,1.0000
 "Fado Adiça","fado","dissonant",0.0000,0.0000,0.0300,1.0000
 "Fado Adiça","fado","climaxCount",4.0000,1.0000,6.0000,1.0000
-"Fado Adiça","fado","arch",0.1250,0.0000,0.7500,1.0000
 "Fado Adiça","fado","endLow",0.7500,0.3750,1.0000,1.0000
 "Fado Adiça","fado","motifs",0.6667,0.1765,0.8000,1.0000
-"Fado Adiça","fado","longOnBeat",0.8929,0.8000,1.0000,1.0000
-"Fado Adiça","fado","syncBar",0.1846,0.0000,0.1000,0.7179
+"Fado Adiça","fadoAlegre","verseFinal",2.7992,1.8000,4.5000,1.0000
+"Fado Adiça","fadoAlegre","verseNotes",7.8750,6.0000,18.0000,1.0000
+"Fado Adiça","fadoAlegre","restShare",0.1077,0.0300,0.1600,1.0000
+"Fado Adiça","fadoAlegre","syncBar",0.1846,0.1000,0.6000,1.0000
+"Fado Adiça","fadoAlegre","longOnBeat",0.8929,0.6000,1.0000,1.0000
+"Fado Adiça","fadoAlegre","verseTonic",0.0000,0.0000,0.4000,1.0000
+"Fado Adiça","fadoAlegre","verseEndStep",0.2500,0.2000,1.0000,1.0000
+"Fado Adiça","fadoAlegre","repeats",0.0820,0.0600,0.3600,1.0000
+"Fado Adiça","fadoAlegre","quickRuns",0.0000,0.0000,0.4000,1.0000
+"Fado Adiça","fadoAlegre","runsIntoLong",,0.3000,1.0000,
+"Fado Adiça","fadoAlegre","density",0.9846,0.9000,2.2000,1.0000
+"Fado Adiça","fadoAlegre","leaps",0.1967,0.0600,0.2600,1.0000
+"Fado Adiça","fadoAlegre","range",13.0000,9.0000,17.0000,1.0000
+"Fado Adiça","fadoAlegre","finalLength",0.9397,0.5000,2.6000,1.0000
+"Fado Adiça","fadoAlegre","arch",0.1250,0.0000,1.0000,1.0000
+"Fado Adiça","fadoAlegre","inertia",1.0000,0.3000,1.0000,1.0000
+"Fado Adiça","fadoAlegre","stepDown",0.6667,0.3939,0.7778,1.0000
+"Fado Adiça","fadoAlegre","recovery",0.0000,0.0000,0.6000,1.0000
+"Fado Adiça","fadoAlegre","leapChain",0.0000,0.0000,0.0200,1.0000
+"Fado Adiça","fadoAlegre","dissonant",0.0000,0.0000,0.0300,1.0000
+"Fado Adiça","fadoAlegre","climaxCount",4.0000,1.0000,6.0000,1.0000
+"Fado Adiça","fadoAlegre","endLow",0.7500,0.3750,1.0000,1.0000
+"Fado Adiça","fadoAlegre","motifs",0.6667,0.1765,0.8000,1.0000
 "Fado Alberto","none","stepDown",0.7037,0.3939,0.7778,1.0000
 "Fado Alberto","none","inertia",0.4375,0.5000,0.8919,0.5000
 "Fado Alberto","none","leaps",0.0455,0.0392,0.2366,1.0000
@@ -43,22 +75,54 @@
 "Fado Alberto","none","motifs",0.5833,0.1765,0.8000,1.0000
 "Fado Alberto","none","longOnBeat",0.6842,0.8000,1.0000,0.4211
 "Fado Alberto","none","syncBar",0.4848,0.0000,0.1000,-0.2828
-"Fado Alberto","fado","finalLength",0.4857,1.6000,3.0000,-1.0000
-"Fado Alberto","fado","range",13.0000,10.0000,17.0000,1.0000
-"Fado Alberto","fado","steps",0.4091,0.4500,0.8000,0.6727
-"Fado Alberto","fado","restShare",0.1111,0.0200,0.1500,1.0000
-"Fado Alberto","fado","stepDown",0.7037,0.3939,0.7778,1.0000
-"Fado Alberto","fado","inertia",0.4375,0.5000,0.8919,0.5000
+"Fado Alberto","fado","verseFinal",4.6667,2.2000,5.0000,1.0000
+"Fado Alberto","fado","verseNotes",11.1667,6.0000,16.0000,1.0000
+"Fado Alberto","fado","restShare",0.1111,0.0600,0.2200,1.0000
+"Fado Alberto","fado","syncBar",0.4848,0.1500,0.7000,1.0000
+"Fado Alberto","fado","verseAnticip",0.8333,0.1000,0.8500,1.0000
+"Fado Alberto","fado","longOnBeat",0.6842,0.2000,1.0000,1.0000
+"Fado Alberto","fado","verseEndStep",0.8333,0.4000,1.0000,1.0000
+"Fado Alberto","fado","verseTonic",0.0000,0.0000,0.3400,1.0000
+"Fado Alberto","fado","repeats",0.4091,0.1500,0.4200,1.0000
+"Fado Alberto","fado","stepDown",0.7037,0.5500,0.8500,1.0000
+"Fado Alberto","fado","quickRuns",0.1616,0.0000,0.3500,1.0000
+"Fado Alberto","fado","quickRunMax",4.0000,0.0000,6.0000,1.0000
+"Fado Alberto","fado","runsIntoLong",1.0000,0.5000,1.0000,1.0000
+"Fado Alberto","fado","density",1.3737,0.6000,1.6000,1.0000
+"Fado Alberto","fado","range",13.0000,10.0000,19.0000,1.0000
+"Fado Alberto","fado","finalLength",0.4857,0.5000,2.6000,0.9728
+"Fado Alberto","fado","arch",1.0000,0.0000,1.0000,1.0000
+"Fado Alberto","fado","inertia",0.4375,0.3000,1.0000,1.0000
+"Fado Alberto","fado","recovery",0.0000,0.0000,0.7000,1.0000
+"Fado Alberto","fado","leapChain",0.0308,0.0000,0.0800,1.0000
 "Fado Alberto","fado","leaps",0.0455,0.0392,0.2366,1.0000
-"Fado Alberto","fado","recovery",0.0000,0.0000,0.6000,1.0000
-"Fado Alberto","fado","leapChain",0.0308,0.0000,0.0200,0.7846
 "Fado Alberto","fado","dissonant",0.0000,0.0000,0.0300,1.0000
 "Fado Alberto","fado","climaxCount",4.0000,1.0000,6.0000,1.0000
-"Fado Alberto","fado","arch",1.0000,0.0000,0.7500,-0.3333
 "Fado Alberto","fado","endLow",0.7143,0.3750,1.0000,1.0000
 "Fado Alberto","fado","motifs",0.5833,0.1765,0.8000,1.0000
-"Fado Alberto","fado","longOnBeat",0.6842,0.8000,1.0000,0.4211
-"Fado Alberto","fado","syncBar",0.4848,0.0000,0.1000,-0.2828
+"Fado Alberto","fadoAlegre","verseFinal",4.6667,1.8000,4.5000,0.7531
+"Fado Alberto","fadoAlegre","verseNotes",11.1667,6.0000,18.0000,1.0000
+"Fado Alberto","fadoAlegre","restShare",0.1111,0.0300,0.1600,1.0000
+"Fado Alberto","fadoAlegre","syncBar",0.4848,0.1000,0.6000,1.0000
+"Fado Alberto","fadoAlegre","longOnBeat",0.6842,0.6000,1.0000,1.0000
+"Fado Alberto","fadoAlegre","verseTonic",0.0000,0.0000,0.4000,1.0000
+"Fado Alberto","fadoAlegre","verseEndStep",0.8333,0.2000,1.0000,1.0000
+"Fado Alberto","fadoAlegre","repeats",0.4091,0.0600,0.3600,0.6073
+"Fado Alberto","fadoAlegre","quickRuns",0.1616,0.0000,0.4000,1.0000
+"Fado Alberto","fadoAlegre","runsIntoLong",1.0000,0.3000,1.0000,1.0000
+"Fado Alberto","fadoAlegre","density",1.3737,0.9000,2.2000,1.0000
+"Fado Alberto","fadoAlegre","leaps",0.0455,0.0600,0.2600,0.8836
+"Fado Alberto","fadoAlegre","range",13.0000,9.0000,17.0000,1.0000
+"Fado Alberto","fadoAlegre","finalLength",0.4857,0.5000,2.6000,0.9728
+"Fado Alberto","fadoAlegre","arch",1.0000,0.0000,1.0000,1.0000
+"Fado Alberto","fadoAlegre","inertia",0.4375,0.3000,1.0000,1.0000
+"Fado Alberto","fadoAlegre","stepDown",0.7037,0.3939,0.7778,1.0000
+"Fado Alberto","fadoAlegre","recovery",0.0000,0.0000,0.6000,1.0000
+"Fado Alberto","fadoAlegre","leapChain",0.0308,0.0000,0.0200,0.7846
+"Fado Alberto","fadoAlegre","dissonant",0.0000,0.0000,0.0300,1.0000
+"Fado Alberto","fadoAlegre","climaxCount",4.0000,1.0000,6.0000,1.0000
+"Fado Alberto","fadoAlegre","endLow",0.7143,0.3750,1.0000,1.0000
+"Fado Alberto","fadoAlegre","motifs",0.5833,0.1765,0.8000,1.0000
 "Coimbra (Raul Ferrão)","none","stepDown",0.7647,0.3939,0.7778,1.0000
 "Coimbra (Raul Ferrão)","none","inertia",0.7143,0.5000,0.8919,1.0000
 "Coimbra (Raul Ferrão)","none","leaps",0.1000,0.0392,0.2366,1.0000
@@ -73,22 +137,54 @@
 "Coimbra (Raul Ferrão)","none","motifs",0.7941,0.1765,0.8000,1.0000
 "Coimbra (Raul Ferrão)","none","longOnBeat",1.0000,0.8000,1.0000,1.0000
 "Coimbra (Raul Ferrão)","none","syncBar",0.0000,0.0000,0.1000,1.0000
-"Coimbra (Raul Ferrão)","fado","finalLength",1.0291,1.6000,3.0000,-0.6311
-"Coimbra (Raul Ferrão)","fado","range",17.0000,10.0000,17.0000,1.0000
-"Coimbra (Raul Ferrão)","fado","steps",0.4250,0.4500,0.8000,0.8000
-"Coimbra (Raul Ferrão)","fado","restShare",0.0216,0.0200,0.1500,1.0000
-"Coimbra (Raul Ferrão)","fado","stepDown",0.7647,0.3939,0.7778,1.0000
-"Coimbra (Raul Ferrão)","fado","inertia",0.7143,0.5000,0.8919,1.0000
+"Coimbra (Raul Ferrão)","fado","verseFinal",3.9105,2.2000,5.0000,1.0000
+"Coimbra (Raul Ferrão)","fado","verseNotes",21.0000,6.0000,16.0000,-1.0000
+"Coimbra (Raul Ferrão)","fado","restShare",0.0216,0.0600,0.2200,0.6927
+"Coimbra (Raul Ferrão)","fado","syncBar",0.0000,0.1500,0.7000,0.5000
+"Coimbra (Raul Ferrão)","fado","verseAnticip",0.0000,0.1000,0.8500,0.4667
+"Coimbra (Raul Ferrão)","fado","longOnBeat",1.0000,0.2000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fado","verseEndStep",0.7500,0.4000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fado","verseTonic",0.3333,0.0000,0.3400,1.0000
+"Coimbra (Raul Ferrão)","fado","repeats",0.2750,0.1500,0.4200,1.0000
+"Coimbra (Raul Ferrão)","fado","stepDown",0.7647,0.5500,0.8500,1.0000
+"Coimbra (Raul Ferrão)","fado","quickRuns",0.0000,0.0000,0.3500,1.0000
+"Coimbra (Raul Ferrão)","fado","quickRunMax",0.0000,0.0000,6.0000,1.0000
+"Coimbra (Raul Ferrão)","fado","runsIntoLong",,0.5000,1.0000,
+"Coimbra (Raul Ferrão)","fado","density",0.6043,0.6000,1.6000,1.0000
+"Coimbra (Raul Ferrão)","fado","range",17.0000,10.0000,19.0000,1.0000
+"Coimbra (Raul Ferrão)","fado","finalLength",1.0291,0.5000,2.6000,1.0000
+"Coimbra (Raul Ferrão)","fado","arch",0.1250,0.0000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fado","inertia",0.7143,0.3000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fado","recovery",0.6250,0.0000,0.7000,1.0000
+"Coimbra (Raul Ferrão)","fado","leapChain",0.0658,0.0000,0.0800,1.0000
 "Coimbra (Raul Ferrão)","fado","leaps",0.1000,0.0392,0.2366,1.0000
-"Coimbra (Raul Ferrão)","fado","recovery",0.6250,0.0000,0.6000,0.8333
-"Coimbra (Raul Ferrão)","fado","leapChain",0.0658,0.0000,0.0200,0.0842
 "Coimbra (Raul Ferrão)","fado","dissonant",0.0000,0.0000,0.0300,1.0000
 "Coimbra (Raul Ferrão)","fado","climaxCount",4.0000,1.0000,6.0000,1.0000
-"Coimbra (Raul Ferrão)","fado","arch",0.1250,0.0000,0.7500,1.0000
 "Coimbra (Raul Ferrão)","fado","endLow",0.3529,0.3750,1.0000,0.8588
 "Coimbra (Raul Ferrão)","fado","motifs",0.7941,0.1765,0.8000,1.0000
-"Coimbra (Raul Ferrão)","fado","longOnBeat",1.0000,0.8000,1.0000,1.0000
-"Coimbra (Raul Ferrão)","fado","syncBar",0.0000,0.0000,0.1000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","verseFinal",3.9105,1.8000,4.5000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","verseNotes",21.0000,6.0000,18.0000,0.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","restShare",0.0216,0.0300,0.1600,0.9327
+"Coimbra (Raul Ferrão)","fadoAlegre","syncBar",0.0000,0.1000,0.6000,0.6667
+"Coimbra (Raul Ferrão)","fadoAlegre","longOnBeat",1.0000,0.6000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","verseTonic",0.3333,0.0000,0.4000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","verseEndStep",0.7500,0.2000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","repeats",0.2750,0.0600,0.3600,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","quickRuns",0.0000,0.0000,0.4000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","runsIntoLong",,0.3000,1.0000,
+"Coimbra (Raul Ferrão)","fadoAlegre","density",0.6043,0.9000,2.2000,0.0902
+"Coimbra (Raul Ferrão)","fadoAlegre","leaps",0.1000,0.0600,0.2600,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","range",17.0000,9.0000,17.0000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","finalLength",1.0291,0.5000,2.6000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","arch",0.1250,0.0000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","inertia",0.7143,0.3000,1.0000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","stepDown",0.7647,0.3939,0.7778,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","recovery",0.6250,0.0000,0.6000,0.8333
+"Coimbra (Raul Ferrão)","fadoAlegre","leapChain",0.0658,0.0000,0.0200,0.0842
+"Coimbra (Raul Ferrão)","fadoAlegre","dissonant",0.0000,0.0000,0.0300,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","climaxCount",4.0000,1.0000,6.0000,1.0000
+"Coimbra (Raul Ferrão)","fadoAlegre","endLow",0.3529,0.3750,1.0000,0.8588
+"Coimbra (Raul Ferrão)","fadoAlegre","motifs",0.7941,0.1765,0.8000,1.0000
 "Fado do Marujo","none","stepDown",0.7442,0.3871,0.8000,1.0000
 "Fado do Marujo","none","inertia",0.7917,0.2857,0.9091,1.0000
 "Fado do Marujo","none","leaps",0.1304,0.0400,0.2581,1.0000
@@ -97,28 +193,60 @@
 "Fado do Marujo","none","dissonant",0.0217,0.0000,0.0300,1.0000
 "Fado do Marujo","none","range",20.0000,9.0000,17.0000,-0.2000
 "Fado do Marujo","none","climaxCount",1.0000,1.0000,8.0000,1.0000
-"Fado do Marujo","none","arch",0.3077,0.0000,0.7500,1.0000
-"Fado do Marujo","none","endLow",0.4615,0.3333,1.0000,1.0000
-"Fado do Marujo","none","finalLength",1.2253,1.0247,2.3333,1.0000
+"Fado do Marujo","none","arch",0.2857,0.0000,0.7500,1.0000
+"Fado do Marujo","none","endLow",0.5714,0.3333,1.0000,1.0000
+"Fado do Marujo","none","finalLength",1.6044,1.0247,2.3333,1.0000
 "Fado do Marujo","none","motifs",0.6538,0.3333,0.8182,1.0000
 "Fado do Marujo","none","longOnBeat",0.2353,0.8000,1.0000,-1.0000
 "Fado do Marujo","none","syncBar",0.4860,0.0000,0.1000,-0.2866
-"Fado do Marujo","fado","finalLength",1.2253,1.6000,3.0000,-0.0706
-"Fado do Marujo","fado","range",20.0000,10.0000,17.0000,-0.2000
-"Fado do Marujo","fado","steps",0.4674,0.4500,0.8000,1.0000
-"Fado do Marujo","fado","restShare",0.0280,0.0200,0.1500,1.0000
-"Fado do Marujo","fado","stepDown",0.7442,0.3871,0.8000,1.0000
-"Fado do Marujo","fado","inertia",0.7917,0.2857,0.9091,1.0000
+"Fado do Marujo","fado","verseFinal",2.7992,2.2000,5.0000,1.0000
+"Fado do Marujo","fado","verseNotes",23.2500,6.0000,16.0000,-1.0000
+"Fado do Marujo","fado","restShare",0.0280,0.0600,0.2200,0.7443
+"Fado do Marujo","fado","syncBar",0.4860,0.1500,0.7000,1.0000
+"Fado do Marujo","fado","verseAnticip",0.2500,0.1000,0.8500,1.0000
+"Fado do Marujo","fado","longOnBeat",0.2353,0.2000,1.0000,1.0000
+"Fado do Marujo","fado","verseEndStep",0.5000,0.4000,1.0000,1.0000
+"Fado do Marujo","fado","verseTonic",0.6667,0.0000,0.3400,-1.0000
+"Fado do Marujo","fado","repeats",0.1630,0.1500,0.4200,1.0000
+"Fado do Marujo","fado","stepDown",0.7442,0.5500,0.8500,1.0000
+"Fado do Marujo","fado","quickRuns",0.0000,0.0000,0.3500,1.0000
+"Fado do Marujo","fado","quickRunMax",0.0000,0.0000,6.0000,1.0000
+"Fado do Marujo","fado","runsIntoLong",,0.5000,1.0000,
+"Fado do Marujo","fado","density",1.7383,0.6000,1.6000,0.5389
+"Fado do Marujo","fado","range",20.0000,10.0000,19.0000,0.6000
+"Fado do Marujo","fado","finalLength",1.6044,0.5000,2.6000,1.0000
+"Fado do Marujo","fado","arch",0.2857,0.0000,1.0000,1.0000
+"Fado do Marujo","fado","inertia",0.7917,0.3000,1.0000,1.0000
+"Fado do Marujo","fado","recovery",0.0833,0.0000,0.7000,1.0000
+"Fado do Marujo","fado","leapChain",0.0110,0.0000,0.0800,1.0000
 "Fado do Marujo","fado","leaps",0.1304,0.0400,0.2581,1.0000
-"Fado do Marujo","fado","recovery",0.0833,0.0000,0.5000,1.0000
-"Fado do Marujo","fado","leapChain",0.0110,0.0000,0.0200,1.0000
 "Fado do Marujo","fado","dissonant",0.0217,0.0000,0.0300,1.0000
 "Fado do Marujo","fado","climaxCount",1.0000,1.0000,8.0000,1.0000
-"Fado do Marujo","fado","arch",0.3077,0.0000,0.7500,1.0000
-"Fado do Marujo","fado","endLow",0.4615,0.3333,1.0000,1.0000
+"Fado do Marujo","fado","endLow",0.5714,0.3333,1.0000,1.0000
 "Fado do Marujo","fado","motifs",0.6538,0.3333,0.8182,1.0000
-"Fado do Marujo","fado","longOnBeat",0.2353,0.8000,1.0000,-1.0000
-"Fado do Marujo","fado","syncBar",0.4860,0.0000,0.1000,-0.2866
+"Fado do Marujo","fadoAlegre","verseFinal",2.7992,1.8000,4.5000,1.0000
+"Fado do Marujo","fadoAlegre","verseNotes",23.2500,6.0000,18.0000,-0.7500
+"Fado do Marujo","fadoAlegre","restShare",0.0280,0.0300,0.1600,0.9843
+"Fado do Marujo","fadoAlegre","syncBar",0.4860,0.1000,0.6000,1.0000
+"Fado do Marujo","fadoAlegre","longOnBeat",0.2353,0.6000,1.0000,-1.0000
+"Fado do Marujo","fadoAlegre","verseTonic",0.6667,0.0000,0.4000,-1.0000
+"Fado do Marujo","fadoAlegre","verseEndStep",0.5000,0.2000,1.0000,1.0000
+"Fado do Marujo","fadoAlegre","repeats",0.1630,0.0600,0.3600,1.0000
+"Fado do Marujo","fadoAlegre","quickRuns",0.0000,0.0000,0.4000,1.0000
+"Fado do Marujo","fadoAlegre","runsIntoLong",,0.3000,1.0000,
+"Fado do Marujo","fadoAlegre","density",1.7383,0.9000,2.2000,1.0000
+"Fado do Marujo","fadoAlegre","leaps",0.1304,0.0600,0.2600,1.0000
+"Fado do Marujo","fadoAlegre","range",20.0000,9.0000,17.0000,-0.2000
+"Fado do Marujo","fadoAlegre","finalLength",1.6044,0.5000,2.6000,1.0000
+"Fado do Marujo","fadoAlegre","arch",0.2857,0.0000,1.0000,1.0000
+"Fado do Marujo","fadoAlegre","inertia",0.7917,0.3000,1.0000,1.0000
+"Fado do Marujo","fadoAlegre","stepDown",0.7442,0.3871,0.8000,1.0000
+"Fado do Marujo","fadoAlegre","recovery",0.0833,0.0000,0.5000,1.0000
+"Fado do Marujo","fadoAlegre","leapChain",0.0110,0.0000,0.0200,1.0000
+"Fado do Marujo","fadoAlegre","dissonant",0.0217,0.0000,0.0300,1.0000
+"Fado do Marujo","fadoAlegre","climaxCount",1.0000,1.0000,8.0000,1.0000
+"Fado do Marujo","fadoAlegre","endLow",0.5714,0.3333,1.0000,1.0000
+"Fado do Marujo","fadoAlegre","motifs",0.6538,0.3333,0.8182,1.0000
 "Fado Pagem","none","stepDown",0.7284,0.3939,0.7778,1.0000
 "Fado Pagem","none","inertia",0.5476,0.5000,0.8919,1.0000
 "Fado Pagem","none","leaps",0.0403,0.0392,0.2366,1.0000
@@ -133,19 +261,51 @@
 "Fado Pagem","none","motifs",0.3243,0.1765,0.8000,1.0000
 "Fado Pagem","none","longOnBeat",0.6744,0.8000,1.0000,0.3721
 "Fado Pagem","none","syncBar",0.4331,0.0000,0.1000,-0.1104
-"Fado Pagem","fado","finalLength",2.4803,1.6000,3.0000,1.0000
-"Fado Pagem","fado","range",13.0000,10.0000,17.0000,1.0000
-"Fado Pagem","fado","steps",0.5436,0.4500,0.8000,1.0000
-"Fado Pagem","fado","restShare",0.2452,0.0200,0.1500,0.2382
-"Fado Pagem","fado","stepDown",0.7284,0.3939,0.7778,1.0000
-"Fado Pagem","fado","inertia",0.5476,0.5000,0.8919,1.0000
+"Fado Pagem","fado","verseFinal",3.1606,2.2000,5.0000,1.0000
+"Fado Pagem","fado","verseNotes",7.6364,6.0000,16.0000,1.0000
+"Fado Pagem","fado","restShare",0.2452,0.0600,0.2200,0.7982
+"Fado Pagem","fado","syncBar",0.4331,0.1500,0.7000,1.0000
+"Fado Pagem","fado","verseAnticip",0.2727,0.1000,0.8500,1.0000
+"Fado Pagem","fado","longOnBeat",0.6744,0.2000,1.0000,1.0000
+"Fado Pagem","fado","verseEndStep",0.6818,0.4000,1.0000,1.0000
+"Fado Pagem","fado","verseTonic",0.1905,0.0000,0.3400,1.0000
+"Fado Pagem","fado","repeats",0.2617,0.1500,0.4200,1.0000
+"Fado Pagem","fado","stepDown",0.7284,0.5500,0.8500,1.0000
+"Fado Pagem","fado","quickRuns",0.0000,0.0000,0.3500,1.0000
+"Fado Pagem","fado","quickRunMax",0.0000,0.0000,6.0000,1.0000
+"Fado Pagem","fado","runsIntoLong",,0.5000,1.0000,
+"Fado Pagem","fado","density",1.0701,0.6000,1.6000,1.0000
+"Fado Pagem","fado","range",13.0000,10.0000,19.0000,1.0000
+"Fado Pagem","fado","finalLength",2.4803,0.5000,2.6000,1.0000
+"Fado Pagem","fado","arch",0.3000,0.0000,1.0000,1.0000
+"Fado Pagem","fado","inertia",0.5476,0.3000,1.0000,1.0000
+"Fado Pagem","fado","recovery",0.6667,0.0000,0.7000,1.0000
+"Fado Pagem","fado","leapChain",0.0077,0.0000,0.0800,1.0000
 "Fado Pagem","fado","leaps",0.0403,0.0392,0.2366,1.0000
-"Fado Pagem","fado","recovery",0.6667,0.0000,0.6000,0.5556
-"Fado Pagem","fado","leapChain",0.0077,0.0000,0.0200,1.0000
 "Fado Pagem","fado","dissonant",0.0067,0.0000,0.0300,1.0000
 "Fado Pagem","fado","climaxCount",1.0000,1.0000,6.0000,1.0000
-"Fado Pagem","fado","arch",0.3000,0.0000,0.7500,1.0000
 "Fado Pagem","fado","endLow",0.7500,0.3750,1.0000,1.0000
 "Fado Pagem","fado","motifs",0.3243,0.1765,0.8000,1.0000
-"Fado Pagem","fado","longOnBeat",0.6744,0.8000,1.0000,0.3721
-"Fado Pagem","fado","syncBar",0.4331,0.0000,0.1000,-0.1104
+"Fado Pagem","fadoAlegre","verseFinal",3.1606,1.8000,4.5000,1.0000
+"Fado Pagem","fadoAlegre","verseNotes",7.6364,6.0000,18.0000,1.0000
+"Fado Pagem","fadoAlegre","restShare",0.2452,0.0300,0.1600,0.3182
+"Fado Pagem","fadoAlegre","syncBar",0.4331,0.1000,0.6000,1.0000
+"Fado Pagem","fadoAlegre","longOnBeat",0.6744,0.6000,1.0000,1.0000
+"Fado Pagem","fadoAlegre","verseTonic",0.1905,0.0000,0.4000,1.0000
+"Fado Pagem","fadoAlegre","verseEndStep",0.6818,0.2000,1.0000,1.0000
+"Fado Pagem","fadoAlegre","repeats",0.2617,0.0600,0.3600,1.0000
+"Fado Pagem","fadoAlegre","quickRuns",0.0000,0.0000,0.4000,1.0000
+"Fado Pagem","fadoAlegre","runsIntoLong",,0.3000,1.0000,
+"Fado Pagem","fadoAlegre","density",1.0701,0.9000,2.2000,1.0000
+"Fado Pagem","fadoAlegre","leaps",0.0403,0.0600,0.2600,0.8421
+"Fado Pagem","fadoAlegre","range",13.0000,9.0000,17.0000,1.0000
+"Fado Pagem","fadoAlegre","finalLength",2.4803,0.5000,2.6000,1.0000
+"Fado Pagem","fadoAlegre","arch",0.3000,0.0000,1.0000,1.0000
+"Fado Pagem","fadoAlegre","inertia",0.5476,0.3000,1.0000,1.0000
+"Fado Pagem","fadoAlegre","stepDown",0.7284,0.3939,0.7778,1.0000
+"Fado Pagem","fadoAlegre","recovery",0.6667,0.0000,0.6000,0.5556
+"Fado Pagem","fadoAlegre","leapChain",0.0077,0.0000,0.0200,1.0000
+"Fado Pagem","fadoAlegre","dissonant",0.0067,0.0000,0.0300,1.0000
+"Fado Pagem","fadoAlegre","climaxCount",1.0000,1.0000,6.0000,1.0000
+"Fado Pagem","fadoAlegre","endLow",0.7500,0.3750,1.0000,1.0000
+"Fado Pagem","fadoAlegre","motifs",0.3243,0.1765,0.8000,1.0000

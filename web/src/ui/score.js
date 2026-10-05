@@ -7,6 +7,8 @@
 // Two layouts (io/notation.js): one staff per voice, or the whole canon on one line with
 // numbered entry marks (as rounds are printed: when the first voice reaches mark 2, the second
 // voice starts from the beginning), repeat signs for a round and a legend of the voices.
+// With dynamics (the fado styles), the marks go under each staff: the letters (pp…ff) in the
+// music font, hairpins, and accents over the notes.
 // VexFlow (MIT) is vendored in web/vendor/ and loaded the first time the score is shown.
 
 import { t } from '../i18n/i18n.js';
@@ -166,6 +168,9 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
   const tempoDur = { 4: ['q', 0], 6: ['q', 1], 12: ['h', 1], 8: ['h', 0] }[tempo.unit] ?? ['q', 0];
   const out = [];
   const chains = model.staves.map(() => []); // per staff: [{note, tie, sys}] for ties
+  const placed = model.staves.map(() => []); // per staff: [{start, end, note, sys, stave}] for the dynamics
+  const accents = model.staves.map((st) => new Set((st.dynamics ?? []).filter((d) => d.type === 'accent').map((d) => d.step)));
+  const lineEnd = {};
   const ctxOf = {};
   const entriesAt = {};
   for (const e of model.entries ?? []) (entriesAt[Math.floor(e.step / m.barLen)] ||= []).push(e);
@@ -219,6 +224,8 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
           });
           if (dur.endsWith('d')) VF.Dot.buildAndAttach([note], { all: true });
           const s0 = bar * m.barLen + it.start;
+          if (!it.rest && accents[i].has(s0)) note.addModifier(new VF.Articulation('a>').setPosition(VF.Modifier.Position.ABOVE), 0);
+          placed[i].push({ start: s0, end: s0 + (it.full ? m.barLen : it.dur), note, sys: si, stave: null, i });
           out.push({ note, start: s0, end: s0 + (it.full ? m.barLen : it.dur), rest: it.rest });
           if (!it.rest) chains[i].push({ note, tie: it.tie, sys: si });
           else chains[i].push({ note: null, tie: false, sys: si });
@@ -229,6 +236,9 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
         VF.Accidental.applyAccidentals([voice], model.keyNames.vex);
         beams.push(...VF.Beam.generateBeams(notes, { groups: beamGroups, beam_rests: false }));
         voices.push(voice);
+      });
+      model.staves.forEach((_, i) => {
+        for (const pl of placed[i]) if (pl.stave === null) pl.stave = staves[i];
       });
       const fmt = new VF.Formatter();
       voices.forEach((v) => fmt.joinVoices([v]));
@@ -264,6 +274,7 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
       if (k === 0) firstStaves.push(...staves);
       x += w;
     });
+    lineEnd[si] = x;
 
     if (n > 1) {
       const topSt = firstStaves[0];
@@ -297,7 +308,80 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
       }
     }
   }
+  // ---- dynamics under the staves: letters, then hairpins from the note where they start to the
+  // next note after their end (or to the end of the line)
+  model.staves.forEach((st, i) => {
+    const items = placed[i];
+    if (!st.dynamics?.length || !items.length) return;
+    const at = (step) => items.find((pl) => pl.start <= step && step < pl.end) ?? items.find((pl) => pl.start >= step);
+    const textEnd = new Map();
+    for (const d of st.dynamics) {
+      if (d.type !== 'text') continue;
+      const a = at(d.step);
+      if (!a) continue;
+      const x = a.note.getAbsoluteX() - 3;
+      const w = drawDynamic(VF, ctxOf[a.sys], d.text, x, a.stave.getYForLine(4) + 30, ink);
+      textEnd.set(d.step, x + w + 4);
+    }
+    for (const d of st.dynamics) {
+      if (d.type !== 'cresc' && d.type !== 'dim') continue;
+      const a = at(d.step);
+      if (!a) continue;
+      const b = items.find((pl) => pl.start >= d.end);
+      const x1 = textEnd.get(d.step) ?? a.note.getAbsoluteX();
+      let x2 = b && b.sys === a.sys ? b.note.getAbsoluteX() - 6 : lineEnd[a.sys] - 6;
+      if (x2 - x1 < 16) x2 = x1 + 16;
+      drawHairpin(ctxOf[a.sys], x1, x2, a.stave.getYForLine(4) + 25, d.type, ink);
+    }
+  });
   return out;
+}
+
+// the dynamic letters in the music font (as LilyPond and VexFlow's TextDynamics draw them); in
+// a font without them, bold italic letters
+const DYNAMIC_GLYPHS = { p: 'dynamicPiano', m: 'dynamicMezzo', f: 'dynamicForte' };
+function drawDynamic(VF, ctx, text, x, y, ink) {
+  ctx.save();
+  ctx.setFillStyle(ink);
+  let w = 0;
+  let glyphs = null;
+  try {
+    glyphs = [...text].map((ch) => new VF.Glyph(DYNAMIC_GLYPHS[ch], 34));
+  } catch {
+    glyphs = null;
+  }
+  if (glyphs) {
+    for (const g of glyphs) {
+      g.render(ctx, x + w, y);
+      w += g.getMetrics().width;
+    }
+  } else {
+    ctx.setFont('Georgia, serif', 14, 'bold', 'italic');
+    ctx.fillText(text, x, y);
+    w = ctx.measureText(text).width;
+  }
+  ctx.restore();
+  return w;
+}
+
+/** A crescendo (opening) or diminuendo (closing) hairpin between x1 and x2, centred on y. */
+function drawHairpin(ctx, x1, x2, y, type, ink) {
+  const h = 4.5;
+  ctx.save();
+  ctx.setStrokeStyle(ink);
+  ctx.setLineWidth(1.1);
+  ctx.beginPath();
+  if (type === 'cresc') {
+    ctx.moveTo(x2, y - h);
+    ctx.lineTo(x1, y);
+    ctx.lineTo(x2, y + h);
+  } else {
+    ctx.moveTo(x1, y - h);
+    ctx.lineTo(x2, y);
+    ctx.lineTo(x1, y + h);
+  }
+  ctx.stroke();
+  ctx.restore();
 }
 
 /**

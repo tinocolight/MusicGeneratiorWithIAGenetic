@@ -8,7 +8,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { melodyFeatures } from '../src/fitness/heuristics.js';
 import { resolveRules } from '../src/fitness/styles.js';
-import { ruleValue, ruleScore } from '../src/fitness/heuristics.js';
+import { ruleValue, ruleScore, scoreRules } from '../src/fitness/heuristics.js';
 import { makeKey } from '../src/core/theory.js';
 import { compactToLine } from '../src/ga/figures.js';
 
@@ -27,6 +27,9 @@ const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN);
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 const SCALE = { major: [0, 2, 4, 5, 7, 9, 11], minor: [0, 2, 3, 5, 7, 8, 10] };
 const DEG = ['1', '♭2', '2', '♭3', '3', '4', '♯4', '5', '♭6', '6', '♭7', '7'];
+const num = (x, d = 4) => (typeof x === 'number' ? (Number.isFinite(x) ? x.toFixed(d) : '') : x === undefined || x === null ? '' : `"${String(x).replace(/"/g, '""')}"`);
+const csv = (rows, cols) => `﻿${[cols.join(','), ...rows.map((r) => cols.map((c) => (Array.isArray(r[c]) ? `"${r[c].join(' ')}"` : num(r[c]))).join(','))].join('\r\n')}\r\n`;
+const fx = (x) => (Number.isFinite(x) ? x.toFixed(2) : '—');
 
 /** Notes {p, s, d} (ticks from the first note) and rests, from [[midi | -1, ticks]]. */
 function notesOf(events) {
@@ -272,18 +275,20 @@ function toSixteenths(m) {
   }
   return ev;
 }
-const ruleRows = [];
-for (const { m } of results.filter((r) => r.m.kind === 'lead sheet')) {
-  const meter = m.meter === '2/2' ? '4/4' : m.meter;
-  const ev = toSixteenths(m);
+/** melodyFeatures (heuristics.js) of a melody on the 16th grid, its first note `pickup` 16ths before a downbeat. */
+function features16(ev, { meter, barLen, pickup, tonic, mode }) {
   const line = compactToLine(ev);
-  const barLen = m.barTicks / 6;
-  const pickup = m.pickup / 6;
   const lead = mod(barLen - pickup, barLen);
   const padded = { pitch: [...new Array(lead).fill(null), ...line.pitch], onset: [...new Array(lead).fill(false), ...line.onset] };
-  const key = makeKey(m.tonic, m.mode);
-  const f = melodyFeatures(padded, { meter, key, phraseBars: 2, phraseStart: 0 });
-  for (const style of ['none', 'fado']) {
+  return melodyFeatures(padded, { meter, key: makeKey(tonic, mode), phraseBars: meter === '2/4' ? 4 : 2, phraseStart: 0 });
+}
+const sixteenthsOf = (m) => ({ meter: m.meter === '2/2' ? '4/4' : m.meter, barLen: m.barTicks / 6, pickup: m.pickup / 6, tonic: m.tonic, mode: m.mode });
+const ruleRows = [];
+const STYLES_NOW = process.argv.slice(2).length ? process.argv.slice(2) : ['none', 'fado'];
+for (const { m } of results.filter((r) => r.m.kind === 'lead sheet')) {
+  const meter = m.meter === '2/2' ? '4/4' : m.meter;
+  const f = features16(toSixteenths(m), sixteenthsOf(m));
+  for (const style of STYLES_NOW) {
     for (const r of resolveRules(style, meter)) {
       const v = ruleValue(f, r);
       ruleRows.push({ title: m.title, style, rule: r.id, value: v, lo: r.in ? r.in.join(' ') : r.lo, hi: r.in ? '' : r.hi, score: ruleScore(v, r) });
@@ -291,14 +296,54 @@ for (const { m } of results.filter((r) => r.m.kind === 'lead sheet')) {
   }
 }
 
+// the verse measures of heuristics.js (the ones the fado rules use), on the 16th grid: fados and corpus
+const NEW = ['verseNotes', 'verseFinal', 'verseEndStep', 'verseTonic', 'verseAnticip', 'quickRuns', 'quickRunMax', 'runsIntoLong', 'repeats', 'syncBar', 'longOnBeat', 'restShare', 'density', 'stepDown', 'range', 'finalLength', 'arch', 'inertia', 'recovery', 'leapChain'];
+const fado16 = results.map(({ m }) => ({ title: m.title, kind: m.kind, mode: m.mode, ...features16(toSixteenths(m), sixteenthsOf(m)) }));
+const corpus16 = [];
+const corpus16Meters = [];
+for (const m of corpus) {
+  const g = groupOf(m);
+  if (!ref[g]) continue;
+  corpus16Meters.push(g);
+  corpus16.push(features16(m.events, { meter: g, barLen: m.barLen, pickup: m.pickup, tonic: m.tonic, mode: m.mode }));
+}
+const newRows = NEW.map((k) => {
+  const row = { k };
+  for (const r of fado16) row[r.title] = r[k];
+  const all = corpus16.map((r) => r[k]);
+  row.corpusP10 = quant(all, 0.1);
+  row.corpusP50 = quant(all, 0.5);
+  row.corpusP90 = quant(all, 0.9);
+  row.corpusN = all.filter(Number.isFinite).length;
+  return row;
+});
+writeFileSync(`${out}/medidas-verso.csv`, csv(newRows, ['k', ...fado16.map((r) => r.title), 'corpusP10', 'corpusP50', 'corpusP90', 'corpusN']));
+console.log('\nverse measures on the 16th grid (fados ... | corpus P10 P50 P90):');
+for (const r of newRows) console.log(r.k.padEnd(14), fado16.map((x) => fx(r[x.title]).padStart(6)).join(' '), '|', fx(r.corpusP10), fx(r.corpusP50), fx(r.corpusP90));
+
+// validation: do the fado rules tell the real fados from the other melodies in the same meters?
+// The score of every melody under each style (mean of its rules, -1..1), and where the fados fall.
+const scoreUnder = (f, style, meter) => scoreRules(f, resolveRules(style, meter)).score;
+const valRows = [];
+for (const style of ['none', 'fado', 'fadoAlegre']) {
+  const corpusScores = corpus16.map((f, i) => scoreUnder(f, style, corpus16Meters[i])).sort((a, b) => a - b);
+  for (const r of results) {
+    const meter = r.m.meter === '2/2' ? '4/4' : r.m.meter;
+    const sc = scoreUnder(fado16.find((x) => x.title === r.m.title), style, meter);
+    const pct = corpusScores.filter((x) => x < sc).length / corpusScores.length;
+    valRows.push({ style, title: r.m.title, mode: r.m.mode, score: sc, corpusPercentile: pct, corpusMedian: quant(corpusScores, 0.5), corpusP90: quant(corpusScores, 0.9) });
+  }
+}
+writeFileSync(`${out}/validacao.csv`, csv(valRows, ['style', 'title', 'mode', 'score', 'corpusPercentile', 'corpusMedian', 'corpusP90']));
+console.log('\nscore of each fado under each style, and its percentile among the corpus melodies:');
+for (const r of valRows) console.log(r.style.padEnd(11), r.title.padEnd(24), fx(r.score), `P${Math.round(r.corpusPercentile * 100)}`, `(corpus median ${fx(r.corpusMedian)})`);
+
 // written melody against the singer's version (Coimbra)
 const written = results.find((r) => r.m.title.startsWith('Coimbra (')).f;
 const sung = results.find((r) => r.m.title.startsWith('Coimbra,')).f;
 const SUNG_KEYS = ['notes', 'bars', 'density', 'quick', 'eighth', 'quarter', 'long', 'syncPerBar', 'longAnticipated', 'repeats', 'steps', 'phraseNotes', 'phraseStartsOff', 'phraseLastAnticipated', 'phraseRecite', 'restShare'];
 
 // ------------------------------------------------------------------ CSV
-const num = (x, d = 4) => (typeof x === 'number' ? (Number.isFinite(x) ? x.toFixed(d) : '') : x === undefined || x === null ? '' : `"${String(x).replace(/"/g, '""')}"`);
-const csv = (rows, cols) => `﻿${[cols.join(','), ...rows.map((r) => cols.map((c) => (Array.isArray(r[c]) ? `"${r[c].join(' ')}"` : num(r[c]))).join(','))].join('\r\n')}\r\n`;
 writeFileSync(`${out}/melodias.csv`, csv(rowsMel, ['title', 'kind', 'meter', 'mode', 'notes', 'bars', ...KEYS, 'phrases', 'climaxVerse']));
 writeFileSync(`${out}/frases.csv`, csv(rowsPh, ['title', 'k', 'notes', 'beats', 'startPos', 'startsOffDownbeat', 'lastDur', 'lastIsLongest', 'lastRatio', 'lastPos', 'lastAnticipated', 'lastDegree', 'lastStable', 'intoLast', 'contour', 'topAt', 'top', 'ambitus', 'recite', 'restAfter']));
 writeFileSync(`${out}/comparacao.csv`, csv(cmp, ['k', 'fadoMin', 'fadoMed', 'fadoMax', 'p10', 'p50', 'p90', 'pct']));
@@ -306,7 +351,6 @@ writeFileSync(`${out}/regras-atuais.csv`, csv(ruleRows, ['title', 'style', 'rule
 writeFileSync(`${out}/cantado.csv`, csv(SUNG_KEYS.map((k) => ({ k, written: written[k], sung: sung[k] })), ['k', 'written', 'sung']));
 
 // ------------------------------------------------------------------ console summary
-const fx = (x) => (Number.isFinite(x) ? x.toFixed(2) : '—');
 console.log(`corpus: ${ref['2/4'].length} melodies in 2/4, ${ref['4/4'].length} in 4/4\n`);
 console.log('feature'.padEnd(22), 'fado min/med/max'.padEnd(22), 'corpus P10/P50/P90'.padEnd(22), 'fado median at corpus percentile');
 for (const c of cmp) console.log(c.k.padEnd(22), `${fx(c.fadoMin)} ${fx(c.fadoMed)} ${fx(c.fadoMax)}`.padEnd(22), `${fx(c.p10)} ${fx(c.p50)} ${fx(c.p90)}`.padEnd(22), `${Math.round(c.pct * 100)}`);

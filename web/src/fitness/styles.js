@@ -58,7 +58,7 @@ const QE = 'x___x_'; // quarter + eighth
 const DQ = 'x_____'; // dotted quarter
 const SIC = 'x__xx_'; // dotted eighth, sixteenth, eighth (siciliana)
 
-export const STYLE_FAMILIES = ['trad', 'dance', 'baroque', 'classical', 'popular'];
+export const STYLE_FAMILIES = ['trad', 'fado', 'dance', 'baroque', 'classical', 'popular'];
 
 export const STYLES = {
   // ------------------------------------------------------------------ songs
@@ -113,13 +113,63 @@ export const STYLES = {
       R('bigLeaps', 'bigLeaps', ['E42', 'E43'], { lo: 0, hi: 0.08, tol: 0.15 }),
     ],
   },
+  // ------------------------------------------------------------------ fado (results/fado.md)
+  // Two groups, as the user suggested: the sad fados in minor and the happy ones in major (not
+  // always so, but the safer split). The ranges come from five real fados measured next to the
+  // 5727 corpus melodies in the same meters (tools/fado_study.mjs, results/fado/medidas-verso.csv).
+  // Besides the rules, a fado style changes the fitness itself (attractor.js): breaths between the
+  // verses (restTarget), held notes that may start half a beat early (anticipation), verse endings
+  // alternating between suspension and rest (cadence), recitation on a repeated note
+  // (recitation), the peak of each verse early in it (phrasePeak); and the page plays it with
+  // dynamics (core/expression.js).
   fado: {
-    family: 'trad', meters: ['4/4', '2/4'], bpm: 72, mode: 'minor',
+    family: 'fado', meters: ['4/4', '2/4'], form: 'AABB', bars: 8, bpm: 72, mode: 'minor',
+    restTarget: [0.06, 0.22], anticipation: true, cadence: 'alternate', recitation: true, phrasePeak: 0.35, expression: 'sad',
     rules: [
-      R('finalLength', 'finalLength', ['E32'], { lo: 1.6, hi: 3, weight: 1.5 }),
-      R('range', 'range', ['E32'], { lo: 10, hi: 17 }),
-      R('steps', 'steps', ['E32'], { lo: 0.45, hi: 0.8 }),
-      R('restShare', 'restShare', ['E32'], { lo: 0.02, hi: 0.15 }),
+      R('verseFinal', 'verseFinal', ['E32', 'F04'], { lo: 2.2, hi: 5, tol: 1.2, weight: 2 }),
+      R('verseNotes', 'verseNotes', ['F02', 'F04'], { lo: 6, hi: 16, tol: 5 }),
+      R('restShare', 'restShare', ['F05', 'F07'], { lo: 0.06, hi: 0.22, weight: 1.5 }),
+      R('syncBar', 'syncBar', ['F02', 'F06'], { lo: 0.15, hi: 0.7, weight: 1.5 }),
+      R('verseAnticip', 'verseAnticip', ['F06', 'F07'], { lo: 0.1, hi: 0.85 }),
+      R('longOnBeat', 'longOnBeat', ['F06'], { lo: 0.2, hi: 1, weight: 0.5 }),
+      R('verseEndStep', 'verseEndStep', ['F09'], { lo: 0.4, hi: 1 }),
+      R('verseTonic', 'verseTonic', ['F03', 'F10'], { lo: 0, hi: 0.34 }),
+      R('repeats', 'repeats', ['F08'], { lo: 0.15, hi: 0.42 }),
+      R('stepDown', 'stepDown', ['G02', 'F08'], { lo: 0.55, hi: 0.85 }),
+      R('quickRuns', 'quickRuns', ['F11'], { lo: 0, hi: 0.35 }),
+      R('quickRunMax', 'quickRunMax', ['F11'], { lo: 0, hi: 6, tol: 3, weight: 0.5 }),
+      R('runsIntoLong', 'runsIntoLong', ['F11'], { lo: 0.5, hi: 1, weight: 0.5 }),
+      R('density', 'density', ['E32', 'F04'], { lo: 0.6, hi: 1.6 }),
+      R('range', 'range', ['E32', 'F04'], { lo: 10, hi: 19 }),
+      // measured on fixed two-bar windows, which a verse starting after the downbeat straddles:
+      // the verse rules above judge the endings, these only keep the general ones from fighting them
+      R('finalLength', 'finalLength', ['F04'], { lo: 0.5, hi: 2.6, weight: 0.5 }),
+      R('arch', 'arch', ['F04'], { lo: 0, hi: 1, weight: 0.25 }),
+      R('inertia', 'inertia', ['F04'], { lo: 0.3, hi: 1 }),
+      R('recovery', 'recovery', ['F04'], { lo: 0, hi: 0.7, weight: 0.5 }),
+      R('leapChain', 'leapChain', ['F04'], { lo: 0, hi: 0.08, tol: 0.1 }),
+    ],
+  },
+  fadoAlegre: {
+    family: 'fado', meters: ['2/4', '4/4'], form: 'AABB', bars: 8, bpm: 112, mode: 'major',
+    restTarget: [0.03, 0.16], anticipation: true, cadence: 'alternate', recitation: true, phrasePeak: 0.5, expression: 'happy',
+    rules: [
+      R('verseFinal', 'verseFinal', ['F04', 'F14'], { lo: 1.8, hi: 4.5, tol: 1.2, weight: 1.5 }),
+      R('verseNotes', 'verseNotes', ['F02', 'F14'], { lo: 6, hi: 18, tol: 5 }),
+      R('restShare', 'restShare', ['F05', 'F14'], { lo: 0.03, hi: 0.16 }),
+      R('syncBar', 'syncBar', ['F02', 'F06'], { lo: 0.1, hi: 0.6 }),
+      R('longOnBeat', 'longOnBeat', ['F14', 'G16'], { lo: 0.6, hi: 1 }),
+      R('verseTonic', 'verseTonic', ['F03', 'F10'], { lo: 0, hi: 0.4 }),
+      R('verseEndStep', 'verseEndStep', ['F09'], { lo: 0.2, hi: 1, weight: 0.5 }),
+      R('repeats', 'repeats', ['F08', 'F14'], { lo: 0.06, hi: 0.36 }),
+      R('quickRuns', 'quickRuns', ['F11'], { lo: 0, hi: 0.4 }),
+      R('runsIntoLong', 'runsIntoLong', ['F11'], { lo: 0.3, hi: 1, weight: 0.5 }),
+      R('density', 'density', ['F04', 'F14'], { lo: 0.9, hi: 2.2 }),
+      R('leaps', 'leaps', ['F04', 'F14'], { lo: 0.06, hi: 0.26 }),
+      R('range', 'range', ['F04'], { lo: 9, hi: 17 }),
+      R('finalLength', 'finalLength', ['F04'], { lo: 0.5, hi: 2.6, weight: 0.5 }),
+      R('arch', 'arch', ['F04'], { lo: 0, hi: 1, weight: 0.25 }),
+      R('inertia', 'inertia', ['F04'], { lo: 0.3, hi: 1 }),
     ],
   },
   // ------------------------------------------------------------------ dances
@@ -461,4 +511,12 @@ export function styleSettings(style, currentMeter) {
   if (!s) return null;
   const meter = s.meters.includes(currentMeter) ? currentMeter : s.meters[0];
   return { meter, phraseBars: s.phraseBars ?? null, form: s.form ?? null, bars: s.bars ?? null, bpm: s.bpm ?? null, mode: s.mode ?? null, pickup: s.pickup ?? 0 };
+}
+
+/** The style's own changes to the fitness and the playback (fado): {} for the other styles. */
+export function styleTraits(style) {
+  const s = STYLES[style];
+  if (!s) return {};
+  const { restTarget, anticipation, cadence, recitation, phrasePeak, expression } = s;
+  return Object.fromEntries(Object.entries({ restTarget, anticipation, cadence, recitation, phrasePeak, expression }).filter(([, v]) => v !== undefined));
 }
