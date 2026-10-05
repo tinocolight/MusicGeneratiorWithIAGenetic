@@ -35,10 +35,11 @@ import { loadVexFlow, renderScore, scorePdf } from './score.js';
 import { aboutHtml } from './about.js';
 import { t, tn, has, locale, applyTexts, setLang, getLang, onLangChange, initialLang, startLang, LANGUAGES } from '../i18n/i18n.js';
 import { STYLES, styleTraits } from '../fitness/styles.js';
-import { expressionOf } from '../core/expression.js';
+import { expressionOf, rubatoOf, timeline } from '../core/expression.js';
+import { fadoAccompaniment, ACCOMP_PARTS } from '../accomp/fado.js';
 import {
   defaultConfig, cloneConfig, voiceSpecs, applyEnsemble, buildFitness, autoConfigure, autoWaves, meterOfConfig,
-  presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf, adaptToVoices, activeStyle,
+  presetWaves, wavesFromRealMelody, surprise, describe, activeVoices, keyOf, adaptToVoices, activeStyle, applyStyle,
 } from './config.js';
 import { createQuickStart } from './quickstart.js';
 import { createControls, FIELD_LABELS, CLASSIC_LABELS } from './controls.js';
@@ -296,6 +297,12 @@ function onConfigChange(kind, arg) {
   const c = state.config;
   if (kind === 'ensemble') {
     applyEnsemble(c, arg);
+    // the accompaniment exists only for fado for now: it brings a fado style with it
+    if (c.accompaniment && !styleTraits(activeStyle(c)).expression) {
+      applyStyle(c, 'fado');
+      c.major = false;
+      controls.renderAll();
+    }
     controls.renderGA();
     controls.renderWeights();
     // instruments changed: keep a named preset inside the new register
@@ -408,12 +415,6 @@ function pieceFromGenes(genes, built, cfg, extra = {}) {
   };
 }
 
-/**
- * Voices as they sound: leader and followers with absolute onsets and transposed pitches.
- * A plain canon stops when fewer than two voices remain (like the fermata in Telemann, where
- * the second violin stops with the first); a round goes round twice and every voice stops
- * at the end of the second pass.
- */
 /** 'sad' | 'happy' when the piece's style plays with dynamics (the fado styles), else null. */
 function expressionKind(p) {
   if (!p?.config || p.config.mode === 'classic') return null;
@@ -431,30 +432,75 @@ function expressionFor(p) {
   return p.expression.notes;
 }
 
+/**
+ * The rubato of a piece that plays with dynamics (fado): the time stretched into the held notes and
+ * held on the last one, from the melody as it sounds ({stretch, marks}), or null.
+ */
+function rubatoFor(p, sounding = soundingVoices(p)) {
+  const kind = $('dynPlay').checked ? expressionKind(p) : null;
+  if (!kind) return null;
+  const lead = sounding.voices[0];
+  const beat = (p.meter && METERS[p.meter]?.beat) || 4;
+  return rubatoOf(lead.events, { total: sounding.total, beat, kind });
+}
+
+/**
+ * The accompaniment of a piece set to "melody + accompaniment" in a fado style (src/accomp/fado.js):
+ * {intro, total, chords, parts}, or null (another style, the classic mode, or not asked for).
+ */
+function accompanimentFor(p) {
+  if (!p?.config?.accompaniment || p.config.mode === 'classic') return null;
+  const kind = styleTraits(activeStyle(p.config)).expression;
+  if (!kind) return null;
+  if (p.accomp?.kind !== kind) {
+    const m = meterOf(p.meter || p.barLen);
+    p.accomp = { kind, ...fadoAccompaniment(p.events, { length: p.length, barLen: p.barLen, beat: m.beat, meter: m.id, key: p.key ?? { tonic: 0, mode: 'minor' }, kind, seed: p.config.ga?.seed ?? 1 }) };
+  }
+  return p.accomp;
+}
+
+/**
+ * Voices as they sound: leader and followers with absolute onsets and transposed pitches.
+ * A plain canon stops when fewer than two voices remain (like the fermata in Telemann, where
+ * the second violin stops with the first); a round goes round twice and every voice stops
+ * at the end of the second pass. With an accompaniment, the guitars come after the melody (which
+ * starts after the guitarra's introduction).
+ */
 function soundingVoices(p, all = $('canonPlay').checked) {
   const voices = all ? p.voices : p.voices.slice(0, 1);
   // with dynamics (fado), the other voices play a little softer so that the melody leads
   const expr = expressionFor(p);
   const xOf = (k, lead) => (expr?.[k] ? (lead ? expr[k] : { ...expr[k], vel: expr[k].vel * 0.8 }) : undefined);
+  const acc = all ? accompanimentFor(p) : null;
+  const shift = acc ? acc.intro : 0;
   const delays = p.voices.map((v) => v.delay).sort((a, b) => b - a);
   const reps = p.circular && voices.length > 1 ? 2 : 1;
-  const total = voices.length === 1 ? p.length : p.end ?? (p.circular ? reps * p.length : p.length + (delays[1] ?? 0));
+  const total = acc ? acc.total : voices.length === 1 ? p.length : p.end ?? (p.circular ? reps * p.length : p.length + (delays[1] ?? 0));
+  const dyn = $('dynPlay').checked;
+  const accompaniment = acc
+    ? ACCOMP_PARTS.map((part) => ({
+        events: acc.parts[part.id].map((e) => (dyn ? e : { pitch: e.pitch, start: e.start, dur: e.dur })),
+        instrument: part.instrument, kind: 'accomp', spec: { instrument: part.instrument, delay: 0, accomp: true },
+      }))
+    : [];
   return {
     total,
-    voices: voices.map((v, i) => {
+    shift,
+    chords: acc ? acc.chords : null,
+    voices: [...voices.map((v, i) => {
       const map = v.map || ((x) => x);
       const events = [];
       for (let r = 0; v.delay + r * p.length < total; r++) {
         if (i === 0 && r >= reps) break;
         p.events.forEach((e, k) => {
-          const s = e.start + r * p.length + v.delay;
+          const s = e.start + r * p.length + v.delay + shift;
           if (e.pitch === null || s >= total) return;
           const x = xOf(k, i === 0);
           events.push(x ? { pitch: map(e.pitch), start: s, dur: Math.min(e.dur, total - s), x } : { pitch: map(e.pitch), start: s, dur: Math.min(e.dur, total - s) });
         });
       }
       return { events, instrument: v.instrument, kind: i === 0 ? 'lead' : i === 1 ? 'follower' : 'v3', spec: v };
-    }),
+    }), ...accompaniment],
   };
 }
 
@@ -474,8 +520,9 @@ function stageScene() {
   const p = stagePiece();
   if (!p) return null;
   const analyzing = p === state.analysisPiece;
-  const { voices, total } = soundingVoices(p);
-  let waves = p.waves || [];
+  const { voices, total, shift } = soundingVoices(p);
+  // with an accompaniment the melody (and its waves) starts after the guitarra's introduction
+  let waves = shift ? (p.waves || []).map((w) => ({ ...w, start: (w.start ?? 0) + shift })) : p.waves || [];
   let length = total;
   let segments = [];
   if (!analyzing && state.tab === 'compose' && state.preview && (!p.config || waveSignature(p.config) !== state.preview.sig)) {
@@ -516,7 +563,7 @@ function render() {
   scene.voices.forEach((v, i) => {
     const s = v.spec;
     const inst = instrument(s.instrument).label;
-    const txt = i === 0 ? t('legend.melody', { inst }) : `${t('legend.entry', { inst, bar: 1 + s.delay / p.barLen })}${s.interval && s.interval !== 'unison' ? ` · ${INTERVALS[s.interval]?.label ?? ''}` : ''}`;
+    const txt = i === 0 ? t('legend.melody', { inst }) : v.kind === 'accomp' ? t('legend.accomp', { inst }) : `${t('legend.entry', { inst, bar: 1 + s.delay / p.barLen })}${s.interval && s.interval !== 'unison' ? ` · ${INTERVALS[s.interval]?.label ?? ''}` : ''}`;
     legend.push(`<span><i style="background:${colours[i]}"></i>${txt}</span>`);
   });
   const analyzing = state.tab === 'analyze' && state.analysis && p === state.analysisPiece;
@@ -602,10 +649,13 @@ function scoreModelFor(p, layout = scoreLayoutOf(p)) {
       circular: !!p.circular,
     });
   }
-  const { voices, total } = soundingVoices(p);
+  const sounding = soundingVoices(p);
+  const { voices, total, chords } = sounding;
   const names = voiceNames(voices);
   return scoreModel({
-    voices: voices.map((v, i) => ({ events: v.events, instrument: v.instrument, name: names[i] })),
+    voices: voices.map((v, i) => ({ events: v.events, instrument: v.instrument, name: names[i], dynamics: v.kind !== 'accomp' })),
+    chords,
+    marks: rubatoFor(p, sounding)?.marks ?? null,
     total,
     barLen: p.barLen,
     meter: p.meter ?? null,
@@ -1148,12 +1198,18 @@ function togglePlay() {
 
 function playPiece(p) {
   if (!p) return;
-  const { voices } = soundingVoices(p);
+  const sounding = soundingVoices(p);
+  const { voices } = sounding;
   const n = voices.length;
-  const pans = n === 1 ? [0] : n === 2 ? [-0.35, 0.35] : [-0.45, 0.45, 0];
+  const accomp = voices.some((v) => v.kind === 'accomp');
+  const rubato = rubatoFor(p, sounding);
+  // the voice in the middle, the guitarra to the right and the viola to the left, a little softer
+  const pans = accomp ? [0, 0.35, -0.35] : n === 1 ? [0] : n === 2 ? [-0.35, 0.35] : [-0.45, 0.45, 0];
+  const gainOf = (v, i) => (v.kind === 'accomp' ? (v.events.some((e) => e.x) ? 0.85 : 0.6) : i ? 0.9 : 1);
   $('playBtn').textContent = t('play.stop');
-  player.play(voices.map((v, i) => ({ events: v.events, instrument: v.instrument, pan: pans[i], gain: i ? 0.9 : 1 })), {
+  player.play(voices.map((v, i) => ({ events: v.events, instrument: v.instrument, pan: pans[i] ?? 0, gain: gainOf(v, i) })), {
     bpm: Number($('bpm').value),
+    times: rubato ? timeline(rubato.stretch, Number($('bpm').value)) : null,
     onStep: (s) => {
       state.playhead = s;
       render();
@@ -1208,14 +1264,20 @@ function songOf(p) {
  * codes; `voices: false` keeps only the melody (the page rebuilds the canon from the record).
  */
 function midiOf(p, { compact = false, voices: all = $('canonPlay').checked } = {}) {
-  const { voices } = soundingVoices(p, all);
+  const sounding = soundingVoices(p, all);
+  const { voices } = sounding;
+  // the rubato as tempo changes (not in the compact files of links and QR codes)
+  const bpm = Number($('bpm').value);
+  const rubato = compact ? null : rubatoFor(p, sounding);
+  const tempos = rubato ? rubato.stretch.flatMap((f, i) => (i && f !== rubato.stretch[i - 1] ? [{ step: i, bpm: bpm / f }] : [])) : null;
   const tracks = voices.map((v, i) => ({
     events: v.events,
     name: `${instrument(v.instrument).label} ${i + 1}`,
     program: instrument(v.instrument).program,
+    ...(v.kind === 'accomp' ? { velocity: 64 } : {}),
   }));
   const [num, den] = p.meter && METERS[p.meter] ? [METERS[p.meter].num, METERS[p.meter].den] : TIME_SIGNATURES[p.barLen] ?? [4, 4];
-  return writeMidi(tracks, { bpm: Number($('bpm').value), numerator: num, denominator: den, text: songText(songOf(p)), compact });
+  return writeMidi(tracks, { bpm, numerator: num, denominator: den, text: songText(songOf(p)), compact, tempos });
 }
 
 // The page the links and QR codes open: the light player (tocar.html) published on the repository's

@@ -103,7 +103,8 @@ export function layoutScore(model, width) {
       }
     }
   }
-  const entryRoom = model.entries?.length ? ENTRY_GAP : 0;
+  // room above the first staff for the entry marks of a canon or the chord symbols of an accompaniment
+  const entryRoom = model.entries?.length || model.chords?.length ? ENTRY_GAP : 0;
   const sysH = n * STAFF_STEP + SYSTEM_GAP + entryRoom;
   // how far the last system on a page reaches (its lowest staff and notes below it)
   const sysFoot = (n - 1) * STAFF_STEP + 70 + entryRoom;
@@ -200,7 +201,7 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
         if (model.repeat && bar === 0) stave.setBegBarType(VF.Barline.type.REPEAT_BEGIN);
         if (bar === model.nBars - 1) stave.setEndBarType(model.repeat ? VF.Barline.type.REPEAT_END : VF.Barline.type.END);
         if (i === 0 && k === 0 && !sys.first) stave.setMeasure(bar + 1);
-        if (i === 0 && k === 0 && sys.first) stave.setTempo({ duration: tempoDur[0], dots: tempoDur[1], bpm: tempo.value }, -14);
+        if (i === 0 && k === 0 && sys.first) stave.setTempo({ duration: tempoDur[0], dots: tempoDur[1], bpm: tempo.value }, model.chords?.length ? -30 : -14);
         return stave.setContext(ctx);
       });
       if (staves.length > 1) VF.Stave.formatBegModifiers(staves);
@@ -217,7 +218,7 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
           const dur = VEX_DURATION[it.full ? 16 : it.dur];
           const note = new VF.StaveNote({
             clef: st.clef,
-            keys: [it.rest ? REST_KEY[st.clef] ?? 'b/4' : vexKey(spell(it.pitch, model.spelling), -st.octave)],
+            keys: it.rest ? [REST_KEY[st.clef] ?? 'b/4'] : (it.pitches?.length ? it.pitches : [it.pitch]).map((p) => vexKey(spell(p, model.spelling), -st.octave)),
             duration: dur + (it.rest ? 'r' : ''),
             auto_stem: true,
             align_center: !!it.full,
@@ -225,7 +226,8 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
           if (dur.endsWith('d')) VF.Dot.buildAndAttach([note], { all: true });
           const s0 = bar * m.barLen + it.start;
           if (!it.rest && accents[i].has(s0)) note.addModifier(new VF.Articulation('a>').setPosition(VF.Modifier.Position.ABOVE), 0);
-          placed[i].push({ start: s0, end: s0 + (it.full ? m.barLen : it.dur), note, sys: si, stave: null, i });
+          if (i === 0 && !it.rest && model.marks?.fermata.includes(s0)) note.addModifier(new VF.Articulation('a@a').setPosition(VF.Modifier.Position.ABOVE), 0);
+          placed[i].push({ start: s0, end: s0 + (it.full ? m.barLen : it.dur), note, sys: si, stave: null, i, full: !!it.full });
           out.push({ note, start: s0, end: s0 + (it.full ? m.barLen : it.dur), rest: it.rest });
           if (!it.rest) chains[i].push({ note, tie: it.tie, sys: si });
           else chains[i].push({ note: null, tie: false, sys: si });
@@ -308,6 +310,37 @@ function drawSystems(VF, model, lay, systemsToDraw, place, { ink, muted }) {
       }
     }
   }
+  // ---- chord symbols over the first staff, at the note or rest where each chord starts
+  if (model.chords?.length && placed[0].length) {
+    for (const c of model.chords) {
+      // over the note (of any staff) that starts with the chord: the voice may be resting there
+      const all = placed.flat();
+      // (a whole-bar rest is drawn in the middle of the bar, so it does not say where a chord starts)
+      const at = (x) => x.start === c.step && !x.full;
+      const pl = placed[0].find(at) ?? all.find(at) ?? placed[0].find((x) => x.start <= c.step && c.step < x.end);
+      if (!pl) continue;
+      const ctx = ctxOf[pl.sys];
+      ctx.save();
+      ctx.setFillStyle(ink);
+      ctx.setFont('Georgia, serif', 12, 'bold');
+      const top = placed[0].find((x) => x.sys === pl.sys)?.stave ?? pl.stave;
+      ctx.fillText(c.name, pl.note.getAbsoluteX() - 2, top.getYForLine(0) - 12);
+      ctx.restore();
+    }
+  }
+
+  // ---- "rit." over the first staff where the singer slows into a held note (the rubato)
+  for (const step of model.marks?.rit ?? []) {
+    const pl = placed[0].find((x) => x.start <= step && step < x.end);
+    if (!pl) continue;
+    const ctx = ctxOf[pl.sys];
+    ctx.save();
+    ctx.setFillStyle(ink);
+    ctx.setFont('Georgia, serif', 12, 'normal', 'italic');
+    ctx.fillText('rit.', pl.note.getAbsoluteX(), pl.stave.getYForLine(0) - (model.chords?.length ? 26 : 12));
+    ctx.restore();
+  }
+
   // ---- dynamics under the staves: letters, then hairpins from the note where they start to the
   // next note after their end (or to the end of the line)
   model.staves.forEach((st, i) => {

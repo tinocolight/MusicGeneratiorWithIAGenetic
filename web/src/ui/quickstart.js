@@ -3,7 +3,9 @@
 // starting configuration is derived. The number of bars comes from the length asked for: for the
 // meter and the tempo of the answers, the length in the menu that comes closest, with the tempo
 // then nudged (at most 20 %) to land near the time asked. A canon counts the time its later
-// voices take to finish, a round is heard twice.
+// voices take to finish, a round is heard twice. "Melody + accompaniment" (the voice with a Portuguese
+// guitar and a viola, src/accomp/fado.js) exists only for fado for now: choosing it leaves only the
+// fado styles, and the guitarra's introduction counts in the length.
 //
 // deriveQuickStart() is pure (tested in Node); createQuickStart() draws the window.
 
@@ -11,6 +13,7 @@ import { t } from '../i18n/i18n.js';
 import { METERS, meterOf } from '../core/meter.js';
 import { STYLES, STYLE_FAMILIES, stylesOf } from '../fitness/styles.js';
 import { ENSEMBLES } from '../core/instruments.js';
+import { introBarsFor } from '../accomp/fado.js';
 import { SCALE_LABELS } from '../core/theory.js';
 import {
   defaultConfig, cloneConfig, applyEnsemble, applyStyle, autoConfigure, autoWaves, presetWaves, BAR_OPTIONS,
@@ -18,6 +21,11 @@ import {
 
 export const QS_STEPS = ['voices', 'style', 'kind', 'duration', 'waves', 'key'];
 export const CANON_ENSEMBLES = ['telemann', 'flutes', 'fifth', 'trio', 'round'];
+/** The styles the accompaniment exists for (only fado, for now). */
+export const ACCOMP_STYLES = stylesOf('fado');
+const accompanied = (voices) => !!ENSEMBLES[voices]?.accompaniment;
+/** The style of the answers, made a fado style when the voices are "melody + accompaniment". */
+export const styleForVoices = (voices, style) => (accompanied(voices) && !ACCOMP_STYLES.includes(style) ? ACCOMP_STYLES[0] : style);
 export const DURATIONS = [15, 30, 45, 60, 90, 120, 180];
 export const WAVE_CHOICES = ['auto', 'chaotic', 'two', 'three', 'original'];
 export const TEMPI = { slow: 0.72, moderate: 1, lively: 1.3 };
@@ -62,7 +70,9 @@ export function canonShape(voices) {
 /** Bars (from the menu), tempo and resulting length for a length asked for, in seconds. */
 export function lengthFor({ seconds, bpm, meter, voices }) {
   const m = meterOf(meter);
-  const shape = canonShape(voices);
+  const shape = { ...canonShape(voices) };
+  // the accompaniment's introduction (one verse of guitarra) comes before the voice
+  if (accompanied(voices)) shape.extraBars += introBarsFor(m.id);
   const steps = (seconds * bpm) / 15; // 16ths that fit in the time at this tempo
   const ideal = Math.max(1, (steps / m.barLen - shape.extraBars) / shape.reps);
   const options = BAR_OPTIONS.filter((b) => b >= shape.need);
@@ -94,7 +104,7 @@ export function wavesFor(c, choice) {
 export function deriveQuickStart(answers, base = defaultConfig()) {
   const a = { ...defaultAnswers(), ...answers };
   const c = cloneConfig(base);
-  const style = STYLES[a.style] ? a.style : 'none';
+  const style = styleForVoices(a.voices, STYLES[a.style] ? a.style : 'none');
   const meter = meterFor(style, a.meter);
   c.mode = 'field';
   c.style = 'none';
@@ -178,6 +188,11 @@ export function createQuickStart({ onApply }) {
   ]);
   const set = (k) => (v) => {
     a[k] = v;
+    if (k === 'voices' && styleForVoices(v, a.style) !== a.style) {
+      a.style = styleForVoices(v, a.style);
+      a.meter = meterFor(a.style, a.meter);
+      a.mode = null;
+    }
     if (k === 'style') {
       a.meter = meterFor(a.style, a.meter);
       a.mode = null; // the style's usual mode until chosen
@@ -193,19 +208,23 @@ export function createQuickStart({ onApply }) {
         ...CANON_ENSEMBLES.map((id) => option('voices', id, t(`ensemble.${id}`), null, a.voices === id, set('voices'))),
         h('div', { className: 'qs-group', text: t('qs.voices.single') }),
         option('voices', 'solo', t('ensemble.solo'), t('qs.voices.solo.desc'), a.voices === 'solo', set('voices')),
+        h('div', { className: 'qs-group', text: t('qs.voices.accomp') }),
+        option('voices', 'accomp', t('qs.voices.accomp.title'), t('qs.voices.accomp.desc'), a.voices === 'accomp', set('voices')),
       ];
     },
     style() {
       const sel = h('select', { id: 'qsStyle', onchange: (e) => set('style')(e.target.value) });
-      sel.append(h('option', { value: 'none', text: t('style.none'), selected: a.style === 'none' }));
-      for (const fam of STYLE_FAMILIES) {
+      // with the accompaniment only the fado styles are offered
+      const only = accompanied(a.voices);
+      if (!only) sel.append(h('option', { value: 'none', text: t('style.none'), selected: a.style === 'none' }));
+      for (const fam of only ? ['fado'] : STYLE_FAMILIES) {
         const g = h('optgroup', { label: t(`style.family.${fam}`) });
         for (const id of stylesOf(fam)) g.append(h('option', { value: id, text: t(`style.${id}`), selected: a.style === id }));
         sel.append(g);
       }
       const s = STYLES[a.style];
       return [
-        h('p', { className: 'hint', text: t('qs.style.hint') }),
+        h('p', { className: only ? 'qs-note' : 'hint', text: t(only ? 'qs.style.accompOnly' : 'qs.style.hint') }),
         h('label', { className: 'qs-field', for: 'qsStyle' }, [h('span', { text: t('style.label') }), sel]),
         s ? h('p', { className: 'qs-desc', text: t(`style.${a.style}.desc`) }) : null,
         s ? h('p', { className: 'hint', text: t('qs.style.meta', { meters: s.meters.join(', '), tempo: tempoLabel(s.bpm ?? METER_BPM[s.meters[0]], s.meters[0]) }) }) : null,

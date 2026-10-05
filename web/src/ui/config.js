@@ -33,6 +33,8 @@ export function defaultConfig() {
     form: "AA'BA'",
     phraseBars: 2,
     ensemble: 'solo',
+    // melody + decoupled accompaniment (Portuguese guitar and viola; fado styles only)
+    accompaniment: false,
     voices: [
       { instrument: 'violin' },
       { enabled: false, instrument: 'violin', delayBars: 1, interval: 'unison' },
@@ -175,6 +177,7 @@ export function applyEnsemble(c, id) {
     c.voices[i] = v ? { enabled: true, ...v } : { ...c.voices[i], enabled: false };
   }
   c.circular = !!e.circular;
+  c.accompaniment = !!e.accompaniment;
   return adaptToVoices(c);
 }
 

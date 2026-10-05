@@ -23,6 +23,11 @@ export const INSTRUMENTS = {
   alto: { family: 'voices', program: 52, range: [53, 76], synth: 'voice', vowel: 'o' },
   tenor: { family: 'voices', program: 52, range: [48, 69], synth: 'voice', vowel: 'a' },
   bassVoice: { family: 'voices', program: 52, range: [40, 64], synth: 'voice', vowel: 'o' },
+  // the guitars of fado (results/fado/harmonizacao.md): the Portuguese guitar (12 steel strings in
+  // pairs, Lisbon tuning) and the viola (the steel-string classical guitar); GM has neither, the
+  // nearest are the steel- and nylon-string guitars
+  guitarra: { family: 'plucked', program: 25, range: [57, 88], synth: 'guitarra' },
+  violaFado: { family: 'plucked', program: 24, range: [40, 76], synth: 'viola' },
 };
 
 withLabels(INSTRUMENTS, 'instrument');
@@ -57,4 +62,7 @@ export const ENSEMBLES = withLabels({
   fifth: {
     voices: [{ instrument: 'oboe' }, { instrument: 'bassoon', delayBars: 1, interval: 'fifthDown' }],
   },
+  // melody + decoupled accompaniment: the voice alone in the genetic algorithm, then the Portuguese
+  // guitar and the viola harmonise it (src/accomp/fado.js; for now only the fado styles)
+  accomp: { voices: [{ instrument: 'alto' }], accompaniment: true },
 }, 'ensemble');
