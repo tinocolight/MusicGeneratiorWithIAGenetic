@@ -551,7 +551,7 @@ Pedido: procurar na literatura regras de composição por estilo e compasso, reg
   - Depois de gerar, um indicador («heurísticas 15/17») e uma tabela mostram cada regra: o valor, o alvo, a origem e as fontes.
 - **Validação** (validação cruzada em 5 dobras):
   - as regras gerais põem a melodia real acima das mesmas notas baralhadas em 90 % dos pares;
-  - reels e strathspeys são reconhecidos entre 19 estilos em 69–74 % dos casos (ao acaso: 5 %);
+  - reels e strathspeys são reconhecidos entre 20 estilos em 71–75 % dos casos (ao acaso: 5 %);
   - estilos descritos de forma parecida confundem-se (jig com tarantela, coral com hino).
 - **No AG** ([`results/estilos-ga.md`](results/estilos-ga.md), 37 casos × 4 sementes):
   - com o peso a 4, a pontuação do estilo passa de 0,60 para 0,95 e as regras dentro do intervalo de 65 % para 93 %;
