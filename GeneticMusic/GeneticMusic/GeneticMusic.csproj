@@ -51,17 +51,18 @@
   <PropertyGroup>
     <StartupObject>GeneticMusic.Program2</StartupObject>
   </PropertyGroup>
-  <PropertyGroup>
+  <!-- The ClickOnce manifests are signed only when the signing key is present. The temporary key
+       (GeneticMusic_TemporaryKey.pfx) holds a private key and is no longer kept in git (see
+       .gitignore): without it the manifests are generated unsigned and the program builds and
+       runs. To sign a ClickOnce publication again, create a test certificate in Project >
+       Properties > Signing; it stays local. -->
+  <PropertyGroup Condition="Exists('GeneticMusic_TemporaryKey.pfx')">
     <ManifestCertificateThumbprint>B1365DB14DBA0A05C903A028769B14307F6B4BCC</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
     <ManifestKeyFile>GeneticMusic_TemporaryKey.pfx</ManifestKeyFile>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
@@ -130,7 +131,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="GeneticMusic_TemporaryKey.pfx" />
+    <None Include="GeneticMusic_TemporaryKey.pfx" Condition="Exists('GeneticMusic_TemporaryKey.pfx')" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

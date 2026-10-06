@@ -1,0 +1,26 @@
+# Private keys and certificates with keys: never versioned. The C# project signs its ClickOnce
+# manifests only when its key is present locally (GeneticMusic.csproj), so it builds without it.
+*.pfx
+*.p12
+*.pvk
+*.snk
+*.key
+*.ppk
+*.jks
+*.keystore
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*private*.pem
+*-key.pem
+*_key.pem
+key.pem
+
+# C# (Visual Studio): build output, NuGet packages (restored from packages.config), user settings
+GeneticMusic/**/bin/
+GeneticMusic/**/obj/
+GeneticMusic/packages/
+*.user
+*.suo
+.vs/
