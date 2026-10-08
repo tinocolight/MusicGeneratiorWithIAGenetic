@@ -18,6 +18,33 @@ A set of 3rd party packages are used.
 2) To perform the heavy lifting of IA computations, a 3r party package was installed trough Visual Studio NuGet: "Genetic Sharp" (https://github.com/giacomelli/GeneticSharp);
 3) Also installed from Visual Studio NuGet: MetroModernUi
 
+### Building the C# program (Windows, Visual Studio)
+
+The NuGet packages (GeneticSharp, GeneticSharp.Extensions, MetroModernUI, NCalc.NetCore,
+Antlr3.Runtime, System.Drawing.Common) are not kept in the repository: their exact versions are
+listed in [`GeneticMusic/GeneticMusic/packages.config`](GeneticMusic/GeneticMusic/packages.config)
+and are installed again before building.
+
+1. Open `GeneticMusic/GeneticMusic.sln` in Visual Studio (2017 or later) and build (F5). NuGet
+   restores the packages by itself into `GeneticMusic/packages/`. If it does not, right-click the
+   solution and choose *Restore NuGet Packages*. That option needs *Tools > Options > NuGet
+   Package Manager > Allow NuGet to download missing packages*.
+2. From the command line instead:
+   - `nuget restore GeneticMusic\GeneticMusic.sln` (with [nuget.exe](https://www.nuget.org/downloads)), or
+   - in a Developer Command Prompt,
+     `msbuild GeneticMusic\GeneticMusic.sln -t:restore -p:RestorePackagesConfig=true`,
+     then `msbuild GeneticMusic\GeneticMusic.sln -p:Configuration=Release`.
+
+Signing:
+
+- **ClickOnce manifests.** They are signed only when a signing key is present. The old temporary
+  key (`GeneticMusic_TemporaryKey.pfx`, a private key) was removed from the repository, and keys
+  are ignored by `.gitignore`. Without one, the program builds and runs and the manifests are
+  unsigned.
+- **Signed ClickOnce publication.** To publish one, create a test certificate in *Project >
+  Properties > Signing*; it stays on your machine.
+- **Build output.** `bin/`, `obj/` and the restored `packages/` are not versioned either.
+
 
 Rationale of the solutions:
 

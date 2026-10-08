@@ -246,11 +246,15 @@ O relatório está em [`results/estilos.md`](results/estilos.md) e a pesquisa em
 
 ## 7. Repositório
 
-- **Ficheiros do C# que não deviam estar no git.** A chave de assinatura
-  `GeneticMusic/GeneticMusic/GeneticMusic_TemporaryKey.pfx` e os resultados da compilação (`bin/`
-  e `obj/`, 15 ficheiros com a chave) estão no repositório. Retirá-los do git e juntar um
-  `.gitignore` do Visual Studio. A chave é temporária, mas convém revogá-la, ou pelo menos não a
-  reutilizar.
+- ~~**Ficheiros do C# que não deviam estar no git.**~~ **Feito.**
+  - A chave `GeneticMusic_TemporaryKey.pfx` e os resultados da compilação (`bin/Release.zip` e
+    `obj/`) saíram do git, junto com o `GeneticMusic.csproj.user`.
+  - O `.gitignore` da raiz ignora chaves, `bin/`, `obj/`, `packages/` e os ficheiros pessoais do
+    Visual Studio.
+  - O `.csproj` só assina os manifestos ClickOnce se a chave existir localmente, por isso compila
+    sem ela.
+  - A chave fica no histórico (commit `21b506e`). Como é temporária e o risco é baixo, não se
+    reescreve o histórico, mas a chave não deve ser reutilizada.
 - **Sem integração contínua.** O único workflow é o do GitHub Pages. Um workflow que corra o
   `npm test` em `web/` e confirme que o `dist/` está atualizado (`node tools/build_single.mjs` e
   `git diff --exit-code`) apanharia os esquecimentos de reconstruir o `dist`.
