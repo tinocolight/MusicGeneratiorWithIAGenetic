@@ -1,9 +1,29 @@
 # MusicGeneratiorWithIAGenetic
 
-> **Versão web (2026):** a pasta [`web/`](web/) contém uma versão do programa que corre no navegador,
-> com o modelo original (validado contra este código C#), extensões da literatura às ondas
-> atratoras, um modo de cânone à Telemann, um analisador de ondas e avaliação objetiva.
-> Abrir `web/dist/ondas-atratoras.html` ou ler [`web/README.md`](web/README.md).
+> **The easiest way to try this project, both the original 2020 program and the new version, is
+> the web interface: [open Attractor Waves in the browser](https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/).**
+> Nothing needs to be installed, and it also works on a phone.
+>
+> - **The original program (2020).** In *Piece → Model*, choose *Classic (rules of the original C#)*
+>   and the starting combination *Original (2020)*. These are the rules and weights of this C#
+>   code, ported and checked against it (0 differences in 795 comparisons).
+>   - The option *Fix the original's lapses* is on by default. Turn it off to keep the original
+>     rules with their lapses (the *About* tab lists them).
+>   - The original's two waves (in 4/4) and its weights can be edited there, as in the Windows
+>     program.
+> - **The new version.** The default model, *Attractor field (new)*, adds:
+>   - extensions to the attractor waves taken from the literature;
+>   - meters, styles and composition heuristics;
+>   - Telemann-style canons and accompaniment;
+>   - a wave analyser and an objective evaluation;
+>   - a score, PDF, MIDI and LilyPond export.
+> - **Other ways to open it.**
+>   - A [single-file version](https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/dist/ondas-atratoras.html)
+>     that works offline once downloaded.
+>   - Source code: the [`web/`](web/) folder. Documentation (in Portuguese): [`web/README.md`](web/README.md).
+>
+> The C# program below is kept as the original work. Building it needs Windows, Visual Studio and
+> the NuGet packages, so it is only needed to study or change the original code itself.
 
 [2021-07-27]
 
