@@ -1,9 +1,16 @@
 # MusicGeneratiorWithIAGenetic
 
-> **Versão web (2026):** a pasta [`web/`](web/) contém uma versão do programa que corre no navegador,
-> com o modelo original (validado contra este código C#), extensões da literatura às ondas
-> atratoras, um modo de cânone à Telemann, um analisador de ondas e avaliação objetiva.
-> Abrir `web/dist/ondas-atratoras.html` ou ler [`web/README.md`](web/README.md).
+> **Web version (2026) — [open Attractor Waves in the browser](https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/)**
+> (no installation; it also works on a phone).
+>
+> A version of the program that runs in the browser, with:
+> - the original model (checked against this C# code);
+> - extensions to the attractor waves taken from the literature;
+> - a Telemann-style canon mode;
+> - a wave analyser and an objective evaluation.
+>
+> - Single-file version, which also works offline once downloaded: [`ondas-atratoras.html`](https://tinocolight.github.io/MusicGeneratiorWithIAGenetic/web/dist/ondas-atratoras.html).
+> - Source code: the [`web/`](web/) folder. Documentation (in Portuguese): [`web/README.md`](web/README.md).
 
 [2021-07-27]
 
